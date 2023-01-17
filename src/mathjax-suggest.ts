@@ -9,19 +9,21 @@ import {
 	renderMath,
 	TFile
 } from 'obsidian';
-import { MathjaxHelper } from './mathjax-helper';
+import {MathjaxHelper} from './mathjax-helper';
 import {MathJaxSymbol} from './mathjax-symbols';
 import {BetterMathjaxSettings} from "./settings";
 import Logger from "./logger";
 
 export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
-	private mathjaxHelper: MathjaxHelper
+	private mathjaxHelper: MathjaxHelper;
 	private editor: Editor;
 	private settings: BetterMathjaxSettings;
 
+	private enabled: boolean;
+
 	private startPos: EditorPosition;
 	private endPos: EditorPosition;
-	private tired: boolean;
+	private suggestionTired: boolean;
 
 	constructor(private app: App, settings: BetterMathjaxSettings, mathjaxHelper: MathjaxHelper) {
 		super(app);
@@ -31,32 +33,33 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 
 	getSuggestions(context: EditorSuggestContext): MathJaxSymbol[] {
 		// convert the item in results to a string[]
-		return this.mathjaxHelper.search(context.query, this.settings.suggestionNumber);
+		return this.mathjaxHelper.search(context.query, this.settings.maxSuggestionNumber);
 	}
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
-		if (this.tired) {
-			this.tired = false;
+		if (this.suggestionTired) {
+			this.suggestionTired = false;
 			return null;
 		}
 
 		this.editor = editor;
-		const inlineText = editor.getLine(cursor.line).slice(0, cursor.ch);
 
-		// Get the text before the cursor
-		if (this.settings.autoEnabling) {
-			let allTextBeforeCursor = "";
-			for (let i = 0; i < cursor.line; i++) {
-				allTextBeforeCursor += editor.getLine(i) + " ";
+		this.enabled = false;
+		if (this.settings.forceEnabling) {
+			this.enabled = true;
+		} else {
+			if (this.settings.autoEnabling) {
+				const text = this.getTextBeforeCursor(cursor);
+				this.enabled = this.checkMathjaxEnvironment(text)
 			}
-			allTextBeforeCursor += inlineText;
-			this.settings.forceEnabling = this.checkMathjaxEnvironment(allTextBeforeCursor) && this.settings.autoEnabling;
-			Logger.instance.info("check whether mathjax is enabled", this.settings.forceEnabling);
-			if (!this.settings.forceEnabling) {
+
+			if (!this.enabled) {
 				return null;
 			}
 		}
-		const word = this.getWord(inlineText);
+
+
+		const word = this.getWord(this.getCurrentLineBeforeCursor(cursor));
 
 		this.startPos = {line: cursor.line, ch: cursor.ch - word.length};
 		this.endPos = cursor;
@@ -69,7 +72,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 
 	}
 
-	renderSuggestion(suggestion: MathJaxSymbol, el: HTMLElement): void {
+	async renderSuggestion(suggestion: MathJaxSymbol, el: HTMLElement): Promise<void> {
 		el.setText(suggestion.name);
 		// Create new element
 		const mathSpan = el.createSpan();
@@ -87,8 +90,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 
 			//Logger.instance.info(example)
 			const mathEl = renderMath(example, false);
-			finishRenderMath().then(() => {
-			});
+			await finishRenderMath();
 			mathSpan.appendChild(mathEl);
 		} catch (ReferenceError) {
 			Logger.instance.error("ReferenceError");
@@ -99,11 +101,9 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	}
 
 	selectSuggestion(suggestion: MathJaxSymbol, evt: MouseEvent | KeyboardEvent): void {
-
-
 		const pos = this.startPos;
 		pos.ch = pos.ch - 1;
-		if (this.settings.useSnippet && suggestion.snippet !== undefined && suggestion.snippet !== "") {
+		if (this.settings.useSnippetFirst && suggestion.snippet !== undefined && suggestion.snippet !== "") {
 			this.editor.replaceRange(suggestion.snippet, this.startPos, this.endPos);
 			this.editor.setCursor(pos);
 			// this.placeholderPositions = this.getPlaceholderPositions(pos, suggestion.snippet);
@@ -112,7 +112,10 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 			this.editor.replaceRange(suggestion.name, pos, this.endPos);
 		}
 		this.close();
-		this.tired = true;
+		this.suggestionTired = true;
+	}
+	getCurrentLineBeforeCursor(pos: EditorPosition): string {
+		return this.editor.getLine(pos.line).slice(0, pos.ch);
 	}
 
 	// Function to get the text before the cursor and after a backslash
@@ -127,6 +130,16 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 			return "";
 		}
 		return match[1];
+	}
+
+	getTextBeforeCursor(pos: EditorPosition): string {
+		let text = "";
+		for (let i = 0; i < pos.line; i++) {
+			text += this.editor.getLine(i) + " ";
+		}
+
+		text += this.getCurrentLineBeforeCursor(pos);
+		return text;
 	}
 
 	checkMathjaxEnvironment(text: string): boolean {
@@ -157,13 +170,17 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	selectNextSuggestion(): void {
 		// Thanks to github@tth05 for this hack
 		// And thanks to Obsidian team who made this hack possible by not providing a doc for this (yet)
+
+		/* eslint-disable */
 		(this as any).suggestions.setSelectedItem((this as any).suggestions.selectedItem + 1, new KeyboardEvent("keydown"));
+		/* eslint-enable */
 	}
 
 	selectPreviousSuggestion(): void {
+		/* eslint-disable */
 		(this as any).suggestions.setSelectedItem((this as any).suggestions.selectedItem - 1, new KeyboardEvent("keydown"));
+		/* eslint-enable */
 	}
-
 
 
 	selectNextPlaceholder(): void {
@@ -189,8 +206,8 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 			const regex = /@(\d+)@/g;
 			let match;
 			if ((match = regex.exec(line)) !== null) {
-				const placeholderStartPos = {line: lineNumber, ch: pos.ch+match.index};
-				const placeholderEndPos = {line: lineNumber, ch: pos.ch+match.index + match[0].length};
+				const placeholderStartPos = {line: lineNumber, ch: pos.ch + match.index};
+				const placeholderEndPos = {line: lineNumber, ch: pos.ch + match.index + match[0].length};
 				this.editor.setSelection(placeholderStartPos, placeholderEndPos);
 				return;
 			}
@@ -235,9 +252,11 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	}
 
 	showMathjaxHelperOnCurrentSelection(): void {
-		//copy suggestion by jsonify
+
+		/* eslint-disable */
 		const selectedIndex = (this as any).suggestions.selectedItem;
-		Logger.instance.info("DEBUG: suggestion index:", selectedIndex);
+		/* eslint-enable */
+
 		// show the mathjax helper
 		this.mathjaxHelper.showHelperBySelectedItemIndex(selectedIndex);
 

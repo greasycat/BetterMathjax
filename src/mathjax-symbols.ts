@@ -1239,7 +1239,7 @@ export const LATEX_SYMBOLS = [
 	},
 	{
 		"name": "\\def",
-		"description": "for defining your own commands (control sequences, macros, definitions);\nmust appear (within math delimiters) before it is used;\nalternatively, you can\ndefine macros using the MathJax configuration\noptions in the \u00a0<head>\n\\def\\myCommandName{ <replacement text> }",
+		"description": "for defining your own commands (control sequences, macros, definitions);\nmust appear (within math delimiters) before it is used;\nalternatively, you can\ndefine macros using the MathJax configuration\noptions in the \u00a0 \n\\def\\myCommandName{}",
 		"examples": "",
 		"see_also": [],
 		"snippet": ""
@@ -1816,7 +1816,7 @@ export const LATEX_SYMBOLS = [
 		"name": "\\href",
 		"description": "used to make a math object into a link\n\\href{ <url> } #1\nwhere the argument (#1) is the clickable area",
 		"examples": [
-			"\\href{http://www.onemathematicalcat.org}{M^{A^{T^H}}}"
+			"\\href{https://math.stackexchange.com/}{M^{A^{T^H}}}"
 		],
 		"see_also": [],
 		"snippet": ""
@@ -2767,7 +2767,7 @@ export const LATEX_SYMBOLS = [
 	},
 	{
 		"name": "\\mbox",
-		"description": "creates a box just wide enough to hold the text in its argument;\nno linebreaks are allowed in the text;\ntext appears in \u00a0\\rm\u00a0\n\nclass ORD\n\n\\mbox <text argument>",
+		"description": "creates a box just wide enough to hold the text in its argument;\nno linebreaks are allowed in the text;\ntext appears in \u00a0\\rm\u00a0\n\nclass ORD\n\n\\mbox",
 		"examples": [
 			"a + b \\mbox{ (are you paying attention?) } = c",
 			"a + b \\text{ (are you paying attention?) } = c"
