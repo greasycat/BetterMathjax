@@ -2,7 +2,6 @@ import {MathJaxSymbol} from "./mathjax-symbols";
 import {App, PluginSettingTab, Setting, TFile, Notice} from "obsidian";
 import MyPlugin from "../main";
 import {FuzzySearchType} from "./mathjax-search";
-import Logger from "./logger";
 
 export interface BetterMathjaxSettings {
 	mySetting: string;
@@ -153,7 +152,6 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 							await this.app.vault.modify(file, generateDefaultUserDefinedSymbols());
 
 						} else {
-							console.log(content)
 							new Notice("User defined symbols already exists, if you still want the sample code, delete the file", 3000);
 						}
 					} else {
@@ -161,6 +159,7 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 							if (file === null) {
 								new Notice("Failed to create the file, make sure the path is correct.", 3000);
 							}
+							this.plugin.mathjaxHelper.readUserDefinedSymbols();
 						});
 					}
 				}))
@@ -210,10 +209,11 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 }
 
 function generateDefaultUserDefinedSymbols(): string {
-	return "Note:\n" +
-		"- When editing yaml, be careful with `'` and `\"`, must use `\\\\` if double-quoted\n" +
-		"- the plugin will only read user defined snippets inside the markdown codeblocks \\`\\`\\`, both of the following blocks will be loaded and the later blocks may overwrite previous blocks if the names are equal\n" +
-		"\n" +
+	return "```note:\n" +
+		"- While editing yaml, please be careful with `'` and `\"`, must use `\\\\` if double-quoted\n" +
+		"- the plugin will only read the first code block, if you have multiple code blocks, please put the user defined snippets in the first code block\n" +
+		"- if any of the fields are empty, the default value will be used\n" +
+		"```\n" +
 		"```yaml\n" +
 		"- name: '\\begin'\n" +
 		"  snippet: '\\begin{@1@}'\n" +

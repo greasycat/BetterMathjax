@@ -42,6 +42,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
 		if (this.startup) {
 			this.mathjaxHelper.readUserDefinedSymbols().then(() => {
+				Logger.instance.info("Startup finished");
 				this.startup = false;
 			});
 		}

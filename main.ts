@@ -61,10 +61,13 @@ export default class MyPlugin extends Plugin {
 	}
 
 	userDefinedFileChanged(file: TAbstractFile) {
-		new Notice("User defined file changed", 3000);
 		if (file.path === this.settings.userDefineSymbolFilePath) {
-			this.mathjaxHelper.readUserDefinedSymbols().then(() => {
-				console.log("User defined file reloaded");
+			this.mathjaxHelper.readUserDefinedSymbols().then((status) => {
+				if (status) {
+					new Notice("User defined file successful reloaded", 3000);
+				} else {
+					new Notice("User defined file reload failed", 3000);
+				}
 			});
 		}
 	}

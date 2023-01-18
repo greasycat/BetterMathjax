@@ -11,7 +11,7 @@ export class MathjaxHelperModal extends Modal {
 	private mathJaxHelper: MathjaxHelper;
 	private readonly symbol: MathJaxSymbol;
 
-	constructor(app: App, symbol: MathJaxSymbol, mathJaxHelper: MathjaxHelper ,settings: BetterMathjaxSettings) {
+	constructor(app: App, symbol: MathJaxSymbol, mathJaxHelper: MathjaxHelper, settings: BetterMathjaxSettings) {
 		super(app);
 		this.app = app;
 		this.symbol = symbol;
@@ -55,14 +55,14 @@ export class MathjaxHelperModal extends Modal {
 			text.onChange((value) => {
 				// copy the symbol
 				// if the symbol has never been created, create it
-				const newSymbol:MathJaxSymbol =
+				const newSymbol: MathJaxSymbol =
 					{
 						name: this.symbol.name,
 						snippet: value,
 						description: "",
 						examples: "",
 						see_also: []
-					}
+					};
 				if (this.settings.userDefinedSymbols.get(this.symbol.name) === undefined) {
 
 					this.settings.userDefinedSymbols.set(this.symbol.name, newSymbol);
@@ -112,28 +112,14 @@ export class MathjaxHelper {
 			this.settings.userDefinedSymbols = new Map();
 		}
 
-		this.readUserDefinedSymbols().then(() => {
-			Logger.instance.info("User defined symbols loaded");
+		this.readUserDefinedSymbols().then((status) => {
+			Logger.instance.info("User Defined Symbols Loading:", status);
 		});
 	}
 
 	search(query: string, limit = 5) {
 		this.lastQuery = this.fuzzySearch.search(query, limit);
-		this.lastQuery = this.maskWithUserDefinedSymbols(this.lastQuery);
 		return this.lastQuery;
-	}
-
-	maskWithUserDefinedSymbols(symbols: MathJaxSymbol[]): MathJaxSymbol[] {
-		//check if the userDefinedSymbols is defined and is a Map
-
-		// If the user has defined a symbol, use it instead of the default one
-		for (const symbol of symbols) {
-			const userDefinedSymbol = this.settings.userDefinedSymbols.get(symbol.name);
-			if (userDefinedSymbol !== undefined) {
-				symbol.snippet = userDefinedSymbol.snippet;
-			}
-		}
-		return symbols;
 	}
 
 	showHelperBySelectedItemIndex(index: number) {
@@ -141,72 +127,73 @@ export class MathjaxHelper {
 		modal.open();
 	}
 
-	async readUserDefinedSymbols() {
+	async readUserDefinedSymbols(): Promise<boolean> {
 		const file = this.app.vault.getAbstractFileByPath(this.settings.userDefineSymbolFilePath);
 		if (file === null) {
 			new Notice("User defined symbols file not found");
-			return;
+			Logger.instance.error("User defined symbols file not found");
+			// return an error
+			return false;
 		}
 
-		console.log("Reading user defined symbols");
 		// check if the file exists
 		if (await this.app.vault.adapter.exists(file.path)) {
 			// read the file
-			this.app.vault.adapter.read(file.path).then((content) => {
-				console.log("User defined symbols file read");
-				//clear code blocks
-				this.codeBlocks = [];
+			const content = await this.app.vault.adapter.read(file.path);
 
-				//clear user defined symbols
-				this.settings.userDefinedSymbols.clear();
+			//clear code blocks
+			this.codeBlocks = [];
 
-				let firstBlockLoaded = false;
-				// Regex to match markdown code block and extract both the code type and the content
-				const regex = /```(\w+)\n([\s\S]*?)\n```/gm;
-				let match;
-				while ((match = regex.exec(content)) !== null) {
-					const codeType = match[1];
-					const codeContent = match[2];
-					let json: any;
-					try {
-						switch (codeType) {
-							case "json":
-								if (firstBlockLoaded) {
-									continue;
-								}
-								json = JSON.parse(codeContent);
-								this.loadSymbolArray(json);
-								firstBlockLoaded = true;
-								this.codeBlocks.push({content: "", type: codeType});
-								break;
-							case "yaml":
-								if (firstBlockLoaded) {
-									continue;
-								}
-								json = parseYaml(codeContent);
-								this.loadSymbolArray(json);
-								firstBlockLoaded = true;
-								this.codeBlocks.push({content: "", type: codeType});
-								break;
-							default:
-								this.codeBlocks.push({content: codeContent, type: codeType});
-								console.log(`Unsupported code block type: ${codeType}`);
-								console.log(` ${codeContent}`);
-								break;
-						}
-					}catch (TypeError) {
-						console.log(`Error parsing code block type: ${codeType}`);
+			//clear user defined symbols
+			this.settings.userDefinedSymbols.clear();
+
+			let firstBlockLoaded = false;
+			// Regex to match markdown code block and extract both the code type and the content
+			const regex = /```(\w+)\n([\s\S]*?)\n```/gm;
+			let match;
+			while ((match = regex.exec(content)) !== null) {
+				const codeType = match[1];
+				const codeContent = match[2];
+				let json: any;
+				try {
+					switch (codeType) {
+						case "json":
+							if (firstBlockLoaded) {
+								continue;
+							}
+							json = JSON.parse(codeContent);
+							this.loadSymbolArray(json);
+							firstBlockLoaded = true;
+							this.codeBlocks.push({content: "", type: codeType});
+							break;
+						case "yaml":
+							if (firstBlockLoaded) {
+								continue;
+							}
+							json = parseYaml(codeContent);
+							this.loadSymbolArray(json);
+							firstBlockLoaded = true;
+							this.codeBlocks.push({content: "", type: codeType});
+							break;
+						default:
+							this.codeBlocks.push({content: codeContent, type: codeType});
+							break;
 					}
+				} catch (TypeError) {
+					Logger.instance.error(`Unsupported code block type: ${codeType}`);
+					return false;
 				}
-			});
+			}
+			return true;
 		}
-
+		return false;
 	}
 
 	async saveUserDefinedSymbols() {
 		const file = this.app.vault.getAbstractFileByPath(this.settings.userDefineSymbolFilePath);
 		if (file === null) {
 			new Notice("User defined symbols file not found");
+			Logger.instance.error("User defined symbols file not found");
 			return;
 		}
 
@@ -220,15 +207,14 @@ export class MathjaxHelper {
 					content += "```yaml\n" + stringifyYaml(Array.from(this.settings.userDefinedSymbols.values())) + "\n```\n";
 					break;
 				default:
-					content += "```"+codeBlock.type+"\n" + codeBlock.content + "\n```\n";
+					content += "```" + codeBlock.type + "\n" + codeBlock.content + "\n```\n";
 					break;
 			}
 		}
 		await this.app.vault.adapter.write(file.path, content);
 	}
 
-	loadSymbolArray(array: any[])
-	{
+	loadSymbolArray(array: any[]) {
 		if (Array.isArray(array)) {
 			for (const symbol of array) {
 				// check if the symbol has a name, a snippet, a description, examples and see_also
