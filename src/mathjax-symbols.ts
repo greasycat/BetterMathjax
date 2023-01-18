@@ -5,6 +5,37 @@ export type MathJaxSymbol = {
 	see_also: never[],
 	snippet: string,
 }
+
+export function updateMathjaxSymbol(oldSymbol: MathJaxSymbol|undefined, newSymbol: MathJaxSymbol): MathJaxSymbol {
+	// create a copy of the new symbol
+	const symbol = {...newSymbol};
+	if (oldSymbol === undefined) {
+		return symbol;
+	}
+	// check if the new symbol has a name, a snippet, a description, examples and see_also
+	// if not or empty use the old values
+	if (symbol.name === undefined || symbol.name === "") {
+		symbol.name = oldSymbol.name;
+	}
+	if (symbol.snippet === undefined || symbol.snippet === "") {
+		symbol.snippet = oldSymbol.snippet;
+	}
+
+	if (symbol.description === undefined || symbol.description === "") {
+		symbol.description = oldSymbol.description;
+	}
+
+	if (symbol.examples === undefined || symbol.examples === "") {
+		symbol.examples = oldSymbol.examples;
+	}
+
+	if (symbol.see_also === undefined || symbol.see_also.length === 0) {
+		symbol.see_also = oldSymbol.see_also;
+	}
+
+	return symbol;
+}
+
 export const LATEX_SYMBOLS = [
 	{
 		"name": "#",

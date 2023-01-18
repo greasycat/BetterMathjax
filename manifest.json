@@ -1,11 +1,11 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "better-mathjax",
+	"name": "Better Mathjax",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "This is a plugin that enhance the Mathjax support by providing autocompletion and snippet",
+	"author": "github@greasycat",
+	"authorUrl": "https://github.com/greasycat",
+	"fundingUrl": "",
 	"isDesktopOnly": false
 }

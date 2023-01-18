@@ -111,7 +111,7 @@ export function damerauLevenshteinDistance(source: string, target: string) {
     return distanceMatrix[sourceLength + 1][targetLength + 1];
 }
 
-export function distanceRatio(source: string, target: string) {
+export function dld(source: string, target: string) {
     const distance = damerauLevenshteinDistance(source, target);
     // let ratio = 1 - (distance / Math.max(source.length, target.length));
     const ratio = 1 - (distance / (source.length + target.length));

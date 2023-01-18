@@ -1,19 +1,22 @@
-import {App, finishRenderMath, Modal, Notice, parseYaml, renderMath, Setting} from "obsidian";
+import {App, finishRenderMath, Modal, Notice, parseYaml, renderMath, Setting, stringifyYaml} from "obsidian";
 import {BetterMathjaxSettings} from "./settings";
-import FuzzySearch from "./fuzzy-search";
+import MathjaxSearch from "./mathjax-search";
 import {LATEX_SYMBOLS, MathJaxSymbol} from "./mathjax-symbols";
 import Logger from "./logger";
 
 
 export class MathjaxHelperModal extends Modal {
 	private settings: BetterMathjaxSettings;
+
+	private mathJaxHelper: MathjaxHelper;
 	private readonly symbol: MathJaxSymbol;
 
-	constructor(app: App, symbol: MathJaxSymbol, settings: BetterMathjaxSettings) {
+	constructor(app: App, symbol: MathJaxSymbol, mathJaxHelper: MathjaxHelper ,settings: BetterMathjaxSettings) {
 		super(app);
 		this.app = app;
 		this.symbol = symbol;
 		this.settings = settings;
+		this.mathJaxHelper = mathJaxHelper;
 	}
 
 	onOpen() {
@@ -51,10 +54,17 @@ export class MathjaxHelperModal extends Modal {
 			text.setValue(this.symbol.snippet);
 			text.onChange((value) => {
 				// copy the symbol
-				const newSymbol = {...this.symbol};
-				newSymbol.snippet = value;
 				// if the symbol has never been created, create it
+				const newSymbol:MathJaxSymbol =
+					{
+						name: this.symbol.name,
+						snippet: value,
+						description: "",
+						examples: "",
+						see_also: []
+					}
 				if (this.settings.userDefinedSymbols.get(this.symbol.name) === undefined) {
+
 					this.settings.userDefinedSymbols.set(this.symbol.name, newSymbol);
 				}
 				// if the symbol has been created, update it
@@ -69,21 +79,33 @@ export class MathjaxHelperModal extends Modal {
 
 	onClose() {
 		this.contentEl.empty();
+		this.mathJaxHelper.saveUserDefinedSymbols().then(() => {
+			new Notice("User defined symbols saved");
+		});
 	}
 
 
 }
 
+type CodeBlock = {
+	content: string;
+	type: string;
+}
+
 export class MathjaxHelper {
 	private readonly app: App;
 	private readonly settings: BetterMathjaxSettings;
-	private fuzzySearch: FuzzySearch;
+	private fuzzySearch: MathjaxSearch;
 	private lastQuery: MathJaxSymbol[];
+
+	private codeBlocks: CodeBlock[];
 
 	constructor(app: App, settings: BetterMathjaxSettings) {
 		this.app = app;
 		this.settings = settings;
-		this.fuzzySearch = new FuzzySearch();
+		//json and unjson the fuzzy search type from the settings
+
+		this.fuzzySearch = new MathjaxSearch(settings);
 		this.fuzzySearch.load(LATEX_SYMBOLS);
 
 		if (this.settings.userDefinedSymbols == undefined || !(this.settings.userDefinedSymbols instanceof Map)) {
@@ -115,40 +137,94 @@ export class MathjaxHelper {
 	}
 
 	showHelperBySelectedItemIndex(index: number) {
-		const modal = new MathjaxHelperModal(this.app, this.lastQuery[index], this.settings);
+		const modal = new MathjaxHelperModal(this.app, this.lastQuery[index], this, this.settings);
 		modal.open();
 	}
 
 	async readUserDefinedSymbols() {
 		const file = this.app.vault.getAbstractFileByPath(this.settings.userDefineSymbolFilePath);
 		if (file === null) {
+			new Notice("User defined symbols file not found");
 			return;
 		}
 
+		console.log("Reading user defined symbols");
 		// check if the file exists
 		if (await this.app.vault.adapter.exists(file.path)) {
 			// read the file
 			this.app.vault.adapter.read(file.path).then((content) => {
+				console.log("User defined symbols file read");
+				//clear code blocks
+				this.codeBlocks = [];
+
+				//clear user defined symbols
+				this.settings.userDefinedSymbols.clear();
+
+				let firstBlockLoaded = false;
 				// Regex to match markdown code block and extract both the code type and the content
 				const regex = /```(\w+)\n([\s\S]*?)\n```/gm;
 				let match;
 				while ((match = regex.exec(content)) !== null) {
 					const codeType = match[1];
 					const codeContent = match[2];
-					if (codeType === "yaml") {
-						const yaml = parseYaml(codeContent);
-						this.loadSymbolArray(yaml);
-
-					}
-					else if (codeType == "json") {
-						// Load json
-						const json = JSON.parse(codeContent);
-						this.loadSymbolArray(json);
+					let json: any;
+					try {
+						switch (codeType) {
+							case "json":
+								if (firstBlockLoaded) {
+									continue;
+								}
+								json = JSON.parse(codeContent);
+								this.loadSymbolArray(json);
+								firstBlockLoaded = true;
+								this.codeBlocks.push({content: "", type: codeType});
+								break;
+							case "yaml":
+								if (firstBlockLoaded) {
+									continue;
+								}
+								json = parseYaml(codeContent);
+								this.loadSymbolArray(json);
+								firstBlockLoaded = true;
+								this.codeBlocks.push({content: "", type: codeType});
+								break;
+							default:
+								this.codeBlocks.push({content: codeContent, type: codeType});
+								console.log(`Unsupported code block type: ${codeType}`);
+								console.log(` ${codeContent}`);
+								break;
+						}
+					}catch (TypeError) {
+						console.log(`Error parsing code block type: ${codeType}`);
 					}
 				}
 			});
 		}
 
+	}
+
+	async saveUserDefinedSymbols() {
+		const file = this.app.vault.getAbstractFileByPath(this.settings.userDefineSymbolFilePath);
+		if (file === null) {
+			new Notice("User defined symbols file not found");
+			return;
+		}
+
+		let content = "";
+		for (const codeBlock of this.codeBlocks) {
+			switch (codeBlock.type) {
+				case "json":
+					content += "```json\n" + JSON.stringify(Array.from(this.settings.userDefinedSymbols.values()), null, 2) + "\n```\n";
+					break;
+				case "yaml":
+					content += "```yaml\n" + stringifyYaml(Array.from(this.settings.userDefinedSymbols.values())) + "\n```\n";
+					break;
+				default:
+					content += "```"+codeBlock.type+"\n" + codeBlock.content + "\n```\n";
+					break;
+			}
+		}
+		await this.app.vault.adapter.write(file.path, content);
 	}
 
 	loadSymbolArray(array: any[])
@@ -157,7 +233,7 @@ export class MathjaxHelper {
 			for (const symbol of array) {
 				// check if the symbol has a name, a snippet, a description, examples and see_also
 				// if not give a default value
-				if (!this.isValidSymbol(symbol)) {
+				if (symbol.name === undefined) {
 					continue;
 				}
 
@@ -173,25 +249,8 @@ export class MathjaxHelper {
 
 				// add to the userDefinedSymbols
 				this.settings.userDefinedSymbols.set(newSymbol.name, newSymbol);
+				this.fuzzySearch.update(this.settings.userDefinedSymbols);
 			}
 		}
-	}
-	isValidSymbol(symbol: any) {
-		if (symbol.name === undefined) {
-			return false
-		}
-		if (symbol.snippet === undefined) {
-			symbol.snippet = "";
-		}
-		if (symbol.description === undefined) {
-			symbol.description = "";
-		}
-		if (symbol.examples === undefined) {
-			symbol.examples = [];
-		}
-		if (symbol.see_also === undefined) {
-			symbol.see_also = [];
-		}
-		return true;
 	}
 }

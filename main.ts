@@ -1,50 +1,55 @@
-import {loadMathJax, Plugin} from 'obsidian';
+import {loadMathJax, Notice, Plugin, TAbstractFile} from 'obsidian';
 
 import MathjaxSuggest from './src/mathjax-suggest';
 import {
-	SelectNextSuggestCommand,
-	SelectPreviousSuggestCommand,
-	SelectNextPlaceholderCommand,
-	SelectPreviousPlaceholderCommand,
-	ShowMathjaxHelperOnCurrentSelection,
+	selectNextSuggestCommand,
+	selectPreviousSuggestCommand,
+	selectNextPlaceholderCommand,
+	selectPreviousPlaceholderCommand,
+	showMathjaxHelperOnCurrentSelection,
+	insertSubscriptPlaceholder,
+	insertSuperscriptPlaceholder,
+	reloadUserDefinedFile,
 } from './src/commands';
 import {BetterMathjaxSettings, BetterMathjaxSettingTab, DEFAULT_SETTINGS} from "./src/settings";
 import {MathjaxHelper} from "./src/mathjax-helper";
-import {subscriptHandler} from "./src/mathjax-pairing";
 
 
 // Remember to rename these classes and interfaces!
 
 
-
 export default class MyPlugin extends Plugin {
 	settings: BetterMathjaxSettings;
 	mathjaxHelper: MathjaxHelper;
-    mathjaxSuggest: MathjaxSuggest;
+	mathjaxSuggest: MathjaxSuggest;
 
 	async onload() {
 		await this.loadSettings();
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new BetterMathjaxSettingTab(this.app, this));
-
 		// Load mathjax
 		await loadMathJax();
 		this.mathjaxHelper = new MathjaxHelper(this.app, this.settings);
-        this.mathjaxSuggest = new MathjaxSuggest(this.app, this.settings, this.mathjaxHelper);
-        this.registerEditorSuggest(this.mathjaxSuggest);
-
-		this.registerEditorExtension(subscriptHandler());
+		this.mathjaxSuggest = new MathjaxSuggest(this.app, this.settings, this.mathjaxHelper);
+		this.registerEditorSuggest(this.mathjaxSuggest);
 
 
-        this.addCommand(SelectNextSuggestCommand(this.mathjaxSuggest));
-        this.addCommand(SelectPreviousSuggestCommand(this.mathjaxSuggest));
-		this.addCommand(SelectNextPlaceholderCommand(this.mathjaxSuggest));
-		this.addCommand(SelectPreviousPlaceholderCommand(this.mathjaxSuggest));
-		this.addCommand(ShowMathjaxHelperOnCurrentSelection(this.mathjaxSuggest));
+		this.addCommand(selectNextSuggestCommand(this.mathjaxSuggest));
+		this.addCommand(selectPreviousSuggestCommand(this.mathjaxSuggest));
+		this.addCommand(selectNextPlaceholderCommand(this.mathjaxSuggest));
+		this.addCommand(selectPreviousPlaceholderCommand(this.mathjaxSuggest));
+		this.addCommand(showMathjaxHelperOnCurrentSelection(this.mathjaxSuggest));
+		this.addCommand(insertSubscriptPlaceholder(this.mathjaxSuggest, this.settings));
+		this.addCommand(insertSuperscriptPlaceholder(this.mathjaxSuggest, this.settings));
+		this.addCommand(reloadUserDefinedFile(this.mathjaxHelper));
+
+
+		this.app.vault.on("modify", this.userDefinedFileChanged.bind(this));
+
 	}
 
 	onunload() {
+		this.app.vault.off("modify", this.userDefinedFileChanged.bind(this));
 	}
 
 	async loadSettings() {
@@ -53,6 +58,15 @@ export default class MyPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	userDefinedFileChanged(file: TAbstractFile) {
+		new Notice("User defined file changed", 3000);
+		if (file.path === this.settings.userDefineSymbolFilePath) {
+			this.mathjaxHelper.readUserDefinedSymbols().then(() => {
+				console.log("User defined file reloaded");
+			});
+		}
 	}
 }
 

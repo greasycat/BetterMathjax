@@ -19,16 +19,19 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	private editor: Editor;
 	private settings: BetterMathjaxSettings;
 
-	private enabled: boolean;
+	public enabled: boolean;
 
 	private startPos: EditorPosition;
 	private endPos: EditorPosition;
 	private suggestionTired: boolean;
 
+	private startup: boolean;
+
 	constructor(private app: App, settings: BetterMathjaxSettings, mathjaxHelper: MathjaxHelper) {
 		super(app);
 		this.mathjaxHelper = mathjaxHelper;
 		this.settings = settings;
+		this.startup = true;
 	}
 
 	getSuggestions(context: EditorSuggestContext): MathJaxSymbol[] {
@@ -37,6 +40,12 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	}
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
+		if (this.startup) {
+			this.mathjaxHelper.readUserDefinedSymbols().then(() => {
+				this.startup = false;
+			});
+		}
+
 		if (this.suggestionTired) {
 			this.suggestionTired = false;
 			return null;
@@ -141,6 +150,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 		text += this.getCurrentLineBeforeCursor(pos);
 		return text;
 	}
+
 
 	checkMathjaxEnvironment(text: string): boolean {
 		// check if the text is in a mathjax environment using stack

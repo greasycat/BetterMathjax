@@ -1,6 +1,8 @@
 import {MathJaxSymbol} from "./mathjax-symbols";
-import {App, PluginSettingTab, SplitDirection, Setting, TFile} from "obsidian";
+import {App, PluginSettingTab, Setting, TFile, Notice} from "obsidian";
 import MyPlugin from "../main";
+import {FuzzySearchType} from "./mathjax-search";
+import Logger from "./logger";
 
 export interface BetterMathjaxSettings {
 	mySetting: string;
@@ -16,8 +18,7 @@ export interface BetterMathjaxSettings {
 	matchingSuperScript: boolean;
 	matchingSubScript: boolean;
 
-
-
+	fuzzySearchType: FuzzySearchType;
 }
 
 export const DEFAULT_SETTINGS: BetterMathjaxSettings = {
@@ -32,8 +33,11 @@ export const DEFAULT_SETTINGS: BetterMathjaxSettings = {
 	matchingSuperScript: true,
 
 	userDefinedSymbols: new Map<string, MathJaxSymbol>(),
-	userDefineSymbolFilePath: "symbols.md"
-}
+	userDefineSymbolFilePath: "symbols.md",
+
+	fuzzySearchType: "LCS"
+};
+
 export class BetterMathjaxSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
 
@@ -55,10 +59,10 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.useSnippetFirst)
 				.onChange(async (value) => {
-					this.plugin.settings.useSnippetFirst = value;
-					await this.plugin.saveSettings();
-				}
-			));
+						this.plugin.settings.useSnippetFirst = value;
+						await this.plugin.saveSettings();
+					}
+				));
 
 		new Setting(containerEl)
 			.setName('Max suggestion number')
@@ -127,19 +131,100 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.userDefineSymbolFilePath)
 				.setPlaceholder("user-defined-symbols.md")
 				.onChange(async (value) => {
-					this.plugin.settings.userDefineSymbolFilePath = value;
-					await this.plugin.saveSettings();
+					// regex to check if the path is a markdown file
+					if (value.match(/.*\.md$/)) {
+						this.plugin.settings.userDefineSymbolFilePath = value;
+						await this.plugin.saveSettings();
+					} else {
+						new Notice("The file should be a markdown file, otherwise it may not appear in the obsidian file view", 3000);
+					}
+
+				}))
+			.addButton(button => button
+				.setButtonText("Generate")
+				.onClick(async () => {
+					const file = this.app.vault.getAbstractFileByPath(this.plugin.settings.userDefineSymbolFilePath);
+
+					if (file instanceof TFile) {
+						// read the file if empty then generate the default
+						const content = await this.app.vault.read(file);
+						if (content && content.trim() === "") {
+							new Notice("Generating default user defined symbols", 3000);
+							await this.app.vault.modify(file, generateDefaultUserDefinedSymbols());
+
+						} else {
+							console.log(content)
+							new Notice("User defined symbols already exists, if you still want the sample code, delete the file", 3000);
+						}
+					} else {
+						this.app.vault.create(this.plugin.settings.userDefineSymbolFilePath, generateDefaultUserDefinedSymbols()).then((file) => {
+							if (file === null) {
+								new Notice("Failed to create the file, make sure the path is correct.", 3000);
+							}
+						});
+					}
 				}))
 			.addButton(button => button
 				.setButtonText("Open")
 				.onClick(async () => {
 					const file = this.app.vault.getAbstractFileByPath(this.plugin.settings.userDefineSymbolFilePath);
 					if (file instanceof TFile) {
-						await this.app.workspace.getLeaf("split", "vertical" ).openFile(file);
+						await this.app.workspace.getLeaf("split", "vertical").openFile(file);
+					} else {
+						new Notice("The file does not exist", 3000);
 					}
 				})
 			)
+			.addButton(button => button
+				.setButtonText("Reload")
+				.onClick(async () => {
+					this.plugin.mathjaxHelper.readUserDefinedSymbols().then(() => {
+						new Notice("Reloaded user defined symbols", 3000);
+					});
+				}));
+
+
+		new Setting(containerEl)
+			.setName("Fuzzy search type")
+			.setDesc("Select the fuzzy search algorithm")
+			.addDropdown(dropdown => {
+				dropdown.addOption("LCS", "Longest common subsequence");
+				dropdown.addOption("DLD", "Damerau-Levenshtein distance");
+				dropdown.setValue(this.plugin.settings.fuzzySearchType);
+				dropdown.onChange(async (value) => {
+					switch (value) {
+						case "LCS":
+							this.plugin.settings.fuzzySearchType = "LCS";
+							break;
+						case "DLD":
+							this.plugin.settings.fuzzySearchType = "DLD";
+							break;
+
+					}
+					await this.plugin.saveSettings();
+				});
+			});
 
 
 	}
+}
+
+function generateDefaultUserDefinedSymbols(): string {
+	return "Note:\n" +
+		"- When editing yaml, be careful with `'` and `\"`, must use `\\\\` if double-quoted\n" +
+		"- the plugin will only read user defined snippets inside the markdown codeblocks \\`\\`\\`, both of the following blocks will be loaded and the later blocks may overwrite previous blocks if the names are equal\n" +
+		"\n" +
+		"```yaml\n" +
+		"- name: '\\begin'\n" +
+		"  snippet: '\\begin{@1@}'\n" +
+		"```\n" +
+		"\n" +
+		"```json\n" +
+		"[\n" +
+		"  {\n" +
+		"    \"snippet\": \"\\\\end{@1@}\", \n" +
+		"    \"name\": \"\\\\end\"\n" +
+		"  }\n" +
+		"]\n" +
+		"```\n";
 }
