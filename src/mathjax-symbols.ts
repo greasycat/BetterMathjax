@@ -122,7 +122,7 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "\\ \u00a0 (backslash space)",
+		"name": "\\",
 		"description": "control space;\n$\\rm\\TeX$ often ignores spaces, or collapses multiple spaces to a single space.\nA control space is used to force $\\rm\\TeX$ to typeset a space.\n\nclass ORD",
 		"examples": [
 			"\\rm This is a sentence.",
@@ -134,7 +134,7 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "~ \u00a0 (tilde character)",
+		"name": "~",
 		"description": "In $\\rm\\TeX$ this is a non-breaking space\u2014i.e.,\na blank space where $\\rm\\TeX$ is not allowed to break between lines.\nMathJax (unlike $\\rm\\TeX$) doesn't do any automatic breaking of lines,\nso MathJax will not break at any space.\nThe tilde is useful to force a space where MathJax would otherwise collapse or ignore spaces,\nas illustrated in the",
 		"examples": [
 			"\\rm Dr. Carol J.V. Fisher",
@@ -194,7 +194,7 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "\\{  \\}",
+		"name": "braces",
 		"description": "literal braces;\nneeded since braces are used for grouping in math mode;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n\\{ is class OPEN\n\\} is class CLOSE",
 		"examples": [
 			"{1,2,3}",
@@ -202,7 +202,7 @@ export const LATEX_SYMBOLS = [
 			"\\left\\{\\frac ab,c\\right\\}"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\{@1@\\}"
 	},
 	{
 		"name": "|",
@@ -218,7 +218,7 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "\\|",
+		"name": "norm",
 		"description": "double pipe character; double vertical bar; norm;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n&#x2225; \u00a0 class ORD",
 		"examples": [
 			"\\|x\\|",
@@ -226,17 +226,17 @@ export const LATEX_SYMBOLS = [
 			"\\left\\|\\frac ab\\right\\|"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\|@1@\\|"
 	},
 	{
-		"name": "( )",
+		"name": "parentheses",
 		"description": "parentheses;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n( is class OPEN;\n) is class CLOSE",
 		"examples": [
 			"(\\frac ab,c)",
 			"\\left(\\frac ab,c\\right)"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "(@1@)"
 	},
 	{
 		"name": ".",
@@ -277,14 +277,14 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "[ ]",
+		"name": "brackets",
 		"description": "(square) brackets;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n[ is class OPEN;\n] is class CLOSE",
 		"examples": [
 			"[\\frac ab,c]",
 			"\\left[\\frac ab,c\\right]"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "[@1@]"
 	},
 	{
 		"name": "=",
@@ -517,7 +517,7 @@ export const LATEX_SYMBOLS = [
 			"\\bar{xy}"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\bar{@1@}"
 	},
 	{
 		"name": "\\barwedge",
@@ -693,7 +693,7 @@ export const LATEX_SYMBOLS = [
 			"\\binom{n-1}{k-1}"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\binom{@1@}{@2@}"
 	},
 	{
 		"name": "\\blacklozenge",
@@ -1609,7 +1609,7 @@ export const LATEX_SYMBOLS = [
 			"\\frac{a-1}{b-1}"
 		],
 		"see_also": [],
-		"snippet": "\\frac{@1@}}{{@2@}}"
+		"snippet": "\\frac{@1@}{@2@}"
 	},
 	{
 		"name": "\\frak",

@@ -10,6 +10,7 @@ import {
 	insertSubscriptPlaceholder,
 	insertSuperscriptPlaceholder,
 	reloadUserDefinedFile,
+	addSubSuperScriptCommand,
 } from './src/commands';
 import {BetterMathjaxSettings, BetterMathjaxSettingTab, DEFAULT_SETTINGS} from "./src/settings";
 import {MathjaxHelper} from "./src/mathjax-helper";
@@ -30,7 +31,7 @@ export default class MyPlugin extends Plugin {
 		// Load mathjax
 		await loadMathJax();
 		this.mathjaxHelper = new MathjaxHelper(this.app, this.settings);
-		this.mathjaxSuggest = new MathjaxSuggest(this.app, this.settings, this.mathjaxHelper);
+		this.mathjaxSuggest = new MathjaxSuggest(this, this.settings, this.mathjaxHelper);
 		this.registerEditorSuggest(this.mathjaxSuggest);
 
 
@@ -39,10 +40,7 @@ export default class MyPlugin extends Plugin {
 		this.addCommand(selectNextPlaceholderCommand(this.mathjaxSuggest));
 		this.addCommand(selectPreviousPlaceholderCommand(this.mathjaxSuggest));
 		this.addCommand(showMathjaxHelperOnCurrentSelection(this.mathjaxSuggest));
-		this.addCommand(insertSubscriptPlaceholder(this.mathjaxSuggest, this.settings));
-		this.addCommand(insertSuperscriptPlaceholder(this.mathjaxSuggest, this.settings));
 		this.addCommand(reloadUserDefinedFile(this.mathjaxHelper));
-
 
 		this.app.vault.on("modify", this.userDefinedFileChanged.bind(this));
 
@@ -59,6 +57,7 @@ export default class MyPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
 
 	userDefinedFileChanged(file: TAbstractFile) {
 		if (file.path === this.settings.userDefineSymbolFilePath) {

@@ -6,6 +6,7 @@ import {
 	EditorSuggestContext,
 	EditorSuggestTriggerInfo,
 	finishRenderMath,
+	Plugin,
 	renderMath,
 	TFile
 } from 'obsidian';
@@ -13,11 +14,14 @@ import {MathjaxHelper} from './mathjax-helper';
 import {MathJaxSymbol} from './mathjax-symbols';
 import {BetterMathjaxSettings} from "./settings";
 import Logger from "./logger";
+import { addSubSuperScriptCommand, removeSubSuperScriptCommand } from './commands';
 
 export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	private mathjaxHelper: MathjaxHelper;
 	private editor: Editor;
 	private settings: BetterMathjaxSettings;
+
+	private plugin: Plugin;
 
 	public enabled: boolean;
 
@@ -27,8 +31,9 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 
 	private startup: boolean;
 
-	constructor(private app: App, settings: BetterMathjaxSettings, mathjaxHelper: MathjaxHelper) {
-		super(app);
+	constructor(plugin: Plugin, settings: BetterMathjaxSettings, mathjaxHelper: MathjaxHelper) {
+		super(plugin.app);
+		this.plugin = plugin;
 		this.mathjaxHelper = mathjaxHelper;
 		this.settings = settings;
 		this.startup = true;
@@ -64,9 +69,12 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 			}
 
 			if (!this.enabled) {
+				removeSubSuperScriptCommand(this.plugin);
 				return null;
 			}
 		}
+
+		addSubSuperScriptCommand(this.plugin, this, this.settings);
 
 
 		const word = this.getWord(this.getCurrentLineBeforeCursor(cursor));
@@ -116,7 +124,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 		if (this.settings.useSnippetFirst && suggestion.snippet !== undefined && suggestion.snippet !== "") {
 			this.editor.replaceRange(suggestion.snippet, this.startPos, this.endPos);
 			this.editor.setCursor(pos);
-			// this.placeholderPositions = this.getPlaceholderPositions(pos, suggestion.snippet);
+
 			this.selectNextPlaceholder();
 		} else {
 			this.editor.replaceRange(suggestion.name, pos, this.endPos);

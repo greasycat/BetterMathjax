@@ -1,7 +1,8 @@
-import {Command, Notice} from 'obsidian';
+import {App, Command, Notice, Plugin} from 'obsidian';
 import MathjaxSuggest from './mathjax-suggest';
 import {BetterMathjaxSettings} from "./settings";
 import {MathjaxHelper} from "./mathjax-helper";
+import Logger from './logger';
 
 export function selectNextSuggestCommand(latexSuggest: MathjaxSuggest): Command {
 	return {
@@ -88,8 +89,8 @@ export function insertSubscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, setti
 		id: 'better-mathjax-insert-subscript-placeholder-bracket',
 		name: 'Insert subscript',
 		hotkeys: [{
-			key: "_",
-			modifiers: []
+			key: "-",
+			modifiers: ["Shift"]
 		}],
 		repeatable: true, editorCallback: (editor, view) => {
 
@@ -99,37 +100,39 @@ export function insertSubscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, setti
 			if (settings.matchingSubScript && mathjaxSuggest.enabled)
 			{
 				editor.replaceRange("_{@1@}", cursor);
+				mathjaxSuggest.selectNextPlaceholder();
 			}
-			else
-			{
-				editor.replaceRange("_", cursor);
-			}
-			editor.setCursor({ch:cursor.ch + 1, line:cursor.line})
+			// else
+			// {
+			// 	editor.replaceRange("_", cursor);
+			// 	editor.setCursor({ch:cursor.ch + 1, line:cursor.line})
+			// }
 		},
 	};
 }
 
 export function insertSuperscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, settings: BetterMathjaxSettings): Command {
 	return {
-		id: 'better-mathjax-insert-super-placeholder-bracket',
+		id: 'better-mathjax-insert-superscript-placeholder-bracket',
 		name: 'Insert super',
 		hotkeys: [{
-			key: "^",
-			modifiers: []
+			key: "6",
+			modifiers: ["Shift"]
 		}],
 		repeatable: true, editorCallback: (editor, view) => {
 
-
+			Logger.instance.info("Inserting superscript");
 			// Get current cursor position
 			const cursor = editor.getCursor();
 			if (settings.matchingSuperScript && mathjaxSuggest.enabled) {
 				editor.replaceRange("^{@1@}", cursor);
+				mathjaxSuggest.selectNextPlaceholder();
 			}
-			else
-			{
-				editor.replaceRange("^", cursor);
-			}
-			editor.setCursor({ch:cursor.ch + 1, line:cursor.line})
+			// else
+			// {
+			// 	editor.replaceRange("^", cursor);
+			// 	editor.setCursor({ch:cursor.ch + 1, line:cursor.line})
+			// }
 		},
 	};
 }
@@ -145,4 +148,17 @@ export function reloadUserDefinedFile(mathjaxHelper: MathjaxHelper): Command {
 			});
 		},
 	};
+}
+
+
+export function addSubSuperScriptCommand(plugin: Plugin, mathjaxSuggest: MathjaxSuggest, settings: BetterMathjaxSettings) {
+		plugin.addCommand(insertSubscriptPlaceholder(mathjaxSuggest, settings));
+		plugin.addCommand(insertSuperscriptPlaceholder(mathjaxSuggest, settings));
+}
+
+export function removeSubSuperScriptCommand(plugin: Plugin) {
+	// @ts-ignore
+	plugin.app.commands.removeCommand("better-mathjax:better-mathjax-insert-superscript-placeholder-bracket");
+	// @ts-ignore
+	plugin.app.commands.removeCommand("better-mathjax:better-mathjax-insert-subscript-placeholder-bracket");
 }
