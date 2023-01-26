@@ -2,89 +2,11 @@ export type MathJaxSymbol = {
 	name: string,
 	description: string|string[],
 	examples: string|string[],
-	see_also: never[],
+	see_also: string[],
 	snippet: string,
 }
 
-/**
- * Update an existing MathJaxSymbol with new values
- * @param {MathJaxSymbol} oldSymbol - The existing MathJaxSymbol
- * @param {Partial<MathJaxSymbol>} newSymbol - The new values to update the existing MathJaxSymbol
- * @returns {MathJaxSymbol} - The updated MathJaxSymbol
- */
-export function updateMathjaxSymbol(oldSymbol: MathJaxSymbol, newSymbol: Partial<MathJaxSymbol>): MathJaxSymbol {
-	// create a copy of the new symbol
-	return {...oldSymbol, ...newSymbol};
-}
-
 export const LATEX_SYMBOLS = [
-	{
-		"name": "#",
-		"description": "indicates numbered arguments in definitions",
-		"examples": "",
-		"see_also": [],
-		"snippet": ""
-	},
-	{
-		"name": "%",
-		"description": "used for a single-line comment;\nshows only in the source code;\ndoes not show in the rendered expression\n\nExample (showing the math block delimiters):\n\n$$\n% Note: (x+1)^2 is NOT x^2 + 1\n(x+1)^2      % original expression\n= (x+1)(x+1) % definition of exponent\n= x^2 + 2x + 1 % FOIL, combine like terms\n$$\n\nyields\n\n$$\n% Note: (x+1)^2 is NOT x^2 + 1\n(x+1)^2      % original expression\n= (x+1)(x+1) % definition of exponent\n= x^2 + 2x + 1 % FOIL, combine like terms\n$$\n\nInternet Explorer caution: \n\nSome versions of Internet Explorer convert newlines to spaces\nwhen building the page DOM, so that something like\n\n\\begin{equation} % some comment\na = b + c\n\\end{equation} \n\nbecomes\n\\begin{equation} % some comment a = b + c \\end{equation}\nbefore MathJax sees it.  Thus,\nsome comment a = b + c \\end{equation}\nis all treated as a comment, causing a \u00a0 \u2018missing \\end{equation}\u2019 \u00a0 error.\nIt is therefore recommended that you keep comments outside of math mode (using HTML comment style).\nIf you must use comments within mathematics, then it is best to end them with \u00a0<br /> (as of version 1.1a):\nfor example,\n\n$x + y % a comment<br />$\n\nyields\n\n$x + y % a comment<br />$",
-		"examples": [
-			"\n$$\n% Note: (x+1)^2 is NOT x^2 + 1\n(x+1)^2      % original expression\n= (x+1)(x+1) % definition of exponent\n= x^2 + 2x + 1 % FOIL, combine like terms\n$$\n"
-		],
-		"see_also": [],
-		"snippet": ""
-	},
-	{
-		"name": "&",
-		"description": "used as separators in alignment environments;\nused in HTML entity references within math mode;\nfor a literal ampersand, use \\&",
-		"examples": [
-			"a &lt; b",
-			"\\text{Carol }\\&\\text{ Julia}"
-		],
-		"see_also": [],
-		"snippet": ""
-	},
-	{
-		"name": "^",
-		"description": "used to indicate exponents;\nused to indicate superscripts;\nused for limits on large operators and in some \u2018vertical\u2019 constructions (see examples)\n\n<optional #1> ^ #2\nargument #1 is optional;\nuse braces, as needed, to clarify what is the exponent",
-		"examples": [
-			"^i",
-			"x^i_2",
-			"{x^i}_2",
-			"x^{i_2}",
-			"x^{i^2}",
-			"{x^i}^2",
-			"x^i^2",
-			"^ax^b",
-			"\\sum_{n=1}^\\infty"
-		],
-		"see_also": [],
-		"snippet": ""
-	},
-	{
-		"name": "_",
-		"description": "used to indicate subscripts;\nused for limits on large operators and in some \u2018vertical\u2019 constructions (see examples)\n\n<optional #1> _ #2\nargument #1 is optional;\nuse braces, as needed, to clarify what is the subscript",
-		"examples": [
-			"_2",
-			"x_i^2",
-			"{x_i}^2",
-			"x_{i^2}",
-			"x_{i_2}",
-			"{x_i}_2",
-			"x_i_2",
-			"^a_bx^c_d",
-			"\\sum_{n=1}^\\infty"
-		],
-		"see_also": [],
-		"snippet": ""
-	},
-	{
-		"name": "{ }",
-		"description": "braces, used for grouping;\nfor literal braces, use \\{ and \\}\n\nThere are two basic grouping constructs that use braces;\nI will refer to them as \u2018arguments\u2019 versus \u2018braced groups\u2019.\nIf you're not aware which construct is in force, then you can get unexpected results.\nThe",
-		"examples": "",
-		"see_also": [],
-		"snippet": ""
-	},
 	{
 		"name": "\\!",
 		"description": "negative thin space; \u00a0i.e., it \u2018back ups\u2019 a thin space amount",
@@ -92,18 +14,22 @@ export const LATEX_SYMBOLS = [
 			"\\rm IR",
 			"\\rm I\\! R"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\negthinspace"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\,",
 		"description": "\\,thin space (normally $\\frac 16 = \\frac{3}{18}$ of a quad)\n\\:medium space (normally $\\frac 29 = \\frac{4}{18}$ of a quad)\n\\>alternate medium space\n\\;thick space (normally $\\frac 5{18}$ of a quad)",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\thinspace"
+		],
 		"snippet": ""
 	},
 	{
-		"name": "\\",
+		"name": "\\ ",
 		"description": "control space;\n$\\rm\\TeX$ often ignores spaces, or collapses multiple spaces to a single space.\nA control space is used to force $\\rm\\TeX$ to typeset a space.\n\nclass ORD",
 		"examples": [
 			"\\rm This is a sentence.",
@@ -111,7 +37,9 @@ export const LATEX_SYMBOLS = [
 			"\\rm This~is~a~sentence.",
 			"\\text{This is a sentence.}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\text"
+		],
 		"snippet": ""
 	},
 	{
@@ -152,7 +80,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\&",
 		"description": "literal ampersand;\nneeded since ampersands are used as separators in alignment environments\nand for HTML entity references inside math mode\n\n&#x0026; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"<code>\\And</code>"
+		],
 		"snippet": ""
 	},
 	{
@@ -175,15 +105,19 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "braces",
+		"name": "\\{  \\}",
 		"description": "literal braces;\nneeded since braces are used for grouping in math mode;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n\\{ is class OPEN\n\\} is class CLOSE",
 		"examples": [
 			"{1,2,3}",
 			"\\{1,2,3\\}",
 			"\\left\\{\\frac ab,c\\right\\}"
 		],
-		"see_also": [],
-		"snippet": "\\{@1@\\}"
+		"see_also": [
+			"\\brace",
+			"\\lbrace",
+			"\\rbrace"
+		],
+		"snippet": ""
 	},
 	{
 		"name": "|",
@@ -195,29 +129,37 @@ export const LATEX_SYMBOLS = [
 			"\\{x | x\\in\\Bbb Z\\}",
 			"\\{x\\,|\\,x\\in\\Bbb Z\\}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lvert",
+			"\\rvert",
+			"\\vert"
+		],
 		"snippet": ""
 	},
 	{
-		"name": "norm",
+		"name": "\\|",
 		"description": "double pipe character; double vertical bar; norm;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n&#x2225; \u00a0 class ORD",
 		"examples": [
 			"\\|x\\|",
 			"\\|\\frac ab\\|",
 			"\\left\\|\\frac ab\\right\\|"
 		],
-		"see_also": [],
-		"snippet": "\\|@1@\\|"
+		"see_also": [
+			"\\lVert",
+			"\\rVert",
+			"\\Vert"
+		],
+		"snippet": ""
 	},
 	{
-		"name": "parentheses",
+		"name": "( )",
 		"description": "parentheses;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n( is class OPEN;\n) is class CLOSE",
 		"examples": [
 			"(\\frac ab,c)",
 			"\\left(\\frac ab,c\\right)"
 		],
 		"see_also": [],
-		"snippet": "(@1@)"
+		"snippet": ""
 	},
 	{
 		"name": ".",
@@ -258,20 +200,27 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "brackets",
+		"name": "[ ]",
 		"description": "(square) brackets;\nnon-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n[ is class OPEN;\n] is class CLOSE",
 		"examples": [
 			"[\\frac ab,c]",
 			"\\left[\\frac ab,c\\right]"
 		],
-		"see_also": [],
-		"snippet": "[@1@]"
+		"see_also": [
+			"\\brack",
+			"\\lbrack",
+			"\\rbrack"
+		],
+		"snippet": ""
 	},
 	{
 		"name": "=",
 		"description": "equal; equals\n\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ne",
+			"\\neq"
+		],
 		"snippet": ""
 	},
 	{
@@ -280,7 +229,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"f(x) = x^2,\\ \nf'(x) = 2x,\\ \nf''(x) = 2"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\prime"
+		],
 		"snippet": ""
 	},
 	{
@@ -291,7 +242,17 @@ export const LATEX_SYMBOLS = [
 			"a \\above 1pt b+2",
 			"{a+1 \\above 1.5pt b+2}+c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\abovewithdelims",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\dfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\over",
+			"\\overwithdelims"
+		],
 		"snippet": ""
 	},
 	{
@@ -302,7 +263,17 @@ export const LATEX_SYMBOLS = [
 			"{a \\abovewithdelims . | 1.5pt b+2}_{a=3}",
 			"{a+1 \\abovewithdelims \\{ \\} 1pt b+2}+c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\above",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\dfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\over",
+			"\\overwithdelims"
+		],
 		"snippet": ""
 	},
 	{
@@ -342,7 +313,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\And",
 		"description": "ampersand\n\n&#x0026; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\&"
+		],
 		"snippet": ""
 	},
 	{
@@ -400,21 +373,33 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\array{ a & b+1 \\cr c+1 & d }"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\matrix"
+		],
+		"snippet": "\\array{ @1@ & @2@ \\cr @3@ & @4@ }"
 	},
 	{
 		"name": "\\arrowvert",
 		"description": "not intended for direct use;\nused internally to create stretchy delimiters\n\n&#x23D0; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"|",
+			"\\vert",
+			"\\lvert",
+			"\\rvert"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\Arrowvert",
 		"description": "not intended for direct use;\nused internally to create stretchy delimiters\n\n&#x2016; \u00a0 class PUNCT",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\|",
+			"\\Vert",
+			"\\lVert",
+			"\\rVert"
+		],
 		"snippet": ""
 	},
 	{
@@ -439,8 +424,18 @@ export const LATEX_SYMBOLS = [
 			"a+1 \\atop b+2",
 			"{a+1 \\atop b+2}+c"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\dfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\over",
+			"\\overwithdelims"
+		],
+		"snippet": "@1@ \\atop @2@"
 	},
 	{
 		"name": "\\atopwithdelims",
@@ -450,8 +445,18 @@ export const LATEX_SYMBOLS = [
 			"a+1 \\atopwithdelims . | b+2",
 			"{a+1 \\atopwithdelims \\{ \\} b+2}+c"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atop",
+			"\\cfrac",
+			"\\dfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\over",
+			"\\overwithdelims"
+		],
+		"snippet": "@1@ \\atopwithdelims @2@ @3@ @4@"
 	},
 	{
 		"name": "\\backepsilon",
@@ -464,7 +469,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\backprime",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\prime",
+			"ORD"
+		],
 		"snippet": ""
 	},
 	{
@@ -485,7 +493,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\backslash",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\setminus"
+		],
 		"snippet": ""
 	},
 	{
@@ -498,7 +508,7 @@ export const LATEX_SYMBOLS = [
 			"\\bar{xy}"
 		],
 		"see_also": [],
-		"snippet": "\\bar{@1@}"
+		"snippet": ""
 	},
 	{
 		"name": "\\barwedge",
@@ -516,7 +526,9 @@ export const LATEX_SYMBOLS = [
 			"\\Bbb{AaBbKk}Cc",
 			"\\Bbb{ABCDEFGHIJKLMNOPQRSTUVWXYZ}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathbb"
+		],
 		"snippet": ""
 	},
 	{
@@ -570,7 +582,10 @@ export const LATEX_SYMBOLS = [
 			"\\bf AB \\rm CD",
 			"\\bf{AB}CD"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathbf",
+			"\\boldsymbol"
+		],
 		"snippet": ""
 	},
 	{
@@ -673,7 +688,12 @@ export const LATEX_SYMBOLS = [
 			"\\binom{n-1}k-1",
 			"\\binom{n-1}{k-1}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\binom",
+			"\\choose",
+			"\\dbinom",
+			"\\tbinom"
+		],
 		"snippet": "\\binom{@1@}{@2@}"
 	},
 	{
@@ -721,7 +741,10 @@ export const LATEX_SYMBOLS = [
 			"\\boldsymbol{a+2+\\alpha+\\frac{x+3}{\\beta+4}}",
 			"\\mathbf{a+2+\\alpha+\\frac{x+3}{\\beta+4}}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\bf",
+			"\\mathbf"
+		],
 		"snippet": ""
 	},
 	{
@@ -761,8 +784,10 @@ export const LATEX_SYMBOLS = [
 			"\\boxed{ab\\strut}",
 			"\\boxed{\\text{boxed text}}"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\fbox"
+		],
+		"snippet": "\\boxed{@1@}"
 	},
 	{
 		"name": "\\boxminus",
@@ -781,7 +806,7 @@ export const LATEX_SYMBOLS = [
 			"a+{b+c\\brace d+e}+f"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "@1@ \\brace @2@"
 	},
 	{
 		"name": "\\bracevert",
@@ -815,14 +840,14 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "\\buildrel ... \\over ...",
+		"name": "\\buildrel",
 		"description": "\\buildrel <subformula1> \\over #1\nThe result is of class \u00a0REL\u00a0 (binary relation), so it has the\nspacing of a relation.",
 		"examples": [
 			"\\buildrel \\alpha\\beta \\over \\longrightarrow",
 			"\\buildrel \\rm def \\over {:=}"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\buildrel @1@ \\over @2@"
 	},
 	{
 		"name": "\\bullet",
@@ -850,7 +875,10 @@ export const LATEX_SYMBOLS = [
 			"\\cal AB \\rm AB",
 			"\\cal{AB}CD"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\oldstyle",
+			"\\mathcal"
+		],
 		"snippet": ""
 	},
 	{
@@ -861,20 +889,34 @@ export const LATEX_SYMBOLS = [
 			"\\frac{\\bcancel{\\frac13}}{\\bcancel{\\frac13}} = 1"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\cancel{@1@}"
 	},
 	{
 		"name": "\\Cap",
 		"description": "&#x22D2; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\bigcap",
+			"\\cap",
+			"\\Cup",
+			"\\cup",
+			"\\doublecap",
+			"\\doublecup"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\cap",
 		"description": "&#x2229; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\bigcap",
+			"\\Cap",
+			"\\Cup",
+			"\\cup",
+			"\\doublecap",
+			"\\doublecup"
+		],
 		"snippet": ""
 	},
 	{
@@ -894,7 +936,11 @@ export const LATEX_SYMBOLS = [
 			"a\\cdotp b",
 			"a\\centerdot b"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cdotp",
+			"\\cdots",
+			"\\centerdot"
+		],
 		"snippet": ""
 	},
 	{
@@ -904,14 +950,20 @@ export const LATEX_SYMBOLS = [
 			"\\rm s \\cdot h",
 			"\\rm s \\cdotp h"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cdot",
+			"\\centerdot"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\cdots",
 		"description": "&#x22EF; \u00a0\nclass INNER\ncentered dots; \u00a0 dot dot dot",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\dots",
+			"\\ldots"
+		],
 		"snippet": ""
 	},
 	{
@@ -922,7 +974,10 @@ export const LATEX_SYMBOLS = [
 			"a\\cdotp b",
 			"a\\centerdot b"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cdot",
+			"\\cdotp"
+		],
 		"snippet": ""
 	},
 	{
@@ -932,8 +987,18 @@ export const LATEX_SYMBOLS = [
 			"\\frac{2}{1+\\frac{2}{1+\\frac{2}{1}}}",
 			"\\cfrac{2}{1+\\cfrac{2}{1+\\cfrac{2}{1}}}"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\dfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\over",
+			"\\overwithdelims"
+		],
+		"snippet": "\\cfrac{@1@}{@2@}"
 	},
 	{
 		"name": "\\check",
@@ -965,17 +1030,14 @@ export const LATEX_SYMBOLS = [
 		"name": "\\choose",
 		"description": "notation commonly used for binomial coefficients;\ndifferent versions for inline and display modes\n{ <subformula1> \\choose <subformula2> }\nThere are separate local groups for \u00a0subformula1\u00a0\nand \u00a0subformula2\u00a0;\nif these local groups are not explicit, then unexpected results may occur,\nas illustrated next.",
 		"examples": [
-			"subformula1",
-			"\n                                    ${\\displaystyle n+1}\\choose{k+2}$\n                                ",
-			"n+1",
-			"\\displaystyle",
-			"\\choose",
-			"\\displaystyle",
-			"\\displaystyle",
-			"choose"
+			"3 \\choose 2",
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\binom",
+			"\\dbinom",
+			"\\tbinom"
+		],
+		"snippet": "@1@ \\choose @2@"
 	},
 	{
 		"name": "\\circ",
@@ -1028,7 +1090,11 @@ export const LATEX_SYMBOLS = [
 		"name": "\\clubsuit",
 		"description": "&#x2663; \u00a0\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\diamondsuit",
+			"\\heartsuit",
+			"\\spadesuit"
+		],
 		"snippet": ""
 	},
 	{
@@ -1062,7 +1128,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\cong",
 		"description": "&#x2245; \u00a0\nclass REL\n\ncongruent",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ncong"
+		],
 		"snippet": ""
 	},
 	{
@@ -1079,7 +1147,9 @@ export const LATEX_SYMBOLS = [
 			"\\cos x",
 			"\\cos(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\sin"
+		],
 		"snippet": ""
 	},
 	{
@@ -1089,7 +1159,9 @@ export const LATEX_SYMBOLS = [
 			"\\cosh x",
 			"\\cosh(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\sinh"
+		],
 		"snippet": ""
 	},
 	{
@@ -1099,7 +1171,9 @@ export const LATEX_SYMBOLS = [
 			"\\cot x",
 			"\\cot(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\tan"
+		],
 		"snippet": ""
 	},
 	{
@@ -1126,7 +1200,9 @@ export const LATEX_SYMBOLS = [
 			"\\csc x",
 			"\\csc(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\sec"
+		],
 		"snippet": ""
 	},
 	{
@@ -1140,14 +1216,28 @@ export const LATEX_SYMBOLS = [
 		"name": "\\Cup",
 		"description": "&#x22D3; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\bigcup",
+			"\\Cap",
+			"\\cap",
+			"\\cup",
+			"\\doublecap",
+			"\\doublecup"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\cup",
 		"description": "&#x222A; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\bigcup",
+			"\\Cap",
+			"\\cap",
+			"\\Cup",
+			"\\doublecap",
+			"\\doublecup"
+		],
 		"snippet": ""
 	},
 	{
@@ -1208,8 +1298,12 @@ export const LATEX_SYMBOLS = [
 			"\\dbinom{n-1}k-1",
 			"\\dbinom{n-1}{k-1}"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\binom",
+			"\\choose",
+			"\\tbinom"
+		],
+		"snippet": "\\dbinom{@1@}{@2@}"
 	},
 	{
 		"name": "\\dot",
@@ -1251,9 +1345,11 @@ export const LATEX_SYMBOLS = [
 	},
 	{
 		"name": "\\def",
-		"description": "for defining your own commands (control sequences, macros, definitions);\nmust appear (within math delimiters) before it is used;\nalternatively, you can\ndefine macros using the MathJax configuration\noptions in the \u00a0 \n\\def\\myCommandName{}",
+		"description": "for defining your own commands (control sequences, macros, definitions);\nmust appear (within math delimiters) before it is used;\nalternatively, you can\ndefine macros using the MathJax configuration\noptions in the \u00a0<head>\n\\def\\myCommandName{ <replacement text> }",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\newcommand"
+		],
 		"snippet": ""
 	},
 	{
@@ -1267,7 +1363,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\Delta",
 		"description": "&#x0394;uppercase Greek letter deltaclass ORD\n&#x03B4;lowercase Greek letter deltaclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varDelta"
+		],
 		"snippet": ""
 	},
 	{
@@ -1292,8 +1390,18 @@ export const LATEX_SYMBOLS = [
 			"\\dfrac{a-1}b-1",
 			"\\dfrac{a-1}{b-1}"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\over",
+			"\\overwithdelims"
+		],
+		"snippet": "\\dfrac{@1@}{@2@}"
 	},
 	{
 		"name": "\\diagdown",
@@ -1313,7 +1421,11 @@ export const LATEX_SYMBOLS = [
 		"name": "\\diamondsuit",
 		"description": "&#x2662; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\clubsuit",
+			"\\heartsuit",
+			"\\spadesuit"
+		],
 		"snippet": ""
 	},
 	{
@@ -1336,14 +1448,20 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\displaylines{\na = a\\\\\n\\text{if } a=b \\text{ then } b=a\\\\\n\\text{if } a=b \\text{ and } b=c \\text{ then } a=c\n}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"gather"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\displaystyle",
 		"description": "class ORD\nused to over-ride automatic style rules and force display style;\nstays in force until the end of math mode or the braced group, or until another style is selected\n{ \\displaystyle ... }",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\textstyle",
+			"\\scriptstyle",
+			"\\scriptscriptstyle"
+		],
 		"snippet": ""
 	},
 	{
@@ -1383,14 +1501,26 @@ export const LATEX_SYMBOLS = [
 			"x_1 + \\dotsb + x_n",
 			"x_1 + \\cdots + x_n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cdots",
+			"\\ldots",
+			"\\dotsb",
+			"\\dotsc",
+			"\\dotsi",
+			"\\dotsm",
+			"\\dotso"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\dotsb",
 		"description": "&#x22EF;\\dotsbclass INNERdots with binary operations and relations$x_1 + x_2 +\\dotsb + x_n$\n&#x2026;\\dotscclass INNERdots with commas$x_1,x_2,\\dotsc,x_n$\n&#x22EF;\\dotsiclass INNERdots with integrals$\\int_{A_1}\\int_{A_2}\\dotsi\\int_{A_n}$\n&#x22EF;\\dotsmclass INNERdots with multiplication$x_1x_2\\dotsm x_n$\n&#x2026;\\dotsoclass INNERother dots$A_1\\dotso A_n$",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\cdots",
+			"\\dots",
+			"\\ldots"
+		],
 		"snippet": ""
 	},
 	{
@@ -1404,7 +1534,12 @@ export const LATEX_SYMBOLS = [
 		"name": "\\doublecap",
 		"description": "&#x22D2;class BIN\n&#x22D3;class BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Cap",
+			"\\Cup",
+			"\\cap",
+			"\\cup"
+		],
 		"snippet": ""
 	},
 	{
@@ -1425,7 +1560,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\downharpoonleft",
 		"description": "&#x21C3;down harpoon left; non-stretchyclass REL\n&#x21C2;down harpoon right; non-stretchyclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leftharpoondown",
+			"\\leftharpoonup"
+		],
 		"snippet": ""
 	},
 	{
@@ -1439,7 +1577,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\emptyset",
 		"description": "&#x2205; \u00a0 class ORD\nempty set",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varnothing"
+		],
 		"snippet": ""
 	},
 	{
@@ -1462,21 +1602,31 @@ export const LATEX_SYMBOLS = [
 		"name": "\\epsilon",
 		"description": "&#x03F5; \u00a0 class ORD\nlowercase Greek letter epsilon",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varepsilon"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\eqalign",
 		"description": "equation alignment;\nfor aligning multi-line displays at a single place\n\\eqalign{ <math> & <math> \\cr <repeat as needed> }\nthe ampersand is placed where alignment is desired;\na double-backslash can be used in place of the \u00a0\\cr\u00a0;\nthe final \u00a0 \\\\ \u00a0 or \u00a0 \\cr \u00a0 is optional;\nsupports only a single \\tag, which is vertically centered",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\eqalignno",
+			"align environment",
+			"\\tag"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\eqalignno",
 		"description": "equation alignment with optionally numbered (tagged) lines\n\\eqalignno{ <math> & <math> & <equation tag> \\cr <repeat as needed> }\nthe first ampersand is placed where alignment is desired;\nthe second ampersand is used just before a tag;\nif there is no tag, then the final  \u00a0 & <equation tag> \u00a0 is omitted;\na double-backslash can be used in place of the \u00a0\\cr\u00a0;\nthe final \u00a0 \\\\ \u00a0 or \u00a0 \\cr \u00a0 is optional",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\eqalign",
+			"\\leqalignno",
+			"align environment"
+		],
 		"snippet": ""
 	},
 	{
@@ -1508,13 +1658,6 @@ export const LATEX_SYMBOLS = [
 		"snippet": ""
 	},
 	{
-		"name": "Error Messages;",
-		"description": "When you're working with a MathJax page, you may\nwant to see the log of messages generated during page processing (particularly\nif something has gone wrong).\nTo do this, type\n\njavascript:alert(MathJax.Message.Log())\n\nin the browser's location URL box, and then refresh the page.\nIf the alert box is too big to see the close button, just press \u2018enter\u2019 to close the alert box.",
-		"examples": "",
-		"see_also": [],
-		"snippet": ""
-	},
-	{
 		"name": "\\eta",
 		"description": "&#x03B7; \u00a0\nclass ORD\nlowercase Greek letter eta",
 		"examples": "",
@@ -1532,7 +1675,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\exists",
 		"description": "&#x2203; \u00a0\nclass ORD\nthere exists",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nexists"
+		],
 		"snippet": ""
 	},
 	{
@@ -1546,7 +1691,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\fallingdotseq",
 		"description": "&#x2252; \u00a0\nclass REL\nfalling dot sequence;",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\risingdotseq"
+		],
 		"snippet": ""
 	},
 	{
@@ -1556,7 +1703,9 @@ export const LATEX_SYMBOLS = [
 			"\\boxed{Hi there!}",
 			"\\fbox{Hi there!}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\boxed"
+		],
 		"snippet": ""
 	},
 	{
@@ -1570,7 +1719,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\flat",
 		"description": "&#x266D; \u00a0\nclass ORD\nmusical flat symbol",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\natural",
+			"\\sharp"
+		],
 		"snippet": ""
 	},
 	{
@@ -1589,7 +1741,17 @@ export const LATEX_SYMBOLS = [
 			"\\frac{a-1}b-1",
 			"\\frac{a-1}{b-1}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\dfrac",
+			"\\genfrac",
+			"\\over",
+			"\\overwithdelims"
+		],
 		"snippet": "\\frac{@1@}{@2@}"
 	},
 	{
@@ -1603,14 +1765,20 @@ export const LATEX_SYMBOLS = [
 			"\\frak AB \\rm AB",
 			"{\\frak AB \\cal AB} AB"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathfrak"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\frown",
 		"description": "&#x2322; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\smallfrown",
+			"\\smallsmile",
+			"\\smile"
+		],
 		"snippet": ""
 	},
 	{
@@ -1624,7 +1792,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\Gamma",
 		"description": "&#x0393; \u00a0\nclass ORD\nuppercase Greek letter gamma",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varGamma"
+		],
 		"snippet": ""
 	},
 	{
@@ -1648,7 +1818,11 @@ export const LATEX_SYMBOLS = [
 		"name": "\\ge",
 		"description": "&#x2265; \u00a0 \\ge\n&#x2265; \u00a0 \\geq\n&#x2267; \u00a0 \\geqq\n&#x2A7E; \u00a0 \\geqslant\n\nall class REL\ngreater than or equal to",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ngeq",
+			"\\ngeqq",
+			"\\ngeqslant"
+		],
 		"snippet": ""
 	},
 	{
@@ -1657,7 +1831,17 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\genfrac(]{0pt}{2}{a+b}{c+d}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\dfrac",
+			"\\frac",
+			"\\over",
+			"\\overwithdelims"
+		],
 		"snippet": ""
 	},
 	{
@@ -1725,7 +1909,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\gt",
 		"description": "&#x003E; \u00a0 class REL\ngreater than",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ngtr"
+		],
 		"snippet": ""
 	},
 	{
@@ -1758,7 +1944,9 @@ export const LATEX_SYMBOLS = [
 			"\\hat ab",
 			"\\hat{ab}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\widehat"
+		],
 		"snippet": ""
 	},
 	{
@@ -1776,7 +1964,9 @@ export const LATEX_SYMBOLS = [
 			"\\hbox{This is a sentence.}",
 			"\\hbox{for all $x > 0$}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rm"
+		],
 		"snippet": ""
 	},
 	{
@@ -1793,14 +1983,25 @@ export const LATEX_SYMBOLS = [
 		"name": "\\heartsuit",
 		"description": "&#x2661; \u00a0\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\clubsuit",
+			"\\diamondsuit",
+			"\\spadesuit"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\hfil",
 		"description": "horizontal glue; horizontal fill (added in MathJax 2.5);\ncan be used to set horizontal alignment in matrices and arrays (as in old-fashioned $\\,\\TeX\\,$ layout);\nit \u2018expands\u2019 to fill available horizontal space, pushing contents on right or left to the boundary",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\hskip",
+			"\\hspace",
+			"\\kern",
+			"\\mkern",
+			"\\mskip",
+			"\\mspace"
+		],
 		"snippet": ""
 	},
 	{
@@ -1821,14 +2022,17 @@ export const LATEX_SYMBOLS = [
 		"name": "\\hphantom",
 		"description": "class ORD\nhorizontal phantom\n\nSometimes you want to pretend that something is there, for spacing reasons,\nbut you don't want it to appear\u2014you want it to be invisible\u2014you want it to be a phantom.\n\nThe box created by \u00a0 \\hphantom \u00a0 has the width of its argument,\nbut its height and depth are zero (so it doesn't contribute to any vertical spacing issues).\nIn other words, \\hphantom \u00a0 creates horizontal space equal to that produced by its argument,\nbut doesn't create any vertical space.\n\\hphantom #1",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\phantom",
+			"\\vphantom"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\href",
 		"description": "used to make a math object into a link\n\\href{ <url> } #1\nwhere the argument (#1) is the clickable area",
 		"examples": [
-			"\\href{https://math.stackexchange.com/}{M^{A^{T^H}}}"
+			"\\href{http://www.onemathematicalcat.org}{M^{A^{T^H}}}"
 		],
 		"see_also": [],
 		"snippet": ""
@@ -1862,7 +2066,9 @@ export const LATEX_SYMBOLS = [
 			"{\\huge A B} A B",
 			"A\\alpha\\huge A\\alpha \\Huge A\\alpha"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\LARGE, \\Large, \\large"
+		],
 		"snippet": ""
 	},
 	{
@@ -1893,14 +2099,18 @@ export const LATEX_SYMBOLS = [
 			"\\int_a^b",
 			"\\intop_a^b"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\intop"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\intop",
 		"description": "&#x222B; (with movable limits) \u00a0\nclass OP\n\nSee the Big Operators Table for examples.",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\iiiint, \\iiint, \\iint, \\int"
+		],
 		"snippet": ""
 	},
 	{
@@ -1917,7 +2127,9 @@ export const LATEX_SYMBOLS = [
 			"\\hat i",
 			"\\hat\\imath"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\jmath"
+		],
 		"snippet": ""
 	},
 	{
@@ -1938,7 +2150,11 @@ export const LATEX_SYMBOLS = [
 		"name": "\\in",
 		"description": "&#x2208; \u00a0\nclass REL\nis in; \u00a0 is an element of; \u00a0 indicates membership in a set;",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ni",
+			"\\notin",
+			"\\owns"
+		],
 		"snippet": ""
 	},
 	{
@@ -1948,7 +2164,9 @@ export const LATEX_SYMBOLS = [
 			"\\inf_{\\rm limit}",
 			"\\inf_{\\rm limit}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\sup"
+		],
 		"snippet": ""
 	},
 	{
@@ -1962,7 +2180,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\injlim",
 		"description": "class OP\ninjective limit;\ndoes not change size;\ncan change limit placement using \\limits and  \\nolimits;\nsee the Big Operators Table for examples",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varinjlim"
+		],
 		"snippet": ""
 	},
 	{
@@ -1987,7 +2207,10 @@ export const LATEX_SYMBOLS = [
 			"\\rm for\\ all\\ {\\it x}\\ in\\ \\Bbb R",
 			"\\Delta\\Gamma\\Lambda{\\it \\Delta\\Gamma\\Lambda}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathit",
+			"\\mit"
+		],
 		"snippet": ""
 	},
 	{
@@ -1997,7 +2220,9 @@ export const LATEX_SYMBOLS = [
 			"\\hat j",
 			"\\hat\\jmath"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\imath"
+		],
 		"snippet": ""
 	},
 	{
@@ -2011,7 +2236,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\kappa",
 		"description": "&#x03BA; \u00a0\nclass ORD\n\nlowercase Greek letter kappa",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varkappa"
+		],
 		"snippet": ""
 	},
 	{
@@ -2035,14 +2262,28 @@ export const LATEX_SYMBOLS = [
 		"name": "\\Lambda",
 		"description": "uppercase Greek letter lambda\n\n&#x039B; \u00a0\nclass ORD\n\nlowercase Greek letter lambda\n\n&#x03BB; \u00a0\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varLambda"
+		],
+		"snippet": ""
+	},
+	{
+		"name": "\\lambda",
+		"description": "uppercase Greek letter lambda\n\n&#x039B; \u00a0\nclass ORD\n\nlowercase Greek letter lambda\n\n&#x03BB; \u00a0\nclass ORD",
+		"examples": "",
+		"see_also": [
+			"\\varLambda"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\land",
 		"description": "logical AND\n\n&#x2227; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lor",
+			"\\wedge"
+		],
 		"snippet": ""
 	},
 	{
@@ -2051,7 +2292,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\langle\n\\matrix{a & b\\cr c & d}\n\\right\\rangle\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rangle"
+		],
 		"snippet": ""
 	},
 	{
@@ -2063,14 +2306,18 @@ export const LATEX_SYMBOLS = [
 			"AB \\large AB \\Large AB \\LARGE AB",
 			"\\Large{AB}CD"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\huge, \\Huge"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\LaTeX",
 		"description": "the LaTeX logo\n\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\TeX"
+		],
 		"snippet": ""
 	},
 	{
@@ -2080,7 +2327,10 @@ export const LATEX_SYMBOLS = [
 			"\\lbrace \\frac ab, c \\rbrace",
 			"\\left\\lbrace \\frac ab, c \\right\\rbrace"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rbrace",
+			"\\{ \\}"
+		],
 		"snippet": ""
 	},
 	{
@@ -2090,7 +2340,10 @@ export const LATEX_SYMBOLS = [
 			"\\lbrack \\frac ab, c \\rbrack",
 			"\\left\\lbrack \\frac ab, c \\right\\rbrack"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rbrack",
+			"[\u00a0]"
+		],
 		"snippet": ""
 	},
 	{
@@ -2099,7 +2352,11 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\lceil\n\\matrix{a & b\\cr c & d}\n\\right\\rceil\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rceil",
+			"\\lfloor",
+			"\\rfloor"
+		],
 		"snippet": ""
 	},
 	{
@@ -2109,21 +2366,30 @@ export const LATEX_SYMBOLS = [
 			"\\rm s \\ldotp h",
 			"\\rm s.h"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cdotp"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ldots",
 		"description": "lower dots; \u00a0 ellipsis; \u00a0 ellipses; \u00a0 dot dot dot\n\n&#x2026; \u00a0\nclass INNER",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\cdots",
+			"\\dots"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\le",
 		"description": "less than or equal to&#x2264; \u00a0 class REL\nless than or equal to&#x2264; \u00a0 class REL\nless than or equal to&#x2266; \u00a0 class REL\nless than or equal to&#x2A7D; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nleq",
+			"\\nleqq",
+			"\\nleqslant"
+		],
 		"snippet": ""
 	},
 	{
@@ -2140,21 +2406,28 @@ export const LATEX_SYMBOLS = [
 			"\\left( \\frac12 \\right)",
 			"\\left\\updownarrow \\phantom{\\frac12} \\right\\Updownarrow"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\right"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\leftarrow",
 		"description": "left arrow; non-stretchy\n\n&#x2190; \u00a0\nclass REL\n\nleft arrow; non-stretchy\n\n&#x21D0; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nleftarrow",
+			"\\nLeftarrow"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\leftarrowtail",
 		"description": "left arrow tail; non-stretchy\n\n&#x21A2; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\rightarrowtail"
+		],
 		"snippet": ""
 	},
 	{
@@ -2175,7 +2448,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\leftrightarrow",
 		"description": "left right arrow; non-stretchy\n\n&#x2194; \u00a0\nclass REL\n\nleft right arrow; non-stretchy\n\n&#x21D4; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nleftrightarrow",
+			"\\nLeftrightarrow"
+		],
 		"snippet": ""
 	},
 	{
@@ -2209,7 +2485,10 @@ export const LATEX_SYMBOLS = [
 			"\\root 3\\leftroot{-1} \\of x",
 			"\\root 3\\leftroot{-1}\\uproot2 \\of x"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\uproot",
+			"\\root"
+		],
 		"snippet": ""
 	},
 	{
@@ -2223,14 +2502,20 @@ export const LATEX_SYMBOLS = [
 		"name": "\\leqalignno",
 		"description": "equation alignment with optionally numbered (tagged) lines;\nin $\\rm\\TeX$, \u00a0\\leqalignno\u00a0 puts the tags on the left, but MathJax\ndoesn't implement this behavior;\ncurrently, tags appear in a column on the\nright separated from the equations by a fixed amount of space (so they\ndon't work like tags in the AMS math environments);\nthis may be fixed in a future version of MathJax\n\\leqalignno{ <math> & <math> & <equation tag> \\cr <repeat as needed> }\nthe first ampersand is placed where alignment is desired;\nthe second ampersand is used just before a tag;\nif there is no tag, then the final  \u00a0 & <equation tag> \u00a0 is omitted;\na double-backslash can be used in place of the \u00a0\\cr\u00a0;\nthe final \u00a0 \\\\ \u00a0 or \u00a0 \\cr \u00a0 is optional;\noutput is the same in both inline and display modes\n(except for the amount of vertical space before and after);",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\eqalignno",
+			"align environment"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\lessapprox",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lnapprox",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
@@ -2258,14 +2543,21 @@ export const LATEX_SYMBOLS = [
 		"name": "\\lesssim",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lnsim",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\lfloor",
 		"description": "left floor;\nnon-stretchy when used alone;\nstretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n&#x230A; \u00a0\nclass OPEN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\rfloor",
+			"\\lceil",
+			"\\rceil"
+		],
 		"snippet": ""
 	},
 	{
@@ -2281,14 +2573,18 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\lgroup\n\\matrix{a & b\\cr c & d}\n\\right\\rgroup\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rgroup"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\lhd",
 		"description": "left-hand diamond\n\n&#x22B2; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\rhd"
+		],
 		"snippet": ""
 	},
 	{
@@ -2299,7 +2595,7 @@ export const LATEX_SYMBOLS = [
 			"\\lim_{n\\rightarrow\\infty} f(x) = \\ell"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\lim_{@1@ \\rightarrow @2@} @3@ = @4@"
 	},
 	{
 		"name": "\\liminf",
@@ -2308,19 +2604,24 @@ export const LATEX_SYMBOLS = [
 			"\\liminf_{n\\rightarrow\\infty} x_n = \\ell",
 			"\\liminf_{n\\rightarrow\\infty}\\ x_n = \\ell"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\varliminf"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\limits",
 		"description": "used to set limits above/below any token of class OP;\nsee the Big Operators table for more information and examples",
 		"examples": [
+			"\\int_a^b f(x)\\,dx",
 			"\\int\\limits_a^b f(x)\\,dx",
 			"\\int_a^b f(x)\\,dx",
 			"\\int\\limits_a^b f(x)\\,dx",
 			"\\mathop{x}\\limits_0^1"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\nolimits"
+		],
 		"snippet": ""
 	},
 	{
@@ -2330,7 +2631,9 @@ export const LATEX_SYMBOLS = [
 			"\\limsup_{n\\rightarrow\\infty} x_n",
 			"\\limsup_{n\\rightarrow\\infty}\\ x_n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\varlimsup"
+		],
 		"snippet": ""
 	},
 	{
@@ -2354,14 +2657,19 @@ export const LATEX_SYMBOLS = [
 			"a=\\mathrel{\\llap{/\\,}}b",
 			"REL"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rlap"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\llcorner",
 		"description": "lower left corner&#x2514; \u00a0 class REL\nlower right corner&#x2518; \u00a0 class REL\n\nThese are technically delimiters, but MathJax doesn't stretch them like it should.",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ulcorner",
+			"\\urcorner"
+		],
 		"snippet": ""
 	},
 	{
@@ -2384,7 +2692,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\lmoustache\n\\phantom{\\matrix{a & b\\cr c & d}}\n\\right\\rmoustache\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rmoustache"
+		],
 		"snippet": ""
 	},
 	{
@@ -2398,28 +2708,41 @@ export const LATEX_SYMBOLS = [
 		"name": "\\lnapprox",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lessapprox",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\lneq",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leq",
+			"REL",
+			"\\leqq",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\lnot",
 		"description": "logical not\n\n&#x00AC; \u00a0\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\neg"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\lnsim",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lesssim",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
@@ -2447,7 +2770,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\longmapsto",
 		"description": "long maps to\n\n&#x27FC; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\mapsto"
+		],
 		"snippet": ""
 	},
 	{
@@ -2461,7 +2786,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\lor",
 		"description": "logical OR\n\n&#x2228; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\land",
+			"\\vee"
+		],
 		"snippet": ""
 	},
 	{
@@ -2470,7 +2798,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"l\\lower 2pt {owe} r"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\raise"
+		],
 		"snippet": ""
 	},
 	{
@@ -2484,21 +2814,28 @@ export const LATEX_SYMBOLS = [
 		"name": "\\Lsh",
 		"description": "left shift; non-stretchy\n\n&#x21B0; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Rsh"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\lt",
 		"description": "less than\n\n&#x003C; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nless"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ltimes",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\rtimes",
+			"BIN"
+		],
 		"snippet": ""
 	},
 	{
@@ -2507,7 +2844,12 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\left\\lvert\\frac{\\frac ab}{\\frac cd}\\right\\rvert"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rvert",
+			"\\rVert",
+			"|",
+			"\\|"
+		],
 		"snippet": ""
 	},
 	{
@@ -2528,7 +2870,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\mapsto",
 		"description": "maps to; non-stretchy math operator\n\n&#x21A6; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\longmapsto"
+		],
 		"snippet": ""
 	},
 	{
@@ -2540,7 +2884,9 @@ export const LATEX_SYMBOLS = [
 			"\\mathbb{AaBbKk}Cc",
 			"\\mathbb{ABCDEFGHIJKLMNOPQRSTUVWXYZ}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\Bbb"
+		],
 		"snippet": ""
 	},
 	{
@@ -2551,7 +2897,10 @@ export const LATEX_SYMBOLS = [
 			"\\mathbf ZR",
 			"\\mathbf{uvw}xyz"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\bf",
+			"\\boldsymbol"
+		],
 		"snippet": ""
 	},
 	{
@@ -2576,7 +2925,10 @@ export const LATEX_SYMBOLS = [
 			"abcdefghijklmnopqrstuvwxyz",
 			"\\mathcal{AB}AB"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cal",
+			"\\oldstyle"
+		],
 		"snippet": ""
 	},
 	{
@@ -2598,7 +2950,9 @@ export const LATEX_SYMBOLS = [
 			"a + \\lt b\\gt + c",
 			"a + \\mathopen\\lt b\\mathclose\\gt + c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathopen"
+		],
 		"snippet": ""
 	},
 	{
@@ -2610,7 +2964,9 @@ export const LATEX_SYMBOLS = [
 			"\\mathfrak{abcdefghijklmnopqrstuvwxyz}",
 			"\\mathfrak{AB}AB"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\frak"
+		],
 		"snippet": ""
 	},
 	{
@@ -2651,7 +3007,9 @@ export const LATEX_SYMBOLS = [
 			"a + \\lt b\\gt + c",
 			"a + \\mathopen\\lt b\\mathclose\\gt + c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathclose"
+		],
 		"snippet": ""
 	},
 	{
@@ -2704,7 +3062,9 @@ export const LATEX_SYMBOLS = [
 			"\\mathrm ZR",
 			"\\mathrm{uvw}xyz"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rm"
+		],
 		"snippet": ""
 	},
 	{
@@ -2717,7 +3077,9 @@ export const LATEX_SYMBOLS = [
 			"abcdefghijklmnopqrstuvwxyz",
 			"\\mathscr{AB}AB"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\scr"
+		],
 		"snippet": ""
 	},
 	{
@@ -2731,7 +3093,9 @@ export const LATEX_SYMBOLS = [
 			"abcdefghijklmnopqrstuvwxyz",
 			"\\mathsf{AB}AB"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\sf"
+		],
 		"snippet": ""
 	},
 	{
@@ -2755,7 +3119,9 @@ export const LATEX_SYMBOLS = [
 			"\\Delta\\Gamma\\Lambda\\mathtt{\\Delta\\Gamma\\Lambda}",
 			"\\mathtt{AB}AB"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\tt"
+		],
 		"snippet": ""
 	},
 	{
@@ -2764,7 +3130,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\matrix{ a & b \\cr c & d }\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\array"
+		],
 		"snippet": ""
 	},
 	{
@@ -2774,17 +3142,21 @@ export const LATEX_SYMBOLS = [
 			"\\max_{\\rm sub}",
 			"\\max_{\\rm sub}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\min"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\mbox",
-		"description": "creates a box just wide enough to hold the text in its argument;\nno linebreaks are allowed in the text;\ntext appears in \u00a0\\rm\u00a0\n\nclass ORD\n\n\\mbox",
+		"description": "creates a box just wide enough to hold the text in its argument;\nno linebreaks are allowed in the text;\ntext appears in \u00a0\\rm\u00a0\n\nclass ORD\n\n\\mbox <text argument>",
 		"examples": [
 			"a + b \\mbox{ (are you paying attention?) } = c",
 			"a + b \\text{ (are you paying attention?) } = c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\rm"
+		],
 		"snippet": ""
 	},
 	{
@@ -2808,7 +3180,11 @@ export const LATEX_SYMBOLS = [
 			"\\{x | x\\gt 1\\}",
 			"\\{x \\mid x\\gt 1\\}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\nmid",
+			"\\shortmid",
+			"\\nshortmid"
+		],
 		"snippet": ""
 	},
 	{
@@ -2818,7 +3194,9 @@ export const LATEX_SYMBOLS = [
 			"\\min_{\\rm sub}",
 			"\\min_{\\rm sub}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\max"
+		],
 		"snippet": ""
 	},
 	{
@@ -2849,7 +3227,10 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"3\\equiv 5 \\mod 2"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\pmod",
+			"\\bmod"
+		],
 		"snippet": ""
 	},
 	{
@@ -2870,14 +3251,19 @@ export const LATEX_SYMBOLS = [
 			"\\square\\square\\moveleft 2em {\\diamond\\diamond}",
 			"\\square\\square\\moveright 2em {\\diamond\\diamond}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\raise",
+			"\\lower"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\mp",
 		"description": "minus plus\n\n&#x2213; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\pm"
+		],
 		"snippet": ""
 	},
 	{
@@ -2927,35 +3313,50 @@ export const LATEX_SYMBOLS = [
 		"name": "\\natural",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\flat",
+			"\\sharp",
+			"ORD"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ncong",
 		"description": "not congruent\n\n&#x2246; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\cong"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ne",
 		"description": "not equal\n\n&#x2260; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"equals",
+			"\\neq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nearrow",
 		"description": "northeast arrow; non-stretchy\n\n&#x2197; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nwarrow",
+			"\\searrow",
+			"\\swarrow"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\neg",
 		"description": "negate; negation\n\n&#x00AC; \u00a0\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lnot"
+		],
 		"snippet": ""
 	},
 	{
@@ -2967,28 +3368,40 @@ export const LATEX_SYMBOLS = [
 			"a\\negmedspace b",
 			"a\\negthickspace b"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\thinspace"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\neq",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"equals",
+			"\\ne",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\newcommand",
 		"description": "for defining your own commands (control sequences, macros, definitions);\n\\newcommand\u00a0 must appear (within math delimiters) before it is used;\nif desired, you can use the \u00a0TeX.Macros\u00a0\nproperty of the configuration to define\nmacros in the head\n\n\\newcommand\\myCommandName\n[ <optional # of arguments, from 1 to 9> ]\n{ <replacement text> }\n\nThe bracketed # of arguments is omitted when there are no arguments.\n\nExample (no arguments):\n\n\\newcommand\\myHearts\n{\\color{purple}{\\heartsuit}\\kern-2.5pt\\color{green}{\\heartsuit}}\n\n\\myHearts\\myHearts\n\nyields:\n$\n\\newcommand\\myHearts\n{\\color{purple}{\\heartsuit}\\kern-2.5pt\\color{green}{\\heartsuit}}\n\n\\myHearts\\myHearts\n$\n\nA definition may take one or more arguments:\n\nExample (two arguments):\n\n\\newcommand\\myHearts[2]\n{\\color{#1}{\\heartsuit}\\kern-2.5pt\\color{#2}{\\heartsuit}}\n\n\\myHearts{red}{blue}\n\nyields:\n$\n\\newcommand\\myHearts[2]\n{\\color{#1}{\\heartsuit}\\kern-2.5pt\\color{#2}{\\heartsuit}}\n\n\\myHearts{red}{blue}\n$",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\def",
+			"\\newenvironment"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\newenvironment",
 		"description": "for defining your own environments;\n\\newenvironment\u00a0 must appear (within math delimiters) before it is used\n\n\\newenvironment{myEnvironmentName}\n[ <optional # of arguments, from 1 to 9> ]\n{ <replacement text for each occurrence of \\begin{myEnvironmentName}> }\n{ <replacement text for each occurrence of \\end{myEnvironmentName}> }\n\nThe bracketed # of arguments is omitted when there are no arguments.\nThere must not be a command having the same name as the environment:\nfor example, to use \u00a0 \\begin{myHeart}...\\end{myHeart} \u00a0 there may not be a command \\myHeart.\n\nExample (no arguments):\n\n\\newenvironment{myHeartEnv}\n{\\color{purple}{\\heartsuit}\\kern-2.5pt\\color{green}{\\heartsuit}}\n{\\text{ forever}}\n\n\\begin{myHeartEnv}\n\\end{myHeartEnv}\n\nyields:\n$\n\\newenvironment{myHeartEnv}\n{\\color{purple}{\\heartsuit}\\kern-2.5pt\\color{green}{\\heartsuit}}\n{\\text{ forever}}\n\n\\begin{myHeartEnv}\n\\end{myHeartEnv}\n$\n\nAn environment may take one or more arguments:\n\nExample (two arguments):\n\n\\newenvironment{myHeartEnv}[2]\n{\\color{#1}{\\heartsuit}\\kern-2.5pt\\color{#2}{\\heartsuit}}\n{\\text{ forever}}\n\n\\begin{myHeartEnv}{red}{blue}\n\\end{myHeartEnv}\n\nyields:\n$\n\\newenvironment{myHeartEnv}[2]\n{\\color{#1}{\\heartsuit}\\kern-2.5pt\\color{#2}{\\heartsuit}}\n{\\text{ forever}}\n\n\\begin{myHeartEnv}{red}{blue}\n\\end{myHeartEnv}\n$",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\def",
+			"\\newcommand"
+		],
 		"snippet": ""
 	},
 	{
@@ -3002,77 +3415,106 @@ export const LATEX_SYMBOLS = [
 		"name": "\\nexists",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\exists",
+			"ORD"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ngeq",
 		"description": "not greater than or equal to&#x2271; \u00a0 class REL\nnot greater than or equal to&#x2271; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\geq",
+			"\\geqq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ngeqslant",
 		"description": "slanted not greater than or equal to\n\n&#x2A88; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\geqslant"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ngtr",
 		"description": "not greater than\n\n&#x226F; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\gt"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ni",
 		"description": "backwards \u2018in\u2019; contains\n\n&#x220B; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\in"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nleftarrow",
 		"description": "&#x219A; \u00a0 class REL\n&#x21CD; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leftarrow",
+			"\\Leftarrow"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nleftrightarrow",
 		"description": "&#x21AE; \u00a0 class REL\n&#x21CE; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leftrightarrow",
+			"\\Leftrightarrow"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nleq",
 		"description": "not less than or equal to&#x2270; \u00a0 class REL\nnot less than or equal to&#x2270; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leq",
+			"\\leqq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nleqslant",
 		"description": "slanted not less than or equal to\n\n&#x2A87; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leqslant"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nless",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lt",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nmid",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\mid",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
@@ -3091,7 +3533,9 @@ export const LATEX_SYMBOLS = [
 			"\\sum_{k=1}^n a_k",
 			"\\sum\\nolimits_{k=1}^n a_k"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\limits"
+		],
 		"snippet": ""
 	},
 	{
@@ -3100,7 +3544,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\rm \\scriptsize script \\normalsize normal \\large large"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\scriptsize"
+		],
 		"snippet": ""
 	},
 	{
@@ -3124,91 +3570,131 @@ export const LATEX_SYMBOLS = [
 		"name": "\\notin",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\in",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nparallel",
 		"description": "not parallel\n\n&#x2226; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\parallel"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nprec",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\prec",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\npreceq",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\preceq",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nrightarrow",
 		"description": "&#x219B; \u00a0 class REL\n&#x21CF; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\rightarrow",
+			"\\Rightarrow"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nshortmid",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\mid",
+			"\\shortmid",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nshortparallel",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\parallel",
+			"\\shortparallel",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nsim",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\sim",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nsubseteq",
 		"description": "&#x2288; \u00a0 class REL\n&#x2288; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\subseteq",
+			"\\subseteqq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nsucc",
 		"description": "&#x2281; \u00a0 class REL\n&#x22E1; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\succ",
+			"\\succeq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nsupseteq",
 		"description": "&#x2289; \u00a0 class REL\n&#x2289; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\supseteq",
+			"\\supseteqq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ntriangleleft",
 		"description": "&#x22EA; \u00a0 class REL\n&#x22EC; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\triangleleft",
+			"\\trianglelefteq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\ntriangleright",
 		"description": "&#x22EB; \u00a0  class REL\n&#x22ED; \u00a0  class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\triangleright",
+			"\\trianglerighteq"
+		],
 		"snippet": ""
 	},
 	{
@@ -3222,14 +3708,22 @@ export const LATEX_SYMBOLS = [
 		"name": "\\nVDash",
 		"description": "&#x22AF; \u00a0 class REL\n&#x22AE; \u00a0 class REL\n&#x22AD; \u00a0 class REL\n&#x22AC; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Vdash",
+			"\\vDash",
+			"\\vdash"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\nwarrow",
 		"description": "northwest arrow; non-stretchy\n\n&#x2196; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nearrow",
+			"\\searrow",
+			"\\swarrow"
+		],
 		"snippet": ""
 	},
 	{
@@ -3258,14 +3752,19 @@ export const LATEX_SYMBOLS = [
 			"\\oldstyle AB \\rm AB",
 			"\\oldstyle{AB}CD"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cal",
+			"\\mathcal"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\omega",
 		"description": "lowercase Greek letter omega&#x03C9; \u00a0 class ORD\nuppercase Greek letter omega&#x03A9; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varOmega"
+		],
 		"snippet": ""
 	},
 	{
@@ -3293,7 +3792,17 @@ export const LATEX_SYMBOLS = [
 			"a+1 \\over b+2",
 			"{a+1 \\over b+2}+c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\dfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\overwithdelims"
+		],
 		"snippet": ""
 	},
 	{
@@ -3302,7 +3811,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\overbrace{x + \\cdots + x}^{n\\rm\\ times}_{\\text{(note here)}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\underbrace"
+		],
 		"snippet": ""
 	},
 	{
@@ -3334,7 +3845,13 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\overparen a \\quad\n\\overparen ab \\quad \n\\overparen{ab} \\quad\n\\overparen{abc} \\quad\n\\overparen{abcdef} \\quad\n\\overparen{\\underparen{abcd}}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\underparen",
+			"\\smallfrown",
+			"\\frown",
+			"\\smallsmile",
+			"\\smile"
+		],
 		"snippet": ""
 	},
 	{
@@ -3345,8 +3862,11 @@ export const LATEX_SYMBOLS = [
 			"\\overset ab",
 			"a\\,\\overset{?}{=}\\,b"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\atop",
+			"\\underset"
+		],
+		"snippet": "\\overset{@1@}{@2@}"
 	},
 	{
 		"name": "\\overwithdelims",
@@ -3356,21 +3876,38 @@ export const LATEX_SYMBOLS = [
 			"a+1 \\overwithdelims . | b+2",
 			"{a+1 \\overwithdelims \\{ \\} b+2}+c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\above",
+			"\\abovewithdelims",
+			"\\atop",
+			"\\atopwithdelims",
+			"\\cfrac",
+			"\\dfrac",
+			"\\frac",
+			"\\genfrac",
+			"\\over"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\owns",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ni",
+			"\\in",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\parallel",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nparallel",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
@@ -3398,21 +3935,30 @@ export const LATEX_SYMBOLS = [
 			"\n\\Gamma^{\\phantom{i}j}_{i\\phantom{j}k}\n",
 			"\n\\matrix{1&-1\\cr 2&\\phantom{-}3}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\hphantom",
+			"\\vphantom"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\phi",
 		"description": "lowercase Greek letter phi\n&##x03D5; \u00a0 class ORD\n\nuppercase Greek letter phi\n&#x03A6; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varphi",
+			"\\varPhi"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\pi",
 		"description": "lowercase Greek letter pi\n&#x03C0; \u00a0 class ORD\n\nuppercase Greek letter Pi\n&#x03A0; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varpi",
+			"\\varPi"
+		],
 		"snippet": ""
 	},
 	{
@@ -3426,7 +3972,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\pm",
 		"description": "plus or minus\n\n&x00B1; \u00a0\nclass BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\mp"
+		],
 		"snippet": ""
 	},
 	{
@@ -3435,8 +3983,10 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\nA = \\pmatrix{\na_{11} & a_{12} & \\ldots & a_{1n} \\cr\na_{21} & a_{22} & \\ldots & a_{2n} \\cr\n\\vdots & \\vdots & \\ddots & \\vdots \\cr\na_{m1} & a_{m2} & \\ldots & a_{mn} \\cr\n}\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\matrix"
+		],
+		"snippet": "\\begin{pmatrix}\n\t@1@\n\\end{pmatrix}"
 	},
 	{
 		"name": "\\pmb",
@@ -3455,7 +4005,10 @@ export const LATEX_SYMBOLS = [
 			"5\\equiv 8 \\pmod 3",
 			"\\pmod{n+m}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mod",
+			"\\bmod"
+		],
 		"snippet": ""
 	},
 	{
@@ -3482,7 +4035,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\prec",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nprec",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
@@ -3503,7 +4059,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\preceq",
 		"description": "&#x2AAF; \u00a0 class REL\n&#x2AB5; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\npreceq"
+		],
 		"snippet": ""
 	},
 	{
@@ -3523,7 +4081,10 @@ export const LATEX_SYMBOLS = [
 			"f^{\\prime\\prime}",
 			"f''"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\backprime",
+			"prime symbol"
+		],
 		"snippet": ""
 	},
 	{
@@ -3540,21 +4101,28 @@ export const LATEX_SYMBOLS = [
 		"name": "\\projlim",
 		"description": "projective limit;\ndoes not change size;\ncan change limit placement using \\limits and\n\\nolimits;\nsee the Big Operators Table for examples\n\nclass OP",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varprojlim"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\propto",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varpropto",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\psi",
 		"description": "lowercase Greek letter psi\n&#x03C9; \u00a0 class ORD\n\nuppercase Greek letter psi\n&#x03A9; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varPsi"
+		],
 		"snippet": ""
 	},
 	{
@@ -3573,7 +4141,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"h\\raise 2pt {ighe} r"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lower"
+		],
 		"snippet": ""
 	},
 	{
@@ -3582,7 +4152,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\langle\n\\matrix{a & b\\cr c & d}\n\\right\\rangle\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\langle"
+		],
 		"snippet": ""
 	},
 	{
@@ -3591,7 +4163,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\lbrace\n\\matrix{a & b\\cr c & d}\n\\right\\rbrace\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lbrace"
+		],
 		"snippet": ""
 	},
 	{
@@ -3601,7 +4175,10 @@ export const LATEX_SYMBOLS = [
 			"\\lbrack \\frac ab, c \\rbrack",
 			"\\left\\lbrack \\frac ab, c \\right\\rbrack"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lbrack",
+			"[\u00a0]"
+		],
 		"snippet": ""
 	},
 	{
@@ -3610,7 +4187,11 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\lceil\n\\matrix{a & b\\cr c & d}\n\\right\\rceil\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lceil",
+			"\\lfloor",
+			"\\rfloor"
+		],
 		"snippet": ""
 	},
 	{
@@ -3624,7 +4205,11 @@ export const LATEX_SYMBOLS = [
 		"name": "\\renewcommand",
 		"description": "equivalent to \\newcommand;\nfor clarity of code, you may choose to use \u00a0 \\renewcommand \u00a0\nwhen re-defining a macro;\nthis is different from actual $\\,\\rm\\TeX\\,$,\nwhere \u00a0\\renewcommand\u00a0 only allows redefining of an existing command",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\def",
+			"\\newcommand",
+			"\\newenvironment"
+		],
 		"snippet": ""
 	},
 	{
@@ -3645,7 +4230,11 @@ export const LATEX_SYMBOLS = [
 		"name": "\\rfloor",
 		"description": "right floor;\nnon-stretchy when used alone;\nstretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right\n\n&#x230B; \u00a0 class CLOSE",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lfloor",
+			"\\lceil",
+			"\\rceil"
+		],
 		"snippet": ""
 	},
 	{
@@ -3654,21 +4243,27 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\lgroup\n\\matrix{a & b\\cr c & d}\n\\right\\rgroup\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lgroup"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\rhd",
 		"description": "right-hand diamond\n\n&#x22B3; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lhd"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\rho",
 		"description": "lowercase Greek letter rho\n\n&#x0000; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varrho"
+		],
 		"snippet": ""
 	},
 	{
@@ -3680,28 +4275,39 @@ export const LATEX_SYMBOLS = [
 			"\\updownarrow\\Updownarrow",
 			"\\left\\updownarrow \\phantom{\\frac12} \\right\\Updownarrow"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\left"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\rightarrow",
 		"description": "non-stretchy&#x2192; \u00a0 class REL\nnon-stretchy&#x21D2; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nrightarrow",
+			"\\nRightarrow",
+			"\\to"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\rightarrowtail",
 		"description": "right arrow tail; non-stretchy\n\n&#x21A3; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leftarrowtail"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\rightharpoondown",
 		"description": "non-stretchy&#x21C1; \u00a0 class REL\nnon-stretchy&#x21C0; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\leftharpoondown",
+			"\\rightharpoondown"
+		],
 		"snippet": ""
 	},
 	{
@@ -3743,7 +4349,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\risingdotseq",
 		"description": "rising dot sequence\n\n&#x2253; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\fallingdotseq"
+		],
 		"snippet": ""
 	},
 	{
@@ -3752,7 +4360,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"a\\mathrel{\\rlap{\\;/}{=}}b"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\llap"
+		],
 		"snippet": ""
 	},
 	{
@@ -3765,7 +4375,11 @@ export const LATEX_SYMBOLS = [
 			"\\rm AB \\bf CD",
 			"\\rm{AB}CD"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\text",
+			"\\hbox",
+			"\\mathrm"
+		],
 		"snippet": ""
 	},
 	{
@@ -3774,7 +4388,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\left\\lmoustache\n\\phantom{\\matrix{a & b\\cr c & d}}\n\\right\\rmoustache\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lmoustache"
+		],
 		"snippet": ""
 	},
 	{
@@ -3785,7 +4401,11 @@ export const LATEX_SYMBOLS = [
 			"\\root 13 \\of {\\frac 12}",
 			"\\root n+1 \\of x + 2"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\sqrt",
+			"\\leftroot",
+			"\\uproot"
+		],
 		"snippet": ""
 	},
 	{
@@ -3799,14 +4419,19 @@ export const LATEX_SYMBOLS = [
 		"name": "\\Rsh",
 		"description": "right shift; non-stretchy\n\n&#x21B1; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Lsh"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\rtimes",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ltimes",
+			"BIN"
+		],
 		"snippet": ""
 	},
 	{
@@ -3825,7 +4450,12 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\left\\lvert\\frac{\\frac ab}{\\frac cd}\\right\\rvert"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\lvert",
+			"\\lVert",
+			"|",
+			"\\|"
+		],
 		"snippet": ""
 	},
 	{
@@ -3846,14 +4476,20 @@ export const LATEX_SYMBOLS = [
 			"\\scr AB \\rm AB",
 			"\\scr{AB}CD"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathscr"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\scriptscriptstyle",
 		"description": "used to over-ride automatic style rules and force scriptscript style;\nstays in force until the end of math mode or the braced group, or until another style is selected\n\nclass ORD\n\n{ \\scriptscriptstyle ... }",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\displaystyle",
+			"\\scriptstyle",
+			"\\textstyle"
+		],
 		"snippet": ""
 	},
 	{
@@ -3862,21 +4498,31 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\rm  \\scriptsize script \\normalsize normal \\large large"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\normalsize"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\scriptstyle",
 		"description": "used to over-ride automatic style rules and force script style;\nstays in force until the end of math mode or the braced group, or until another style is selected\n\nclass ORD\n\n{ \\scriptstyle ... }",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\displaystyle",
+			"\\scriptscriptstyle",
+			"\\textstyle"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\searrow",
 		"description": "southeast arrow; non-stretchy\n\n&#x2198; \u00a0\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nearrow",
+			"\\nwarrow",
+			"\\swarrow"
+		],
 		"snippet": ""
 	},
 	{
@@ -3886,7 +4532,9 @@ export const LATEX_SYMBOLS = [
 			"\\sec x",
 			"\\sec(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\csc"
+		],
 		"snippet": ""
 	},
 	{
@@ -3896,7 +4544,9 @@ export const LATEX_SYMBOLS = [
 			"A\\setminus B",
 			"A\\backslash B"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\backslash"
+		],
 		"snippet": ""
 	},
 	{
@@ -3911,28 +4561,40 @@ export const LATEX_SYMBOLS = [
 			"\\sf AB \\rm AB",
 			"\\sf{AB}CD"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathsf"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\sharp",
 		"description": "musical sharp symbol\n\n&#x266F; \u00a0\nclass ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\flat",
+			"\\natural"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\shortmid",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nshortmid",
+			"\\mid",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\shortparallel",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nshortparallel",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
@@ -3955,14 +4617,20 @@ export const LATEX_SYMBOLS = [
 		"name": "\\sigma",
 		"description": "lowercase Greek letter sigma\n&#x03C3; \u00a0 class ORD\n\nuppercase Greek letter sigma\n&#x03A3; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\sum",
+			"\\varsigma",
+			"\\varSigma"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\sim",
 		"description": "&#x223C; \u00a0 class REL\n&#x2243; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nsim"
+		],
 		"snippet": ""
 	},
 	{
@@ -3972,7 +4640,9 @@ export const LATEX_SYMBOLS = [
 			"\\sin x",
 			"\\sin(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cos"
+		],
 		"snippet": ""
 	},
 	{
@@ -3982,7 +4652,9 @@ export const LATEX_SYMBOLS = [
 			"\\sinh x",
 			"\\sinh(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cosh"
+		],
 		"snippet": ""
 	},
 	{
@@ -4006,35 +4678,56 @@ export const LATEX_SYMBOLS = [
 			"ab{\\small cd} cd",
 			"ab\\small{cd} cd"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\tiny",
+			"\\Tiny",
+			"\\normalsize",
+			"\\large",
+			"\\Large",
+			"\\LARGE",
+			"\\huge",
+			"\\Huge"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\smallfrown",
 		"description": "small frown\n\n&#x2322; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\frown",
+			"\\smile",
+			"\\smallsmile"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\smallint",
 		"description": "small integral\n\n&#x222B; \u00a0 class OP",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\int"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\smallsetminus",
 		"description": "small set minus\n\n&#x2216; \u00a0 class BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\setminus"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\smallsmile",
 		"description": "small smile\n\n&#x2323; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\smile",
+			"\\frown",
+			"\\smallfrown"
+		],
 		"snippet": ""
 	},
 	{
@@ -4044,14 +4737,24 @@ export const LATEX_SYMBOLS = [
 			"\n\\sqrt{\\frac ab}\n\\sqrt{\\smash{7}\\vphantom{\\frac ab}}\n",
 			"\n\\sqrt{\\frac{\\frac ab}{\\frac cd}}\n\\sqrt{\\smash{\\frac ef}\\vphantom{\\frac{\\frac ab}{\\frac cd}}}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\hphantom",
+			"\\vphantom",
+			"\\phantom",
+			"\\llap",
+			"\\rlap"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\smile",
 		"description": "smile\n\n&#x2323; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\smallsmile",
+			"\\frown",
+			"\\smallfrown"
+		],
 		"snippet": ""
 	},
 	{
@@ -4070,14 +4773,21 @@ export const LATEX_SYMBOLS = [
 			"a\\Rule{5px}{4ex}{2ex}^b_c d",
 			"a\\Space{5px}{4ex}{2ex}^b_c d"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\Rule"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\spadesuit",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\clubsuit",
+			"\\diamondsuit",
+			"\\heartsuit",
+			"ORD"
+		],
 		"snippet": ""
 	},
 	{
@@ -4103,7 +4813,9 @@ export const LATEX_SYMBOLS = [
 			"\\sqrt{xy}",
 			"\\sqrt[3]{x+1}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\root"
+		],
 		"snippet": ""
 	},
 	{
@@ -4152,7 +4864,9 @@ export const LATEX_SYMBOLS = [
 			"\n\\Tiny\n\\sqrt{(\\ )}\n\\sqrt{\\mathstrut\\rm mathstrut}\n\\sqrt{\\strut\\rm strut}\n",
 			"\n\\Large\n\\sqrt{(\\ )}\n\\sqrt{\\mathstrut\\rm mathstrut}\n\\sqrt{\\strut\\rm strut}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\mathstrut"
+		],
 		"snippet": ""
 	},
 	{
@@ -4162,7 +4876,10 @@ export const LATEX_SYMBOLS = [
 			"\\frac{\\style{color:red}{x+1}}{y+2}\n",
 			"\\style{background-color:yellow}{\\frac{x+1}{y+2}}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\class",
+			"\\cssId"
+		],
 		"snippet": ""
 	},
 	{
@@ -4183,7 +4900,12 @@ export const LATEX_SYMBOLS = [
 		"name": "\\subseteq",
 		"description": "&#x2286; \u00a0 class REL\n&#x228A; \u00a0 class REL\n&#x2AC5; \u00a0 class REL\n&#x2ACB; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nsubseteq",
+			"\\nsubseteqq",
+			"\\varsubsetneq",
+			"\\varsubsetneqq"
+		],
 		"snippet": ""
 	},
 	{
@@ -4193,14 +4915,19 @@ export const LATEX_SYMBOLS = [
 			"\n\\sum_{\n\\substack{\n1\\lt i\\lt 3 \\\\\n1\\le j\\lt 5\n}}\na_{ij}\n",
 			"\n^{\\substack{\\text{a very} \\\\\n\\text{contrived} \\\\\n\\text{example}\n}}\n{\\frac ab}_{\\substack{\n\\text{isn't} \\\\\n\\text{it?}\n}}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\begin{subarray}"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\succ",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nsucc",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
@@ -4221,7 +4948,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\succeq",
 		"description": "&#x2AB0; \u00a0 class REL\n&#x2AB6; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nsucceq"
+		],
 		"snippet": ""
 	},
 	{
@@ -4235,7 +4964,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\sum",
 		"description": "summation notation;\nchanges size;\ncan change limit placement using \\limits and  \\nolimits;\nsee the Big Operators Table for examples\n\n&#x2211; \u00a0 class OP",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Sigma"
+		],
 		"snippet": ""
 	},
 	{
@@ -4245,7 +4976,9 @@ export const LATEX_SYMBOLS = [
 			"\\sup_{\\rm limit}",
 			"\\sup_{\\rm limit}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\inf"
+		],
 		"snippet": ""
 	},
 	{
@@ -4266,7 +4999,12 @@ export const LATEX_SYMBOLS = [
 		"name": "\\supseteq",
 		"description": "&#x2287; \u00a0 class REL\n&#x228B; \u00a0 class REL\n&#x2AC6; \u00a0 class REL\n&#x2ACC; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nsupseteq",
+			"\\nsupseteqq",
+			"\\varsupsetneq",
+			"\\varsupsetneqq"
+		],
 		"snippet": ""
 	},
 	{
@@ -4280,7 +5018,11 @@ export const LATEX_SYMBOLS = [
 		"name": "\\swarrow",
 		"description": "southwest arrow; non-stretchy\n\n&#x2199; \u00a0\nclass REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nearrow",
+			"\\nwarrow",
+			"\\searrow"
+		],
 		"snippet": ""
 	},
 	{
@@ -4299,7 +5041,9 @@ export const LATEX_SYMBOLS = [
 			"\\tan x",
 			"\\tan(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cot"
+		],
 		"snippet": ""
 	},
 	{
@@ -4309,7 +5053,10 @@ export const LATEX_SYMBOLS = [
 			"\\tanh x",
 			"\\tanh(2x-1)"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\cosh",
+			"\\sinh"
+		],
 		"snippet": ""
 	},
 	{
@@ -4329,7 +5076,11 @@ export const LATEX_SYMBOLS = [
 			"\\tbinom{n-1}k-1",
 			"\\tbinom{n-1}{k-1}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\binom",
+			"\\choose",
+			"\\dbinom"
+		],
 		"snippet": ""
 	},
 	{
@@ -4339,7 +5090,9 @@ export const LATEX_SYMBOLS = [
 			"\\TeX",
 			"\\rm\\TeX"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\LaTeX"
+		],
 		"snippet": ""
 	},
 	{
@@ -4354,14 +5107,29 @@ export const LATEX_SYMBOLS = [
 			"\\textsf{\\alpha in textsf mode }\\alpha",
 			"\\texttt{\\alpha in texttt mode }\\alpha"
 		],
-		"see_also": [],
-		"snippet": "\\text{@1@}"
+		"see_also": [
+			"\\bf",
+			"\\mathbf",
+			"\\it",
+			"\\mathit",
+			"\\rm",
+			"\\mathrm",
+			"\\sf",
+			"\\mathsf",
+			"\\tt",
+			"\\mathtt"
+		],
+		"snippet": ""
 	},
 	{
 		"name": "\\textstyle",
 		"description": "used to over-ride automatic style rules and force text (inline) style;\nstays in force until the end of math mode or the braced group, or until another style is selected\n\nclass ORD\n\n{ \\textstyle ... }",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\displaystyle",
+			"\\scriptstyle",
+			"\\scriptscriptstyle"
+		],
 		"snippet": ""
 	},
 	{
@@ -4371,7 +5139,10 @@ export const LATEX_SYMBOLS = [
 			"\\tfrac ab \\frac ab",
 			"\\tfrac ab \\frac ab"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\frac",
+			"\\dfrac"
+		],
 		"snippet": ""
 	},
 	{
@@ -4385,14 +5156,19 @@ export const LATEX_SYMBOLS = [
 		"name": "\\theta",
 		"description": "lowercase Greek letter theta&#x03B8; \u00a0 class ORD\nuppercase Greek letter theta&#x0398; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\vartheta",
+			"\\varTheta"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\thickapprox",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\approx"
+		],
 		"snippet": ""
 	},
 	{
@@ -4406,7 +5182,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\thinspace",
 		"description": "thin space; normally $\\frac 16$ of a quad",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"symbols for spaces",
+			"\\negthinspace"
+		],
 		"snippet": ""
 	},
 	{
@@ -4456,7 +5235,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\to",
 		"description": "non-stretchy\n\n&#x2192; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\rightarrow"
+		],
 		"snippet": ""
 	},
 	{
@@ -4477,21 +5258,36 @@ export const LATEX_SYMBOLS = [
 		"name": "\\triangle",
 		"description": "&#x25B3; \u00a0 class ORD\n&#x25BD; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ntriangleleft",
+			"\\ntriangleright",
+			"\\vartriangle",
+			"\\vartriangleleft",
+			"\\vartriangleright"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\triangleleft",
 		"description": "&#x25C3; \u00a0 class BIN\n&#x25B9; \u00a0 class BIN",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ntriangleleft",
+			"\\ntriangleright",
+			"\\vartriangle",
+			"\\vartriangleleft",
+			"\\vartriangleright"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\trianglelefteq",
 		"description": "&#x22B4; \u00a0 class REL\n&#x22B5 \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\ntrianglelefteq",
+			"\\ntrianglerighteq"
+		],
 		"snippet": ""
 	},
 	{
@@ -4524,7 +5320,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\ulcorner",
 		"description": "upper left corner\n&#x250C; \u00a0 class REL\n\nupper right corner\n&#x2510; \u00a0 class REL\n\nThese are technically delimiters, but MathJax\ndoesn't stretch them.\nThey are valid after \u00a0\\left,\n\u00a0\\right, and the various \u00a0\\big\u00a0 commands.",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\llcorner",
+			"\\lrcorner"
+		],
 		"snippet": ""
 	},
 	{
@@ -4533,7 +5332,9 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\underbrace{x + \\cdots + x}_{n\\rm\\ times}^{\\text{(note here)}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\overbrace"
+		],
 		"snippet": ""
 	},
 	{
@@ -4565,7 +5366,13 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\underparen a \\quad\n\\underparen ab \\quad \n\\underparen{ab} \\quad\n\\underparen{abc} \\quad\n\\underparen{abcdef} \\quad\n\\underparen{\\overparen{abcd}}\n"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\overparen",
+			"\\smallfrown",
+			"\\frown",
+			"\\smallsmile",
+			"\\smile"
+		],
 		"snippet": ""
 	},
 	{
@@ -4575,8 +5382,10 @@ export const LATEX_SYMBOLS = [
 			"\\underset{\\rm bottom}{\\rm top}",
 			"\\underset ab"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\overset"
+		],
+		"snippet": "\\underset{@1@}{@2@}"
 	},
 	{
 		"name": "\\unicode",
@@ -4635,14 +5444,20 @@ export const LATEX_SYMBOLS = [
 			"\\root 3 \\of x",
 			"\\root 3\\uproot{-2} \\of x"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\leftroot",
+			"\\root"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\upsilon",
 		"description": "lowercase Greek letter upsilon\n&#x03C5; \u00a0 class ORD\n\nuppercase Greek letter upsilon\n&#x03A5; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varupsilon",
+			"\\varUpsilon"
+		],
 		"snippet": ""
 	},
 	{
@@ -4656,175 +5471,232 @@ export const LATEX_SYMBOLS = [
 		"name": "\\varDelta",
 		"description": "uppercase Greek letter delta; variant\n\n&#x0394; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Delta"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varepsilon",
 		"description": "lowercase Greek letter epsilon; variant\n\n&#x03B5; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\epsilon"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varGamma",
 		"description": "uppercase Greek letter gamma; variant\n\n&#x0393; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Gamma"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varinjlim",
 		"description": "injective limit; variant;\ndoes not change size;\ncan change limit placement using \\limits and  \\nolimits;\nsee the Big Operators Table for examples\n\nclass OP",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\injlim"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varkappa",
 		"description": "lowercase Greek letter kappa; variant\n\n&#x03F0; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\kappa"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varLambda",
 		"description": "uppercase Greek letter lambda; variant\n\n&#x039B; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Lambda"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varlimsup",
 		"description": "limit superior; variant\nclass OP\n\nlimit inferior; variant\nclass OP\n\ndo not change size;\ncan change limit placement using \u00a0\\limits\u00a0 and\n\u00a0\\nolimits;\nsee the Big Operators Table for examples",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\limsup",
+			"\\liminf"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varnothing",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\emptyset",
+			"ORD"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varOmega",
 		"description": "uppercase Greek letter omega; variant\n\n&#x03A9; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Omega"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varphi",
 		"description": "lowercase Greek letter phi; variant\n\n&#x03C6; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\phi"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varPhi",
 		"description": "uppercase Greek letter phi; variant\n\n&#x03A6; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Phi"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varpi",
 		"description": "lowercase Greek letter pi; variant\n\n&#x03D6; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\pi"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varPi",
 		"description": "uppercase Greek letter pi; variant\n\n&#x03A0; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Pi"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varprojlim",
 		"description": "projective limit; variant;\ndoes not change size;\ncan change limit placement using \\limits and\n\\nolimits;\nsee the Big Operators Table for examples",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\projlim"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varpropto",
 		"description": "proportional to; variant\n\n&#x221D; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\propto"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varPsi",
 		"description": "uppercase Greek letter pi; variant\n\n&#x03A8; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Psi"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varrho",
 		"description": "lowercase Greek letter rho; variant\n\n&#x03F1; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\rho"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varsigma",
 		"description": "lowercase Greek letter sigma; variant\n\n&#x03C2; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\sigma"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varSigma",
 		"description": "uppercase Greek letter sigma; variant\n\n&#x03C2; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Sigma"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varsubsetneq",
 		"description": "&#x228A; \u00a0 class REL\n&#x2ACB; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\subsetneq",
+			"\\subsetneqq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varsupsetneq",
 		"description": "&#x228B; \u00a0 class REL\n&#x2ACC; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\supsetneq",
+			"\\supsetneqq"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\vartheta",
 		"description": "lowercase Greek letter theta; variant&#x03D1; \u00a0 class ORD\nuppercase Greek letter theta; variant&#x0398; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\theta",
+			"\\Theta"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\vartriangle",
 		"description": "&#x25B3; \u00a0 class REL\n&#x22B2; \u00a0 class REL\n&#x22B3; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\triangle",
+			"\\triangleleft",
+			"\\triangleright"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varUpsilon",
 		"description": "uppercase Greek letter upsilon; variant\n\n&#x03A5; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\upsilon"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\varXi",
 		"description": "uppercase Greek letter xi; variant\n\n&#x039E; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\Xi"
+		],
 		"snippet": ""
 	},
 	{
@@ -4843,14 +5715,20 @@ export const LATEX_SYMBOLS = [
 		"name": "\\vdash",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nvdash",
+			"REL"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\Vdash",
 		"description": "&#x22A9; \u00a0 class REL\n&#x22A8; \u00a0 class REL",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\nVdash",
+			"\\nvDash"
+		],
 		"snippet": ""
 	},
 	{
@@ -4867,14 +5745,19 @@ export const LATEX_SYMBOLS = [
 			"\\vec v",
 			"\\vec{AB}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\overrightarrow"
+		],
 		"snippet": ""
 	},
 	{
 		"name": "\\vee",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\lor",
+			"BIN"
+		],
 		"snippet": ""
 	},
 	{
@@ -4895,7 +5778,14 @@ export const LATEX_SYMBOLS = [
 		"name": "\\vert",
 		"description": "class ORD\n&#x2225; \u00a0 class ORD\n\nboth non-stretchy when used alone; stretchy when used with \u00a0 \\left \u00a0 or \u00a0 \\right",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"|",
+			"\\|",
+			"\\lvert",
+			"\\lVert",
+			"\\rvert",
+			"\\rVert"
+		],
 		"snippet": ""
 	},
 	{
@@ -4904,7 +5794,11 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\\binom{\\frac ab}c  \\binom{\\vphantom{\\frac ab}?}c"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\phantom",
+			"\\hphantom",
+			"\\smash"
+		],
 		"snippet": ""
 	},
 	{
@@ -4918,7 +5812,10 @@ export const LATEX_SYMBOLS = [
 		"name": "\\wedge",
 		"description": "",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\land",
+			"BIN"
+		],
 		"snippet": ""
 	},
 	{
@@ -4930,7 +5827,9 @@ export const LATEX_SYMBOLS = [
 			"\\widehat AB",
 			"\\widehat{AB}"
 		],
-		"see_also": [],
+		"see_also": [
+			"\\hat"
+		],
 		"snippet": ""
 	},
 	{
@@ -4963,7 +5862,9 @@ export const LATEX_SYMBOLS = [
 		"name": "\\Xi",
 		"description": "uppercase Greek letter xi\n\n&#x039E; \u00a0 class ORD",
 		"examples": "",
-		"see_also": [],
+		"see_also": [
+			"\\varXi"
+		],
 		"snippet": ""
 	},
 	{
@@ -5004,36 +5905,47 @@ export const LATEX_SYMBOLS = [
 		"name": "align",
 		"description": "For vertical alignment of two or more lines at one or more places:\n\nampersand(s) \u2018&\u2019 are used to indicate desired alignments (see",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\eqalign",
+			"\\eqalignno",
+			"\\leqalignno"
+		],
+		"snippet": "\\begin{align}\n\t@1@\n\\end{align}"
 	},
 	{
 		"name": "align*",
 		"description": "[May 2011] same as align",
 		"examples": "",
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\begin{align*}\n\t@1@\n\\end{align*}"
 	},
 	{
 		"name": "alignat",
 		"description": "For vertical alignment of two or more lines at one or more places;\nproduces a more horizontally-compressed display than align:\n\nthe alignat environment is started with \u00a0 \\begin{alignat}{<num>}\u00a0,\nwhere \u00a0 num \u00a0 is a positive integer ($1,2,3,\\ldots$) that indicates the number of places\nwhere alignment is desired\n\nampersand(s) \u2018&\u2019 are used to indicate desired alignments (see",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\eqalignat",
+			"\\eqalignatno",
+			"\\leqalignatno"
+		],
+		"snippet": "\\begin{alignat}\n\t@1@\n\\end{alignat}"
 	},
 	{
 		"name": "alignat*",
 		"description": "[May 2011] same as alignat",
 		"examples": "",
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\begin{alignat*}\n\t@1@\n\\end{alignat*}"
 	},
 	{
 		"name": "array",
 		"description": "Used to create an array (matrix),\nwhere columns can be individually left-justified,\ncentered, or right-justified.\n\nsuppose that $n$ columns are desired in the array;\nthen, $n-1$ ampersands are used to separate the columns\n\nthe array environment is started with \u00a0 \\begin{array}{<justification info>}\u00a0,\nwhere \u00a0 <justification info> \u00a0 is a series of $n$ letters, one for each column:\n\n\u2018l\u2019 for left-justified\n\u2018c\u2019 for centered\n\u2018r\u2019 for right-justified\n\npipe character(s) \u2018|\u2019 can be used in the justification information to specify\noptional separating vertical line(s) (see example below)\n\na double backslash \u2018\\\\\u2019 or carriage return \u2018\\cr\u2019 separates rows\n\nCompare these scenarios:\n\nboth columns left-justified:\n\n\\begin{array}{ll}\naaa & b\\cr\nc   & ddd\n\\end{array}\n\nyields\n$$\n\\begin{array}{ll}\naaa & b\\cr\nc   & ddd\n\\end{array}\n$$\n\nboth columns right-justified:\n\n\\begin{array}{rr}\naaa & b\\cr\nc   & ddd\n\\end{array}\n\nyields\n$$\n\\begin{array}{rr}\naaa & b\\cr\nc   & ddd\n\\end{array}\n$$\n\nboth columns centered, with separating line:\n\n\\begin{array}{c|c}\naaa & b\\cr\nc   & ddd\n\\end{array}\n\nyields\n$$\n\\begin{array}{c|c}\naaa & b\\cr\nc   & ddd\n\\end{array}\n$$\n\nfirst column left-justified; second column right-justified:\n\n\\begin{array}{lr}\naaa & b\\cr\nc & ddd\n\\end{array}\n\nyields\n$$\n\\begin{array}{lr}\naaa & b\\cr\nc & ddd\n\\end{array}\n$$\n\nPutting a pipe character \u2018|\u2019 at the beginning or end of\nthe justification info encloses the entire structure,\nwhich is different from standard $\\,\\rm\\TeX\\,$:\n\n\\begin{array}{|lr}\naaa & b\\cr\nc & ddd\n\\end{array}\n\nyields\n$$\n\\begin{array}{|lr}\naaa & b\\cr\nc & ddd\n\\end{array}\n$$",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{matrix}",
+			"\\begin{subarray}"
+		],
+		"snippet": "\\begin{array}\n\t@1@\n\\end{array}"
 	},
 	{
 		"name": "Bmatrix",
@@ -5041,8 +5953,11 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\begin{Bmatrix}\naaa & b\\cr\nc   & ddd\n\\end{Bmatrix}\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{array}",
+			"\\begin{matrix}"
+		],
+		"snippet": "\\begin{Bmatrix}\n\t@1@\n\\end{Bmatrix}"
 	},
 	{
 		"name": "bmatrix",
@@ -5050,8 +5965,11 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\begin{bmatrix}\naaa & b\\cr\nc   & ddd\n\\end{bmatrix}\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{array}",
+			"\\begin{matrix}"
+		],
+		"snippet": "\\begin{bmatrix}\n\t@1@\n\\end{bmatrix}"
 	},
 	{
 		"name": "cases",
@@ -5059,50 +5977,54 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n|x| =\n\\begin{cases}\nx  & \\text{ if } x\\ge 0 \\\\\n-x & \\text{ if } x \\lt 0\n\\end{cases}\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\cases"
+		],
+		"snippet": "\\begin{cases}\n\t@1@\n\\end{cases}"
 	},
 	{
 		"name": "eqnarray",
 		"description": "for \u2018equation arrays\u2019;\naligns at one or more places;\nsurround the character(s) to be aligned with ampersands, as shown below;\ncontent between alignment characters (or between alignment characters and end-of-line) is left-justified;\na double backslash \u2018\\\\\u2019 or carriage return \u2018\\cr\u2019 separates rows",
 		"examples": "",
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\begin{eqnarray}\n\t@1@\n\\end{eqnarray}"
 	},
 	{
 		"name": "eqnarray*",
 		"description": "[May 2011] same as equarray",
 		"examples": "",
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\begin{eqnarray*}\n\t@1@\n\\end{eqnarray*}"
 	},
 	{
 		"name": "equation",
 		"description": "[May 2011] ignored, until MathJax implements automatic numbering",
 		"examples": "",
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\begin{equation}\n\t@1@\n\\end{equation}"
 	},
 	{
 		"name": "equation*",
 		"description": "[May 2011] ignored",
 		"examples": "",
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\begin{equation*}\n\t@1@\n\\end{equation*}"
 	},
 	{
 		"name": "gather",
 		"description": "to display any number of centered formulas (without any alignment);\na double backslash \u2018\\\\\u2019 or carriage return \u2018\\cr\u2019 separates rows;\nindividual lines may be tagged using the \\tag{} command:\n\ndefault input for \u00a0\\tag{}\u00a0 is text\n\nyou may get mathematical content inside \u00a0\\tag{}\u00a0 by using math delimiters;\ne.g., \\tag{$\\alpha$}",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\displaylines"
+		],
+		"snippet": "\\begin{gather}\n\t@1@\n\\end{gather}"
 	},
 	{
 		"name": "gather*",
 		"description": "[May 2011] same as gather",
 		"examples": "",
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\begin{gather*}\n\t@1@\n\\end{gather*}"
 	},
 	{
 		"name": "matrix",
@@ -5110,22 +6032,29 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\begin{matrix}\naaa & b\\cr\nc   & ddd\n\\end{matrix}\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{array}"
+		],
+		"snippet": "\\begin{matrix}\n\t@1@\n\\end{matrix}"
 	},
 	{
 		"name": "multline",
 		"description": "a multi-line environment;\ntypically used for formulas/equations that don't fit on a single line\n\nthe first (or only) line is displayed left-justified\nthe last line is displayed right-justified\nany intermediate line(s) are centered\n\nThe justification of intermediate lines can be adjusted with\n\\shoveleft and \\shoveright.",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{split}"
+		],
+		"snippet": "\\begin{multline}\n\t@1@\n\\end{multline}"
 	},
 	{
 		"name": "multline*",
 		"description": "[May 2011] same as multline",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\shoveleft",
+			"\\shoveright"
+		],
+		"snippet": "\\begin{multline*}\n\t@1@\n\\end{multline*}"
 	},
 	{
 		"name": "pmatrix",
@@ -5133,8 +6062,11 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\begin{pmatrix}\naaa & b\\cr\nc   & ddd\n\\end{pmatrix}\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{array}",
+			"\\begin{matrix}"
+		],
+		"snippet": "\\begin{pmatrix}\n\t@1@\n\\end{pmatrix}"
 	},
 	{
 		"name": "smallmatrix",
@@ -5144,22 +6076,30 @@ export const LATEX_SYMBOLS = [
 			"\n\\left[\n\\begin{smallmatrix}\naaa & b\\cr\nc   & ddd\n\\end{smallmatrix}\n\\right]\n",
 			"\n\\left[\n\\begin{smallmatrix}\naaa & b\\cr\nc   & ddd\n\\end{smallmatrix}\n\\right]\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{array}",
+			"\\begin{matrix}"
+		],
+		"snippet": "\\begin{smallmatrix}\n\t@1@\n\\end{smallmatrix}"
 	},
 	{
 		"name": "split",
 		"description": "for single equations that are too long to \ufb01t on one line, and hence must be split into multiple lines;\nallows for (optional) alignment at one or more places, using \u2018&\u2019 to mark alignment points",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{multline}"
+		],
+		"snippet": "\\begin{split}\n\t@1@\n\\end{split}"
 	},
 	{
 		"name": "subarray",
 		"description": "a more compact version of \\begin{array};\ncan be used for multi-subscripts and multi-superscripts on large operators;\ncolumns can be individually left-justified,\ncentered, or right-justified\n\nsuppose that $n$ columns are desired in the subarray;\nthen, $n-1$ ampersands are used to separate the columns\n\nthe subarray environment is started with \u00a0 \\begin{subarray}{<justification info>}\u00a0,\nwhere \u00a0 <justification info> \u00a0 is a series of $n$ letters, one for each column:\n\n\u2018l\u2019 for left-justified\n\u2018c\u2019 for centered\n\u2018r\u2019 for right-justified\n\na double backslash \u2018\\\\\u2019 or carriage return \u2018\\cr\u2019 separates rows",
 		"examples": "",
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\substack",
+			"\\begin{array}"
+		],
+		"snippet": "\\begin{subarray}{@1@}\n\t@2@\n\\end{subarray}"
 	},
 	{
 		"name": "Vmatrix",
@@ -5167,8 +6107,11 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\begin{Vmatrix}\naaa & b\\cr\nc   & ddd\n\\end{Vmatrix}\n"
 		],
-		"see_also": [],
-		"snippet": ""
+		"see_also": [
+			"\\begin{array}",
+			"\\begin{matrix}"
+		],
+		"snippet": "\\begin{Vmatrix}\n\t@1@\n\\end{Vmatrix}"
 	},
 	{
 		"name": "vmatrix",
@@ -5176,7 +6119,10 @@ export const LATEX_SYMBOLS = [
 		"examples": [
 			"\n\\begin{vmatrix}\naaa & b\\cr\nc   & ddd\n\\end{vmatrix}\n"
 		],
-		"see_also": [],
-		"snippet": "\n\\begin{vmatrix}\n\t@1@ & @2@ & @3@ \\\\\n\t@4@ & @5@ & @6@ \\\\\n\t@7@ & @8@ & @9@ \n\\end{vmatrix}\n"
+		"see_also": [
+			"\\begin{array}",
+			"\\begin{matrix}"
+		],
+		"snippet": "\\begin{vmatrix}\n\t@1@\n\\end{vmatrix}"
 	}
 ]

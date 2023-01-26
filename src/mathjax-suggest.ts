@@ -1,5 +1,4 @@
 import {
-	App,
 	Editor,
 	EditorPosition,
 	EditorSuggest,
@@ -11,12 +10,12 @@ import {
 	TFile
 } from 'obsidian';
 import {MathjaxHelper} from './mathjax-helper';
-import {MathJaxSymbol} from './mathjax-symbols';
 import {BetterMathjaxSettings} from "./settings";
 import Logger from "./logger";
 import { addSubSuperScriptCommand, removeSubSuperScriptCommand } from './commands';
+import {getSymbolFromQuery, MathJaxSymbolQuery} from "./mathjax-search";
 
-export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
+export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbolQuery> {
 	private mathjaxHelper: MathjaxHelper;
 	private editor: Editor;
 	private settings: BetterMathjaxSettings;
@@ -39,7 +38,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 		this.startup = true;
 	}
 
-	getSuggestions(context: EditorSuggestContext): MathJaxSymbol[] {
+	getSuggestions(context: EditorSuggestContext): MathJaxSymbolQuery[] {
 		// convert the item in results to a string[]
 		return this.mathjaxHelper.search(context.query, this.settings.maxSuggestionNumber);
 	}
@@ -90,20 +89,21 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 
 	}
 
-	async renderSuggestion(suggestion: MathJaxSymbol, el: HTMLElement): Promise<void> {
-		el.setText(suggestion.name);
+	async renderSuggestion(suggestion: MathJaxSymbolQuery, el: HTMLElement): Promise<void> {
+		const symbol = getSymbolFromQuery(suggestion);
+		el.setText(symbol.name);
 		// Create new element
 		const mathSpan = el.createSpan();
 
 		//Change span left padding to 10px
 		mathSpan.style.paddingLeft = "10px";
 		try {
-			let example = suggestion.name;
+			let example = symbol.name;
 			// check the type of examples, if string and not empty then use it, if array and not empty then use the first element
-			if (typeof suggestion.examples === "string" && suggestion.examples !== "") {
-				example = suggestion.examples;
-			} else if (Array.isArray(suggestion.examples) && suggestion.examples.length > 0) {
-				example = suggestion.examples[0];
+			if (typeof symbol.examples === "string" && symbol.examples !== "") {
+				example = symbol.examples;
+			} else if (Array.isArray(symbol.examples) && symbol.examples.length > 0) {
+				example = symbol.examples[0];
 			}
 
 			//Logger.instance.info(example)
@@ -118,16 +118,17 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 
 	}
 
-	selectSuggestion(suggestion: MathJaxSymbol, evt: MouseEvent | KeyboardEvent): void {
+	selectSuggestion(suggestion: MathJaxSymbolQuery, evt: MouseEvent | KeyboardEvent): void {
+		const symbol = getSymbolFromQuery(suggestion);
 		const pos = this.startPos;
-		pos.ch = pos.ch - 1;
-		if (this.settings.useSnippetFirst && suggestion.snippet !== undefined && suggestion.snippet !== "") {
-			this.editor.replaceRange(suggestion.snippet, this.startPos, this.endPos);
+		// pos.ch = pos.ch - 1;
+		if (this.settings.useSnippetFirst && symbol.snippet !== undefined && symbol.snippet !== "") {
+			this.editor.replaceRange(symbol.snippet, this.startPos, this.endPos);
 			this.editor.setCursor(pos);
 
 			this.selectNextPlaceholder();
 		} else {
-			this.editor.replaceRange(suggestion.name, pos, this.endPos);
+			this.editor.replaceRange(symbol.name, pos, this.endPos);
 		}
 		this.close();
 		this.suggestionTired = true;
@@ -142,7 +143,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 	getWord(text: string): string {
 
 		// Regex to match a word after a backslash and before the end of the line
-		const regex = /\\(\w+)$/;
+		const regex = /(\\\w+)$/;
 		const match = text.match(regex);
 		if (!match) {
 			return "";
@@ -213,6 +214,8 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 		const currentLineNumber = pos.line;
 		const maxLineNumber = this.editor.lastLine();
 
+		let bracketPositions;
+		let firstBracketPosition = true;
 		// Iterate over each line unless find a placeholder in format @1@, @2@, @3@, etc.
 		for (let lineNumber = currentLineNumber; lineNumber <= maxLineNumber; lineNumber++) {
 			let line = "";
@@ -222,16 +225,34 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbol> {
 				// get the text after the cursor
 				line = this.editor.getLine(lineNumber).slice(pos.ch);
 			}
-			const regex = /@(\d+)@/g;
+
+			Logger.instance.info("lineNumber:", lineNumber);
+			Logger.instance.info("currentLineNumber:", currentLineNumber);
+			Logger.instance.info("pos.ch:", pos.ch);
+
+			const placeHolderRegex = /@(\S)@/g;
 			let match;
-			if ((match = regex.exec(line)) !== null) {
+			if ((match = placeHolderRegex.exec(line)) !== null) {
+				Logger.instance.info("Placeholder found");
 				const placeholderStartPos = {line: lineNumber, ch: pos.ch + match.index};
 				const placeholderEndPos = {line: lineNumber, ch: pos.ch + match.index + match[0].length};
 				this.editor.setSelection(placeholderStartPos, placeholderEndPos);
 				return;
 			}
+
+			const endBracketRegex = /}/g;
+			while ((match = endBracketRegex.exec(line)) !== null && firstBracketPosition) {
+				Logger.instance.info("End bracket found");
+				bracketPositions = {line: lineNumber, ch: pos.ch + match.index+1};
+				firstBracketPosition = false;
+			}
 			pos.ch = 0;
 		}
+
+		if (bracketPositions) {
+			this.editor.setCursor(bracketPositions);
+		}
+
 	}
 
 	selectPreviousPlaceholder(): void {

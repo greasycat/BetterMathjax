@@ -209,22 +209,28 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 }
 
 function generateDefaultUserDefinedSymbols(): string {
-	return "```note:\n" +
-		"- While editing yaml, please be careful with `'` and `\"`, must use `\\\\` if double-quoted\n" +
-		"- the plugin will only read the first code block, if you have multiple code blocks, please put the user defined snippets in the first code block\n" +
-		"- if any of the fields are empty, the default value will be used\n" +
-		"```\n" +
-		"```yaml\n" +
-		"- name: '\\begin'\n" +
-		"  snippet: '\\begin{@1@}'\n" +
+	return "```note\n" +
+		"- Use can use either json or yaml to customize your snippets (but be careful with \"\" and indent when using yaml\n" +
+		"- If any of the field (e.g. description) is set to empty \"\" or [], then the default value will be used\n" +
+		"- Everything in the note section will be saved\n" +
 		"```\n" +
 		"\n" +
 		"```json\n" +
 		"[\n" +
 		"  {\n" +
-		"    \"snippet\": \"\\\\end{@1@}\", \n" +
-		"    \"name\": \"\\\\end\"\n" +
-		"  }\n" +
+		"    \"name\": \"\\\\int\",\n" +
+		"    \"snippet\": \"\\\\int_{@1@}^{@2@}\",\n" +
+		"    \"description\": \"\",\n" +
+		"    \"examples\": \"\",\n" +
+		"    \"see_also\": []\n" +
+		"  },\n" +
+		"  {\n" +
+		"    \"name\": \"\\\\sum\",\n" +
+		"    \"snippet\": \"\\\\sum_{@1@}^{@2@}\",\n" +
+		"    \"description\": \"\",\n" +
+		"    \"examples\": \"\",\n" +
+		"    \"see_also\": []\n" +
+		"  },\n" +
 		"]\n" +
-		"```\n";
+		"```"
 }

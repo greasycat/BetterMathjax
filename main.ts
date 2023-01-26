@@ -11,6 +11,7 @@ import {
 } from './src/commands';
 import {BetterMathjaxSettings, BetterMathjaxSettingTab, DEFAULT_SETTINGS} from "./src/settings";
 import {MathjaxHelper} from "./src/mathjax-helper";
+import Logger from "./src/logger";
 
 
 // Remember to rename these classes and interfaces!
@@ -39,11 +40,11 @@ export default class BetterMathjaxPlugin extends Plugin {
 		this.addCommand(showMathjaxHelperOnCurrentSelection(this.mathjaxSuggest));
 		this.addCommand(reloadUserDefinedFile(this.mathjaxHelper));
 
-		this.app.vault.on("modify", this.userDefinedFileChanged.bind(this));
+		this.app.vault.on("modify", this.userDefinedFileChanged, this);
 	}
 
 	onunload() {
-		this.app.vault.off("modify", this.userDefinedFileChanged.bind(this));
+		this.app.vault.off("modify", this.userDefinedFileChanged);
 	}
 
 	async loadSettings() {
@@ -60,8 +61,10 @@ export default class BetterMathjaxPlugin extends Plugin {
 			this.mathjaxHelper.readUserDefinedSymbols().then((status) => {
 				if (status) {
 					new Notice("User defined file successful reloaded", 3000);
+					Logger.instance.info("User defined file successful reloaded");
 				} else {
-					new Notice("User defined file reload failed", 3000);
+					new Notice("User defined file reload failed, check your format!!", 6000);
+					Logger.instance.error("User defined file reload failed");
 				}
 			});
 		}

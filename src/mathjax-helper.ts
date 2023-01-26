@@ -1,6 +1,6 @@
 import {App, finishRenderMath, Modal, Notice, parseYaml, renderMath, Setting, stringifyYaml, TFile} from "obsidian";
 import {BetterMathjaxSettings} from "./settings";
-import MathjaxSearch from "./mathjax-search";
+import MathjaxSearch, {getSymbolFromQuery, MathJaxSymbolQuery} from "./mathjax-search";
 import {LATEX_SYMBOLS, MathJaxSymbol} from "./mathjax-symbols";
 import Logger from "./logger";
 
@@ -9,12 +9,12 @@ export class MathjaxHelperModal extends Modal {
 	private settings: BetterMathjaxSettings;
 
 	private mathJaxHelper: MathjaxHelper;
-	private readonly symbol: MathJaxSymbol;
+	private readonly symbolPair: MathJaxSymbolQuery;
 
-	constructor(app: App, symbol: MathJaxSymbol, mathJaxHelper: MathjaxHelper, settings: BetterMathjaxSettings) {
+	constructor(app: App, symbolPair: MathJaxSymbolQuery, mathJaxHelper: MathjaxHelper, settings: BetterMathjaxSettings) {
 		super(app);
 		this.app = app;
-		this.symbol = symbol;
+		this.symbolPair = symbolPair;
 		this.settings = settings;
 		this.mathJaxHelper = mathJaxHelper;
 	}
@@ -22,23 +22,25 @@ export class MathjaxHelperModal extends Modal {
 	onOpen() {
 		const {contentEl} = this;
 
+		const symbol = getSymbolFromQuery(this.symbolPair);
 		// Show symbol name
-		contentEl.createEl("h2", {text: this.symbol.name});
+		contentEl.createEl("h2", {text: symbol.name});
 
 		//show symbol description
 		// check if the description is a string or string[]
-		if (typeof this.symbol.description === "string") {
-			contentEl.createEl("p", {text: this.symbol.description});
-		} else {
-			for (const description of this.symbol.description) {
+		Logger.instance.info("description: ");
+		if (String.isString(symbol.description)) {
+			contentEl.createEl("p", {text: symbol.description});
+		} else if (Array.isArray(symbol.description)) {
+			for (const description of symbol.description) {
 				contentEl.createEl("p", {text: description});
 			}
 		}
 
-		// Show symbol examples
-		if (this.symbol.examples.length > 0) {
+
+		if (Array.isArray(symbol.examples) && symbol.examples.length > 0) {
 			contentEl.createEl("h4", {text: "Examples"});
-			for (const example of this.symbol.examples) {
+			for (const example of symbol.examples) {
 				const p = contentEl.createEl("p", {text: example});
 				const math = renderMath(example, false);
 				finishRenderMath().then(() => {
@@ -48,28 +50,40 @@ export class MathjaxHelperModal extends Modal {
 			}
 		}
 
+		// Show see_also
+		if (Array.isArray(symbol.see_also) && symbol.see_also.length > 0) {
+			const seeAlsoTitle = contentEl.createEl("span", {text: "See also"});
+			seeAlsoTitle.style.fontWeight = "bold";
+			for (const see_also of symbol.see_also) {
+				const p = contentEl.createEl("p", {text: see_also});
+				//set paddingLeft to 20px
+				p.style.paddingLeft = "20px";
+				//set marginBottom to 10px
+			}
+		}
+
 		// Show symbol snippet to edit
 		contentEl.createEl("h4", {text: "Snippet"});
-		new Setting(contentEl).setName("Snippet").addTextArea((text) => {
-			text.setValue(this.symbol.snippet);
+		new Setting(contentEl).setName("Your Snippet").addTextArea((text) => {
+			text.setValue(symbol.snippet);
 			text.onChange((value) => {
 				// copy the symbol
 				// if the symbol has never been created, create it
 				const newSymbol: MathJaxSymbol =
 					{
-						name: this.symbol.name,
+						name: symbol.name,
 						snippet: value,
 						description: "",
 						examples: "",
 						see_also: []
 					};
-				if (this.settings.userDefinedSymbols.get(this.symbol.name) === undefined) {
+				if (this.settings.userDefinedSymbols.get(symbol.name) === undefined) {
 
-					this.settings.userDefinedSymbols.set(this.symbol.name, newSymbol);
+					this.settings.userDefinedSymbols.set(symbol.name, newSymbol);
 				}
 				// if the symbol has been created, update it
 				else {
-					this.settings.userDefinedSymbols.set(this.symbol.name, newSymbol);
+					this.settings.userDefinedSymbols.set(symbol.name, newSymbol);
 				}
 			});
 		});
@@ -96,7 +110,7 @@ export class MathjaxHelper {
 	private readonly app: App;
 	private readonly settings: BetterMathjaxSettings;
 	private fuzzySearch: MathjaxSearch;
-	private lastQuery: MathJaxSymbol[];
+	private lastQuery: MathJaxSymbolQuery[];
 
 	private codeBlocks: CodeBlock[];
 
@@ -183,6 +197,9 @@ export class MathjaxHelper {
 		}
 
 		let content = "";
+		if (this.codeBlocks.length === 0) {
+			this.codeBlocks.push({content: "", type: "json"});
+		}
 		for (const codeBlock of this.codeBlocks) {
 			switch (codeBlock.type) {
 				case "json":
@@ -204,7 +221,7 @@ export class MathjaxHelper {
 			for (const symbol of array) {
 				// check if the symbol has a name, a snippet, a description, examples and see_also
 				// if not give a default value
-				if (symbol.name === undefined) {
+				if (symbol.name === undefined || symbol.name === "") {
 					continue;
 				}
 
@@ -216,11 +233,12 @@ export class MathjaxHelper {
 					examples: symbol.examples,
 					see_also: symbol.see_also,
 				};
-				// Logger.instance.info("new symbol", newSymbol);
 
 				// add to the userDefinedSymbols
 				this.settings.userDefinedSymbols.set(newSymbol.name, newSymbol);
 				this.fuzzySearch.update(this.settings.userDefinedSymbols);
+
+				Logger.instance.info("new symbol", newSymbol.name);
 			}
 		}
 	}
