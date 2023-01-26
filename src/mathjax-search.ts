@@ -3,7 +3,7 @@ import {dld} from './fuzzy-search-dld';
 import FuzzySearch from "./fuzzy-search-lcs";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import {MathJaxSymbol, updateMathjaxSymbol} from './mathjax-symbols';
+import {MathJaxSymbol} from './mathjax-symbols';
 import {BetterMathjaxSettings} from "./settings";
 import Logger from "./logger";
 
@@ -35,7 +35,8 @@ export default class MathjaxSearch {
 		// else add it to the map
 		newData.forEach((newSymbol, key) => {
 			if (this.data.has(key)) {
-				this.data.set(key, updateMathjaxSymbol(this.data.get(key), newSymbol));
+				const oldSymbol = this.data.get(key);
+				this.data.set(key, {...oldSymbol, ...newSymbol});
 			} else {
 				this.data.set(key, newSymbol);
 			}

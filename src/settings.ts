@@ -1,6 +1,6 @@
 import {MathJaxSymbol} from "./mathjax-symbols";
 import {App, PluginSettingTab, Setting, TFile, Notice} from "obsidian";
-import MyPlugin from "../main";
+import BetterMathjaxPlugin from "../main";
 import {FuzzySearchType} from "./mathjax-search";
 
 export interface BetterMathjaxSettings {
@@ -38,9 +38,9 @@ export const DEFAULT_SETTINGS: BetterMathjaxSettings = {
 };
 
 export class BetterMathjaxSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+	plugin: BetterMathjaxPlugin;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: BetterMathjaxPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

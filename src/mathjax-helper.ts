@@ -1,4 +1,4 @@
-import {App, finishRenderMath, Modal, Notice, parseYaml, renderMath, Setting, stringifyYaml} from "obsidian";
+import {App, finishRenderMath, Modal, Notice, parseYaml, renderMath, Setting, stringifyYaml, TFile} from "obsidian";
 import {BetterMathjaxSettings} from "./settings";
 import MathjaxSearch from "./mathjax-search";
 import {LATEX_SYMBOLS, MathJaxSymbol} from "./mathjax-symbols";
@@ -129,15 +129,8 @@ export class MathjaxHelper {
 
 	async readUserDefinedSymbols(): Promise<boolean> {
 		const file = this.app.vault.getAbstractFileByPath(this.settings.userDefineSymbolFilePath);
-		if (file === null) {
-			new Notice("User defined symbols file not found");
-			Logger.instance.error("User defined symbols file not found");
-			// return an error
-			return false;
-		}
-
 		// check if the file exists
-		if (await this.app.vault.adapter.exists(file.path)) {
+		if (file instanceof TFile) {
 			// read the file
 			const content = await this.app.vault.adapter.read(file.path);
 
@@ -156,28 +149,16 @@ export class MathjaxHelper {
 				const codeContent = match[2];
 				let json: any;
 				try {
-					switch (codeType) {
-						case "json":
-							if (firstBlockLoaded) {
-								continue;
-							}
-							json = JSON.parse(codeContent);
-							this.loadSymbolArray(json);
-							firstBlockLoaded = true;
-							this.codeBlocks.push({content: "", type: codeType});
-							break;
-						case "yaml":
-							if (firstBlockLoaded) {
-								continue;
-							}
-							json = parseYaml(codeContent);
-							this.loadSymbolArray(json);
-							firstBlockLoaded = true;
-							this.codeBlocks.push({content: "", type: codeType});
-							break;
-						default:
-							this.codeBlocks.push({content: codeContent, type: codeType});
-							break;
+					if (codeType === "json" || codeType === "yaml") {
+						if (firstBlockLoaded) {
+							continue;
+						}
+						json = codeType === "json" ? JSON.parse(codeContent) : parseYaml(codeContent);
+						this.loadSymbolArray(json);
+						firstBlockLoaded = true;
+						this.codeBlocks.push({content: "", type: codeType});
+					} else {
+						this.codeBlocks.push({content: codeContent, type: codeType});
 					}
 				} catch (TypeError) {
 					Logger.instance.error(`Unsupported code block type: ${codeType}`);
@@ -185,8 +166,12 @@ export class MathjaxHelper {
 				}
 			}
 			return true;
+		} else {
+			new Notice("User defined symbols file not found");
+			Logger.instance.error("User defined symbols file not found");
+			// return an error
+			return false;
 		}
-		return false;
 	}
 
 	async saveUserDefinedSymbols() {

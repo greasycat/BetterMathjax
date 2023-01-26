@@ -6,34 +6,15 @@ export type MathJaxSymbol = {
 	snippet: string,
 }
 
-export function updateMathjaxSymbol(oldSymbol: MathJaxSymbol|undefined, newSymbol: MathJaxSymbol): MathJaxSymbol {
+/**
+ * Update an existing MathJaxSymbol with new values
+ * @param {MathJaxSymbol} oldSymbol - The existing MathJaxSymbol
+ * @param {Partial<MathJaxSymbol>} newSymbol - The new values to update the existing MathJaxSymbol
+ * @returns {MathJaxSymbol} - The updated MathJaxSymbol
+ */
+export function updateMathjaxSymbol(oldSymbol: MathJaxSymbol, newSymbol: Partial<MathJaxSymbol>): MathJaxSymbol {
 	// create a copy of the new symbol
-	const symbol = {...newSymbol};
-	if (oldSymbol === undefined) {
-		return symbol;
-	}
-	// check if the new symbol has a name, a snippet, a description, examples and see_also
-	// if not or empty use the old values
-	if (symbol.name === undefined || symbol.name === "") {
-		symbol.name = oldSymbol.name;
-	}
-	if (symbol.snippet === undefined || symbol.snippet === "") {
-		symbol.snippet = oldSymbol.snippet;
-	}
-
-	if (symbol.description === undefined || symbol.description === "") {
-		symbol.description = oldSymbol.description;
-	}
-
-	if (symbol.examples === undefined || symbol.examples === "") {
-		symbol.examples = oldSymbol.examples;
-	}
-
-	if (symbol.see_also === undefined || symbol.see_also.length === 0) {
-		symbol.see_also = oldSymbol.see_also;
-	}
-
-	return symbol;
+	return {...oldSymbol, ...newSymbol};
 }
 
 export const LATEX_SYMBOLS = [
@@ -4374,7 +4355,7 @@ export const LATEX_SYMBOLS = [
 			"\\texttt{\\alpha in texttt mode }\\alpha"
 		],
 		"see_also": [],
-		"snippet": ""
+		"snippet": "\\text{@1@}"
 	},
 	{
 		"name": "\\textstyle",

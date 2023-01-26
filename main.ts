@@ -7,10 +7,7 @@ import {
 	selectNextPlaceholderCommand,
 	selectPreviousPlaceholderCommand,
 	showMathjaxHelperOnCurrentSelection,
-	insertSubscriptPlaceholder,
-	insertSuperscriptPlaceholder,
 	reloadUserDefinedFile,
-	addSubSuperScriptCommand,
 } from './src/commands';
 import {BetterMathjaxSettings, BetterMathjaxSettingTab, DEFAULT_SETTINGS} from "./src/settings";
 import {MathjaxHelper} from "./src/mathjax-helper";
@@ -19,7 +16,7 @@ import {MathjaxHelper} from "./src/mathjax-helper";
 // Remember to rename these classes and interfaces!
 
 
-export default class MyPlugin extends Plugin {
+export default class BetterMathjaxPlugin extends Plugin {
 	settings: BetterMathjaxSettings;
 	mathjaxHelper: MathjaxHelper;
 	mathjaxSuggest: MathjaxSuggest;
@@ -43,7 +40,6 @@ export default class MyPlugin extends Plugin {
 		this.addCommand(reloadUserDefinedFile(this.mathjaxHelper));
 
 		this.app.vault.on("modify", this.userDefinedFileChanged.bind(this));
-
 	}
 
 	onunload() {
