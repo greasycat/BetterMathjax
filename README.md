@@ -36,6 +36,6 @@ Fully customizable configuration
 7. Manual Reload Configuration file: `None`
 
 # Special Thanks
-- [Where the mathjax data came from](https://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm)
-- [The LCS implementation](https://github.com/jeancroy/FuzzySearch)
-- [My first attempt of mathjax autocompletion](https://github.com/greasycat/BetterLatexForObsidian)
+- [Where the mathjax data came from](https://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm) CC2.5
+- [The LCS implementation](https://github.com/jeancroy/FuzzySearch) MIT
+- [My first attempt of mathjax autocompletion](https://github.com/greasycat/BetterLatexForObsidian) MIT
