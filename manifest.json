@@ -1,11 +1,11 @@
 {
 	"id": "better-mathjax",
 	"name": "Better Mathjax",
-	"version": "2.1.0",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "This is a plugin that enhance the Mathjax support by providing autocompletion and snippet",
 	"author": "github@greasycat",
 	"authorUrl": "https://github.com/greasycat",
-	"fundingUrl": "",
+	"fundingUrl": "https://www.buymeacoffee.com/greasycat",
 	"isDesktopOnly": false
 }
