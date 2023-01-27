@@ -6,29 +6,17 @@ Autocompletion with inline Mathjax rendering after detection of a `$$` or `$$$$`
 
 ![2023-01-26_18-29-32.png](https://s2.loli.net/2023/01/27/gCUNFnHspqAE8e7.png)
 
-<details>
-<summary>
 Using key shortcuts to show a helper modal for reference purposes and fast editing snippets
-</summary>
 
 ![2023-01-26_18-30-09.png](https://s2.loli.net/2023/01/27/J3QwytrSPloOYiK.png)
-</details>
 
-<details>
-<summary>
 Quick Navigation With Placeholder
-</summary>
  
 ![2023-01-26_18-36-24.png](https://s2.loli.net/2023/01/27/GdQ7wLEYeA1Xtnl.png)
-</details>
 
-<details>
-<summary>
 Fully customizable configuration
-</summary>
 
 ![2023-01-26_18-32-28.png](https://s2.loli.net/2023/01/27/a25ItcnyXQJPMsS.png)
-</details>
 
 # Installation
 ### 1. Downloads from Obsidian Community Plugins List (Not available yet)
