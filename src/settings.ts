@@ -259,6 +259,5 @@ function generateDefaultUserDefinedSymbols(): string {
 		"    \"see_also\": []\n" +
 		"  }\n" +
 		"]\n" +
-		"```:w" +
 		""
 }
