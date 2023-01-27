@@ -35,3 +35,7 @@ Fully customizable configuration
 6. Show help info for the current selection: `Ctrl+Shift+/`
 7. Manual Reload Configuration file: `None`
 
+# Special Thanks
+- [Where the mathjax data came from](https://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm)
+- [The LCS implementation](https://github.com/jeancroy/FuzzySearch)
+- [My first attempt of mathjax autocompletion](https://github.com/greasycat/BetterLatexForObsidian)
