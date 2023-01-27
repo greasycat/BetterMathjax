@@ -1,6 +1,6 @@
 export default class Logger {
 
-	private readonly consoleLogEnabled = true;
+	private consoleLogEnabled: boolean;
 	private static _instance: Logger;
 
 	constructor() {
@@ -12,18 +12,20 @@ export default class Logger {
 		}
 		return Logger._instance;
 	}
-
-	private log(...args: any[]) {
+	public setConsoleLogEnabled(enabled: boolean) {
+		this.consoleLogEnabled = enabled;
+	}
+	private log(...args: unknown[]) {
 		console.log("[DEBUG]",new Date().toLocaleTimeString(), ...args);
 	}
 
-	public info(...args: any[]) {
+	public info(...args: unknown[]) {
 		if (this.consoleLogEnabled) {
 			this.log("INFO:",...args);
 		}
 	}
 
-	public error(...args: any[]) {
+	public error(...args: unknown[]) {
 		if (this.consoleLogEnabled) {
 			this.log("ERROR: ", ...args);
 		}

@@ -2,39 +2,53 @@ import {MathJaxSymbol} from "./mathjax-symbols";
 import {App, PluginSettingTab, Setting, TFile, Notice} from "obsidian";
 import BetterMathjaxPlugin from "../main";
 import {FuzzySearchType} from "./mathjax-search";
+import Logger from "./logger";
 
 export interface BetterMathjaxSettings {
-	mySetting: string;
+	//suggest settings
 	useSnippetFirst: boolean;
 	maxSuggestionNumber: number;
 	alwaysShowExamples: boolean; // Always show example even when not provided, this may lead to mathjax rendering issues
 
 	autoEnabling: boolean; // enable the autocompletion automatically when inside $ (inline) or $$ (multiple lines)
 	forceEnabling: boolean; // always enable the autocompletion
+
+	// user defined symbols
 	userDefineSymbolFilePath: string;
 	userDefinedSymbols: Map<string, MathJaxSymbol>;
 
+	// quick pairing
 	matchingSuperScript: boolean;
 	matchingSubScript: boolean;
 
+	// fuzzy search
 	fuzzySearchType: FuzzySearchType;
+
+	// other settings
+	debugMode: boolean;
 }
 
 export const DEFAULT_SETTINGS: BetterMathjaxSettings = {
-	mySetting: 'default',
+	//auto suggestion settings
 	useSnippetFirst: true,
 	maxSuggestionNumber: 5,
 	alwaysShowExamples: true,
 	autoEnabling: true,
 	forceEnabling: false,
 
+	// quick pairing
 	matchingSubScript: true,
 	matchingSuperScript: true,
 
+	// user defined symbols
 	userDefinedSymbols: new Map<string, MathJaxSymbol>(),
 	userDefineSymbolFilePath: "symbols.md",
 
-	fuzzySearchType: "LCS"
+	// fuzzy search type
+	fuzzySearchType: "LCS",
+
+	// misc
+	debugMode: false,
 };
 
 export class BetterMathjaxSettingTab extends PluginSettingTab {
@@ -204,6 +218,18 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 				});
 			});
 
+		new Setting(containerEl)
+			.setName("Debug mode")
+			.setDesc("Enable debug mode to see the console log")
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.debugMode)
+				.onChange(async (value) => {
+						Logger.instance.setConsoleLogEnabled(value);
+						this.plugin.settings.debugMode = value;
+						await this.plugin.saveSettings();
+					}
+				));
+
 
 	}
 }
@@ -213,6 +239,7 @@ function generateDefaultUserDefinedSymbols(): string {
 		"- Use can use either json or yaml to customize your snippets (but be careful with \"\" and indent when using yaml\n" +
 		"- If any of the field (e.g. description) is set to empty \"\" or [], then the default value will be used\n" +
 		"- Everything in the note section will be saved\n" +
+		"- Avoid putting a comma in the end of the json file\n" +
 		"```\n" +
 		"\n" +
 		"```json\n" +
@@ -230,7 +257,8 @@ function generateDefaultUserDefinedSymbols(): string {
 		"    \"description\": \"\",\n" +
 		"    \"examples\": \"\",\n" +
 		"    \"see_also\": []\n" +
-		"  },\n" +
+		"  }\n" +
 		"]\n" +
-		"```"
+		"```:w" +
+		""
 }

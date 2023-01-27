@@ -18,9 +18,9 @@ import {getSymbolFromQuery, MathJaxSymbolQuery} from "./mathjax-search";
 export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbolQuery> {
 	private mathjaxHelper: MathjaxHelper;
 	private editor: Editor;
-	private settings: BetterMathjaxSettings;
+	private readonly settings: BetterMathjaxSettings;
 
-	private plugin: Plugin;
+	private readonly plugin: Plugin;
 
 	public enabled: boolean;
 

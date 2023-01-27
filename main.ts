@@ -24,7 +24,7 @@ export default class BetterMathjaxPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-
+		Logger.instance.setConsoleLogEnabled(this.settings.debugMode);
 		this.addSettingTab(new BetterMathjaxSettingTab(this.app, this));
 		// Load mathjax
 		await loadMathJax();

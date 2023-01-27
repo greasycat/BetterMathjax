@@ -63,7 +63,7 @@ export default class MathjaxSearch {
 
 	load(data: MathJaxSymbol[]) {
 		this.data = new Map(data.map((item) => [item.name, {name:item.name, originalSymbol: item, userSymbol: null}]));
-		Logger.instance.info("Loaded Mathjax Symbols", this.data.size);
+		Logger.instance.info("Loaded Mathjax symbols. Size: ", this.data.size);
 	}
 
 	update(newData: Map<string, MathJaxSymbol>) {

@@ -23,6 +23,8 @@ export class MathjaxHelperModal extends Modal {
 		const {contentEl} = this;
 
 		const symbol = getSymbolFromQuery(this.symbolPair);
+		Logger.instance.info("Symbol: " + symbol);
+
 		// Show symbol name
 		contentEl.createEl("h2", {text: symbol.name});
 
@@ -238,7 +240,7 @@ export class MathjaxHelper {
 				this.settings.userDefinedSymbols.set(newSymbol.name, newSymbol);
 				this.fuzzySearch.update(this.settings.userDefinedSymbols);
 
-				Logger.instance.info("new symbol", newSymbol.name);
+				Logger.instance.info("New symbol loaded: ", newSymbol.name);
 			}
 		}
 	}
