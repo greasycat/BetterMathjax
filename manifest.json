@@ -1,6 +1,6 @@
 {
 	"id": "better-mathjax",
-	"name": "Better Mathjax",
+	"name": "Better MathJax",
 	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "This is a plugin that enhance the Mathjax support by providing autocompletion and snippet",
