@@ -25,7 +25,8 @@ Fully customizable configuration
 - Put the release files `main.js.bak`, `manifest.json` and `styles.css` into `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax`
 
 # Usage
-### Hotkeys/Keymappings (default)
+# PLEASE SET HOTKEYS!!!
+### Hotkeys/Keymappings (example)
 
 1. Confirm Selected Entry: `Enter`
 2. Select Previous/Up: `Ctrl+[`
