@@ -1,6 +1,6 @@
 import {MathJaxSymbol} from "./mathjax-symbols";
-import {App, PluginSettingTab, Setting, TFile, Notice} from "obsidian";
-import BetterMathjaxPlugin from "../main";
+import {App, PluginSettingTab, Setting, TFile, Notice, TAbstractFile} from "obsidian";
+import BetterMathjaxPlugin from "./main";
 import {FuzzySearchType} from "./mathjax-search";
 import Logger from "./logger";
 
@@ -53,10 +53,19 @@ export const DEFAULT_SETTINGS: BetterMathjaxSettings = {
 
 export class BetterMathjaxSettingTab extends PluginSettingTab {
 	plugin: BetterMathjaxPlugin;
+	lastNoticeTime: number;
 
 	constructor(app: App, plugin: BetterMathjaxPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
+		this.lastNoticeTime = 0;
+	}
+
+	showNotice(message: string, timeout = 3000) {
+		if (Date.now() - this.lastNoticeTime > timeout) {
+			new Notice(message);
+			this.lastNoticeTime = Date.now();
+		}
 	}
 
 	display(): void {
@@ -149,7 +158,7 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 						this.plugin.settings.userDefineSymbolFilePath = value;
 						await this.plugin.saveSettings();
 					} else {
-						new Notice("The file should be a markdown file, otherwise it may not appear in the obsidian file view", 3000);
+						this.showNotice("The file should be a markdown file, otherwise it may not appear in the Obsidian file explorer.", 3000);
 					}
 
 				}))
@@ -231,6 +240,21 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 				));
 
 
+	}
+}
+
+
+export function userDefinedFileChanged(file: TAbstractFile) {
+	if (file.path === this.settings.userDefineSymbolFilePath) {
+		this.mathjaxHelper.readUserDefinedSymbols().then((status: boolean) => {
+			if (status) {
+				new Notice("User defined file successful reloaded", 3000);
+				Logger.instance.info("User defined file successful reloaded");
+			} else {
+				new Notice("User defined file reload failed, check your format!!", 6000);
+				Logger.instance.error("User defined file reload failed");
+			}
+		});
 	}
 }
 

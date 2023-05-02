@@ -115,7 +115,10 @@ export default class MathjaxSearch {
 
 		// convert values into array
 		const values = Array.from(this.data.values());
-		const searcher = new FuzzySearch({source: values, keys: ['name'], output_limit: limit});
+
+		// set normalize to return the string as is so the query is case-sensitive
+		const searcher = new FuzzySearch({source: values, keys: ['name'], output_limit: limit, normalize: (string: string)=>{return string}});
+
 		//@ts-ignore
 		return searcher.search(query);
 	}

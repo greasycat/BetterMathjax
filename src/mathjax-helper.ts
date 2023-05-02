@@ -47,26 +47,24 @@ export class MathjaxHelperModal extends Modal {
 				const math = renderMath(example, false);
 				finishRenderMath().then(() => {
 				});
-				math.style.paddingLeft = "20px";
+				p.addClass("better-mathjax-helper-example-entry")
 				p.appendChild(math);
 			}
 		}
 
 		// Show see_also
 		if (Array.isArray(symbol.see_also) && symbol.see_also.length > 0) {
-			const seeAlsoTitle = contentEl.createEl("span", {text: "See also"});
-			seeAlsoTitle.style.fontWeight = "bold";
+			const seeAlsoTitle = contentEl.createEl("h4", {text: "See also"});
+			seeAlsoTitle.addClass("better-mathjax-helper-see-also-title");
 			for (const see_also of symbol.see_also) {
 				const p = contentEl.createEl("p", {text: see_also});
-				//set paddingLeft to 20px
-				p.style.paddingLeft = "20px";
-				//set marginBottom to 10px
+				p.addClass("better-mathjax-helper-see-also-entry");
 			}
 		}
 
 		// Show symbol snippet to edit
-		contentEl.createEl("h4", {text: "Snippet"});
-		new Setting(contentEl).setName("Your Snippet").addTextArea((text) => {
+		contentEl.createEl("h4", {text: "Your Snippet"});
+		new Setting(contentEl).setName("Content").addTextArea((text) => {
 			text.setValue(symbol.snippet);
 			text.onChange((value) => {
 				// copy the symbol
@@ -148,7 +146,7 @@ export class MathjaxHelper {
 		// check if the file exists
 		if (file instanceof TFile) {
 			// read the file
-			const content = await this.app.vault.adapter.read(file.path);
+			const content = await this.app.vault.read(file);
 
 			//clear code blocks
 			this.codeBlocks = [];
@@ -157,7 +155,7 @@ export class MathjaxHelper {
 			this.settings.userDefinedSymbols.clear();
 
 			let firstBlockLoaded = false;
-			// Regex to match markdown code block and extract both the code type and the content
+			// Regex to match Markdown code block and extract both the code type and the content
 			const regex = /```(\w+)\n([\s\S]*?)\n```/gm;
 			let match;
 			while ((match = regex.exec(content)) !== null) {

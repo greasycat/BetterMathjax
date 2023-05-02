@@ -4,7 +4,7 @@ import {
 	EditorSuggest,
 	EditorSuggestContext,
 	EditorSuggestTriggerInfo,
-	finishRenderMath,
+	finishRenderMath, Notice,
 	Plugin,
 	renderMath,
 	TFile
@@ -95,8 +95,6 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbolQuery> {
 		// Create new element
 		const mathSpan = el.createSpan();
 
-		//Change span left padding to 10px
-		mathSpan.style.paddingLeft = "10px";
 		try {
 			let example = symbol.name;
 			// check the type of examples, if string and not empty then use it, if array and not empty then use the first element
@@ -109,10 +107,11 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbolQuery> {
 			//Logger.instance.info(example)
 			const mathEl = renderMath(example, false);
 			await finishRenderMath();
+			mathSpan.addClass("better-mathjax-suggestion-math-entry");
 			mathSpan.appendChild(mathEl);
 		} catch (ReferenceError) {
-			Logger.instance.error("ReferenceError");
-			Logger.instance.error("Try to preview LaTeX once to load MathJax");
+			new Notice("Error rendering mathjax");
+			Logger.instance.error("Error rendering mathjax");
 		}
 
 

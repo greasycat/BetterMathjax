@@ -6,3 +6,24 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.better-mathjax-suggestion-math-entry {
+	padding-left: 10px;
+}
+
+
+.better-mathjax-helper-example-title {
+	font-weight: bold;
+}
+
+.better-mathjax-helper-example-entry {
+	padding-left: 20px;
+}
+
+.better-mathjax-helper-see-also-title {
+	font-weight: bold;
+}
+
+.better-mathjax-helper-see-also-entry {
+	padding-left: 20px;
+}

@@ -2,7 +2,7 @@
 	"name": "better-mathjax",
 	"version": "1.0.1",
 	"description": "MathJax Autocompletion Plugin for Obsidian",
-	"main": "main.js",
+	"main": "src/main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",

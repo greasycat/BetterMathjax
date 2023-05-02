@@ -1,4 +1,4 @@
-import {App, Command, Notice, Plugin} from 'obsidian';
+import {Command, Notice, Plugin} from 'obsidian';
 import MathjaxSuggest from './mathjax-suggest';
 import {BetterMathjaxSettings} from "./settings";
 import {MathjaxHelper} from "./mathjax-helper";
@@ -6,14 +6,9 @@ import Logger from './logger';
 
 export function selectNextSuggestCommand(latexSuggest: MathjaxSuggest): Command {
 	return {
-		id: 'better-mathjax-select-next-suggestion',
+		id: 'select-next-suggestion',
 		name: 'Select next suggestion',
-		hotkeys: [
-			{
-				key: "]",
-				modifiers: ["Ctrl"]
-			}
-		],
+		hotkeys: [],
 		repeatable: true, editorCallback: (_: never) => {
 			latexSuggest.selectNextSuggestion();
 		},
@@ -22,14 +17,9 @@ export function selectNextSuggestCommand(latexSuggest: MathjaxSuggest): Command 
 
 export function selectPreviousSuggestCommand(latexSuggest: MathjaxSuggest): Command {
 	return {
-		id: 'better-mathjax-select-previous-suggestion',
+		id: 'select-previous-suggestion',
 		name: 'Select previous suggestion',
-		hotkeys: [
-			{
-				key: "[",
-				modifiers: ["Ctrl"]
-			}
-		],
+		hotkeys: [],
 		repeatable: true, editorCallback: (_: never) => {
 			latexSuggest.selectPreviousSuggestion();
 		},
@@ -40,12 +30,7 @@ export function selectNextPlaceholderCommand(latexSuggest: MathjaxSuggest): Comm
 	return {
 		id: 'better-mathjax-select-next-placeholder',
 		name: 'Select next placeholder',
-		hotkeys: [
-			{
-				key: "'",
-				modifiers: ["Ctrl"]
-			}
-		],
+		hotkeys: [],
 		repeatable: true, editorCallback: (_: never) => {
 			latexSuggest.selectNextPlaceholder();
 		},
@@ -56,12 +41,7 @@ export function selectPreviousPlaceholderCommand(latexSuggest: MathjaxSuggest): 
 	return {
 		id: 'better-mathjax-select-previous-placeholder',
 		name: 'Select previous placeholder',
-		hotkeys: [
-			{
-				key: ";",
-				modifiers: ["Ctrl"]
-			}
-		],
+		hotkeys: [],
 		repeatable: true, editorCallback: (_: never) => {
 			latexSuggest.selectPreviousPlaceholder();
 		},
@@ -72,12 +52,7 @@ export function showMathjaxHelperOnCurrentSelection(latexSuggestions: MathjaxSug
 	return {
 		id: 'better-mathjax-show-mathjax-helper-on-current-selection',
 		name: 'Show mathjax helper on current selection',
-		hotkeys: [
-			{
-				key: "?",
-				modifiers: ["Ctrl", "Shift"]
-			}
-		],
+		hotkeys: [],
 		repeatable: true, editorCallback: (_: never) => {
 			latexSuggestions.showMathjaxHelperOnCurrentSelection();
 		},
@@ -88,10 +63,7 @@ export function insertSubscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, setti
 	return {
 		id: 'better-mathjax-insert-subscript-placeholder-bracket',
 		name: 'Insert subscript',
-		hotkeys: [{
-			key: "-",
-			modifiers: ["Shift"]
-		}],
+		hotkeys: [],
 		repeatable: true, editorCallback: (editor, view) => {
 
 
@@ -102,11 +74,6 @@ export function insertSubscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, setti
 				editor.replaceRange("_{@1@}", cursor);
 				mathjaxSuggest.selectNextPlaceholder();
 			}
-			// else
-			// {
-			// 	editor.replaceRange("_", cursor);
-			// 	editor.setCursor({ch:cursor.ch + 1, line:cursor.line})
-			// }
 		},
 	};
 }
@@ -114,11 +81,8 @@ export function insertSubscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, setti
 export function insertSuperscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, settings: BetterMathjaxSettings): Command {
 	return {
 		id: 'better-mathjax-insert-superscript-placeholder-bracket',
-		name: 'Insert super',
-		hotkeys: [{
-			key: "6",
-			modifiers: ["Shift"]
-		}],
+		name: 'Insert superscript',
+		hotkeys: [],
 		repeatable: true, editorCallback: (editor, view) => {
 
 			Logger.instance.info("Inserting superscript");
@@ -128,11 +92,6 @@ export function insertSuperscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, set
 				editor.replaceRange("^{@1@}", cursor);
 				mathjaxSuggest.selectNextPlaceholder();
 			}
-			// else
-			// {
-			// 	editor.replaceRange("^", cursor);
-			// 	editor.setCursor({ch:cursor.ch + 1, line:cursor.line})
-			// }
 		},
 	};
 }

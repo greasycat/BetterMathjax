@@ -14,6 +14,7 @@ export default class Logger {
 	}
 	public setConsoleLogEnabled(enabled: boolean) {
 		this.consoleLogEnabled = enabled;
+		this.info("BetterMathjax Debug Log Enabled:", enabled)
 	}
 	private log(...args: unknown[]) {
 		console.log("[DEBUG]",new Date().toLocaleTimeString(), ...args);
@@ -26,8 +27,6 @@ export default class Logger {
 	}
 
 	public error(...args: unknown[]) {
-		if (this.consoleLogEnabled) {
-			this.log("ERROR: ", ...args);
-		}
+		this.log("ERROR: ", ...args);
 	}
 }

@@ -22,7 +22,7 @@ Fully customizable configuration
 ### 1. Downloads from Obsidian Community Plugins List (Not available yet)
 ### 2. Manual
 - Create `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax` folder
-- Put the release files `main.js`, `manifest.json` and `styles.css` into `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax`
+- Put the release files `main.js.bak`, `manifest.json` and `styles.css` into `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax`
 
 # Usage
 ### Hotkeys/Keymappings (default)
