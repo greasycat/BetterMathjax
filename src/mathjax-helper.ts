@@ -146,7 +146,7 @@ export class MathjaxHelper {
 		// check if the file exists
 		if (file instanceof TFile) {
 			// read the file
-			const content = await this.app.vault.read(file);
+			const content = await this.app.vault.cachedRead(file);
 
 			//clear code blocks
 			this.codeBlocks = [];
@@ -213,7 +213,8 @@ export class MathjaxHelper {
 					break;
 			}
 		}
-		await this.app.vault.adapter.write(file.path, content);
+
+		await this.app.vault.modify(file as TFile, content);
 	}
 
 	loadSymbolArray(array: any[]) {

@@ -1,6 +1,8 @@
 import PriorityQueue from './priority-queue';
+
 import {dld} from './fuzzy-search-dld';
-import FuzzySearch from "./fuzzy-search-lcs";
+// @ts-ignore
+import FuzzySearch from 'fz-search';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import {MathJaxSymbol} from './mathjax-symbols';

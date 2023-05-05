@@ -3,8 +3,8 @@
 	"name": "Better MathJax",
 	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "This is a plugin that enhance the Mathjax support by providing autocompletion and snippet",
-	"author": "github@greasycat",
+	"description": "Provide math autocompletion and customizable snippets.",
+	"author": "GreasyCat",
 	"authorUrl": "https://github.com/greasycat",
 	"fundingUrl": "https://www.buymeacoffee.com/greasycat",
 	"isDesktopOnly": false
