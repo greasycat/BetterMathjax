@@ -19,7 +19,7 @@ Fully customizable configuration
 ![2023-01-26_18-32-28.png](https://s2.loli.net/2023/01/27/a25ItcnyXQJPMsS.png)
 
 # Installation
-### 1. Downloads from Obsidian Community Plugins List (Not available yet)
+### 1. Downloads from Obsidian Community Plugins List
 ### 2. Manual
 - Create `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax` folder
 - Put the release files `main.js.bak`, `manifest.json` and `styles.css` into `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax`
