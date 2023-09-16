@@ -1,5 +1,5 @@
 # BetterMathjax For Obsidian
-This plugin will make the mathjax experience in Obsidian bette by providing autocompletion.
+This plugin will make the mathjax experience in Obsidian better by providing autocompletion.
 
 ## Features
 Autocompletion with inline Mathjax rendering after detection of a `$$` or `$$$$` block.
