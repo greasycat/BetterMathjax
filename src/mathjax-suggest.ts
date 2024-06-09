@@ -151,13 +151,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbolQuery> {
 	}
 
 	getTextBeforeCursor(pos: EditorPosition): string {
-		let text = "";
-		for (let i = 0; i < pos.line; i++) {
-			text += this.editor.getLine(i) + " ";
-		}
-
-		text += this.getCurrentLineBeforeCursor(pos);
-		return text;
+		return this.editor.getRange({ ch: 0, line: 0 }, pos);
 	}
 
 
