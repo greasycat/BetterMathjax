@@ -168,7 +168,7 @@ export default class MathjaxSuggest extends EditorSuggest<MathJaxSymbolQuery> {
 		// if the stack is empty then we are not in a mathjax environment
 		// if the stack is not empty then we are in a mathjax environment
 		const stack: string[] = [];
-		const regex = /(\$\$|\$)/g;
+		const regex = /(?<!\\)(\$\$|\$)/g;
 		let match;
 		while ((match = regex.exec(text)) !== null) {
 			if (stack.length === 0) {
