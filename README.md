@@ -1,42 +1,115 @@
-# BetterMathjax For Obsidian
-This plugin will make the mathjax experience in Obsidian better by providing autocompletion.
+# Better MathJax for Obsidian
+
+Autocompletion for MathJax in Obsidian, with snippets you can edit, placeholders you can jump between, and a reference card for each symbol.
 
 ## Features
-Autocompletion with inline Mathjax rendering after detection of a `$$` or `$$$$` block.
 
-![2023-01-26_18-29-32.png](https://s2.loli.net/2023/01/27/gCUNFnHspqAE8e7.png)
+- **Suggestions inside math.** Type a backslash command inside `$…$` or `$$…$$` to get ranked suggestions, each with a rendered preview. Dollars inside code blocks, inline code and frontmatter are ignored, and so is an escaped `\$`. You can also turn suggestions on everywhere.
+- **Snippets with placeholders.** Accepting `\frac` inserts `\frac{@1@}{@2@}` and selects the first placeholder. Press `Tab` / `Shift+Tab` (or the placeholder commands) to move between the fields; set *Placeholder jump key* to *Hotkeys* to use other keys instead. Fields stay highlighted and jumpable after you type into them, so you can go back and fix one. A snippet inserted inside a field is handled first, then you continue with the outer one. The snippet ends when you move the cursor out of it, or press *next* on the last field once all fields are filled; the cursor then lands after the snippet. Outside a snippet, *next* jumps to the next `@n@` marker in the note, or past the next `}` on the line.
+- **Environments.** Inside math, type the first letters of an environment name, such as `pmat`, with no backslash, and pick `pmatrix` to insert a full `\begin{pmatrix} … \end{pmatrix}` block. Typing `\begin{pm` works too. Only names that start with what you typed are suggested, so variables like `ab` do not open the list, and words in ordinary text never do. To allow only backslash commands, turn on *Require a backslash*. Inside blockquotes and callouts, each inserted line keeps the `>` prefix.
+- **Auto-braces.** In math, typing `_` or `^` inserts `_{}` or `^{}` with the cursor inside. If text is selected, it is wrapped instead.
+- **Symbol reference.** Run *Show symbol reference* to see the description, rendered examples and related symbols for the highlighted suggestion, or for the command under the cursor. You can edit and save the symbol's snippet from the same window.
+- **Custom symbols.** Your own symbols and overrides live in an ordinary note (see below).
 
-Using key shortcuts to show a helper modal for reference purposes and fast editing snippets
+![Suggestions](https://s2.loli.net/2023/01/27/gCUNFnHspqAE8e7.png)
+![Symbol reference](https://s2.loli.net/2023/01/27/J3QwytrSPloOYiK.png)
 
-![2023-01-26_18-30-09.png](https://s2.loli.net/2023/01/27/J3QwytrSPloOYiK.png)
+## Hotkeys
 
-Quick Navigation With Placeholder
- 
-![2023-01-26_18-36-24.png](https://s2.loli.net/2023/01/27/GdQ7wLEYeA1Xtnl.png)
+The plugin sets no hotkeys by default. Assign them in *Settings → Hotkeys*. For example:
 
-Fully customizable configuration
+| Command | Example hotkey |
+|---|---|
+| Select next suggestion | `Ctrl+]` |
+| Select previous suggestion | `Ctrl+[` |
+| Accept suggestion | any key you like |
+| Select next placeholder | `Ctrl+'` |
+| Select previous placeholder | `Ctrl+;` |
+| Show symbol reference | `Ctrl+Shift+/` |
+| Browse all symbols / Add custom symbol / Browse custom symbols / Import custom symbols from note / Open symbol note / Restore custom symbols from backup | — |
 
-![2023-01-26_18-32-28.png](https://s2.loli.net/2023/01/27/a25ItcnyXQJPMsS.png)
+`↑`/`↓` and `Enter` always work in the suggestion list, and so does `Tab` unless you set *Accept suggestion key* to *Enter or hotkey* and bind the *Accept suggestion* command instead. Inside a snippet, `Tab` and `Shift+Tab` also move between placeholders; while the suggestion list is open, `Tab` accepts instead. Tab is handled by the editor rather than as an Obsidian hotkey, so outside a snippet it keeps its normal job (a Tab hotkey would block indenting everywhere). To use other keys, set *Placeholder jump key* to *Hotkeys* and bind the *Select next/previous placeholder* commands. The suggestion commands, including *Accept suggestion*, only act while the list is open, so their keys keep their normal job everywhere else.
 
-# Installation
-### 1. Downloads from Obsidian Community Plugins List
-### 2. Manual
-- Create `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax` folder
-- Put the release files `main.js.bak`, `manifest.json` and `styles.css` into `$YOUR_VAULT_FOLDER$/.obsidian/better-mathjax`
+## Custom symbols
 
-# Usage
-# PLEASE SET HOTKEYS!!!
-### Hotkeys/Keymappings (example)
+Add your own commands, or change the snippet, description or examples of any built-in symbol, without touching JSON:
 
-1. Confirm Selected Entry: `Enter`
-2. Select Previous/Up: `Ctrl+[`
-3. Select Next/Down: `Ctrl+]`
-4. Select Next Placeholder: `Ctrl+'`
-5. Select Previous Placeholder: `Ctrl+;`
-6. Show help info for the current selection: `Ctrl+Shift+/`
-7. Manual Reload Configuration file: `None`
+- **Add custom symbol** (command, or the *Add symbol* button in the settings) opens a form with a live preview of the snippet. Run it with the cursor on a command such as `\frac` to start from that symbol.
+- **Browse custom symbols** (command, or *Browse and edit*) searches every symbol. Your own are listed first, and typing a name that does not exist offers to create it.
+- **Customize** in the symbol reference opens the same form for the symbol you are looking at.
 
-# Special Thanks
-- [Where the mathjax data came from](https://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm) CC2.5
-- [The LCS implementation](https://github.com/jeancroy/FuzzySearch) MIT
-- [My first attempt of mathjax autocompletion](https://github.com/greasycat/BetterLatexForObsidian) MIT
+For a built-in symbol, fields you leave empty keep the built-in value, and *Reset to built-in* removes your changes.
+
+### Browsing and disabling symbols
+
+*Browse symbols* in the settings (or the *Browse all symbols* command) lists every symbol, built-in and your own, about 1,260 in all. You can search by name or description, and filter by source (built-in, customized, your own, disabled) or by MathJax package. Each row shows a preview, a *Customize* or *Edit* button, and an eye icon that turns the symbol off or on.
+
+A disabled symbol does not appear in the suggestion list, but it stays in the browser and the symbol reference. When the list is filtered, *Disable N* and *Enable N* change every symbol shown at once, for example a whole package you never use. The editor has the same switch, *Show in suggestions*. A disabled symbol is stored as `{"name": "\\textcent", "disabled": true}`, in the plugin settings or in your symbol note.
+
+### Where they are stored
+
+Choose in the settings under *Where symbols are stored*:
+
+- **Hidden (plugin settings)**, the default. Symbols are saved in `.obsidian/plugins/better-mathjax/data.json`, so nothing appears among your notes. Edit them with the commands above.
+- **Note in your vault.** Symbols live in a note (`Better MathJax Symbols.md` by default) as a `jsonl` code block, one symbol per line:
+
+  ````markdown
+  ```jsonl
+  {"name":"\\R","snippet":"\\mathbb{R}^{@1@}","description":"The real numbers."}
+  {"name":"\\E","snippet":"\\mathbb{E}\\left[@1@\\right]"}
+  ```
+  ````
+
+  You, or an AI agent that can edit your notes, can change the block directly; edits apply as soon as the note is saved. Lines that are not valid are reported with their line number and skipped, and the other lines still work. When the plugin saves a symbol, it rewrites only that line, so the rest of the note stays as you wrote it. Renaming or moving the note in Obsidian is followed automatically.
+
+Switching between the two moves your symbols across. Switching from the note back to hidden first checks every line: if all are valid, the symbols move into the plugin settings and the note goes to the trash; if any line has a problem, nothing changes and you get a warning listing the lines to fix.
+
+### Backups
+
+Before a change replaces or removes a symbol, the plugin saves a backup in its own folder (`.obsidian/plugins/better-mathjax/backups/`), out of sight. The plugin compares your symbols before and after each write, so adding new symbols never creates a backup. This applies to the editor, imports, restores, switching where symbols are stored, and edits to the symbol note from outside the plugin, for example by an agent. Outside edits in quick succession share one backup. The 10 newest backups are kept.
+
+*Restore…* in the settings (or the *Restore custom symbols from backup* command) lists the backups, newest first, with what each one would bring back, remove or change. Click *Restore* to restore one, or *Delete* and then *Confirm* to delete it. If a restore replaces or removes a symbol, your current symbols are backed up first, so the restore can be undone.
+
+## Upgrading from 1.x
+
+Your existing settings and hotkeys carry over. The first time 2.0 loads, it imports the symbols from your old symbol note (the path from your 1.x settings, or `symbols.md`) and tells you how many it found. The note itself is left as it was, and you can delete it afterwards. To bring in another note in the old format later, use *Import from note* in the settings or the *Import custom symbols from note* command.
+
+Two other things changed:
+
+- The fuzzy-search algorithm setting is gone. One ranker now orders matches as exact match, then prefix, then substring, then subsequence. It is case-sensitive, so `\delta` and `\Delta` are different suggestions.
+- The debug-log setting is gone.
+
+The sub/superscript option now works as you type, and the old *Insert subscript/superscript* commands are removed.
+
+## Development
+
+```sh
+npm install
+npm run dev        # watch build to main.js
+npm test           # unit tests (vitest), including a render check of every built-in symbol
+npm run build:registry   # rebuild src/symbols/builtin-symbols.json from MathJax's own command tables
+npm run build      # typecheck + production build
+npm run lint
+```
+
+| Path | Role |
+|---|---|
+| `src/main.ts` | Plugin wiring only |
+| `src/math/context.ts` | Pure: is the cursor inside math? |
+| `src/search/ranker.ts` | Pure: match scoring and ranking |
+| `src/snippet/placeholders.ts` | Pure: placeholder search and snippet indentation |
+| `src/symbols/` | Built-in data, the registry that merges user overrides, pure custom-symbol list operations, the jsonl note reader/writer (`jsonl-note.ts`), backup helpers (`backups.ts`), the pre-2.0 note reader (import only), and `custom-symbol-store.ts`, which saves to the plugin data or the note and runs the one-time migration |
+| `src/editor/` | `EditorSuggest`, the CodeMirror auto-brace extension, insertion helpers |
+| `src/ui/` | Reference modal, MathJax preview helper |
+| `src/settings/` | Settings model with 1.x migration, settings tab |
+
+`src/editor/suggest-internals.ts` is the only module that touches undocumented Obsidian internals (the selected row of the suggestion list), and it fails softly if they change.
+
+### Built-in symbols
+
+`src/symbols/builtin-symbols.json` lists every command and environment the MathJax in Obsidian supports (MathJax 4.1.3 with Obsidian's TeX packages), about 1,260 entries. `npm run build:registry` keeps it in step: it cleans the hand-written descriptions, adds what MathJax knows but the list lacks, works out snippets for commands that take arguments, and gives every entry a preview that renders. The tests render every example, snippet and preview with the same MathJax version and packages, so a change that breaks one fails `npm test`. Commands that define macros or labels (`\def`, `\newcommand`, `\label`, …) have `"preview": false`: rendering them in a preview would define the macro for the whole page.
+
+## Credits
+
+- Symbol data: [MathJax TeX syntax reference](https://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm) (CC 2.5), completed from MathJax's own command tables
+- [BetterLatexForObsidian](https://github.com/greasycat/BetterLatexForObsidian), the first attempt (MIT)

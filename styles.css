@@ -1,29 +1,295 @@
-/*
+.better-mathjax-suggestion {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.better-mathjax-suggestion-name {
+	font-family: var(--font-monospace);
+}
 
-If your plugin does not need CSS, delete this file.
+.better-mathjax-suggestion-badge {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-accent);
+}
 
-*/
+.better-mathjax-suggestion-preview {
+	margin-left: auto;
+	color: var(--text-normal);
+}
 
-.better-mathjax-suggestion-math-entry {
-	padding-left: 10px;
+.better-mathjax-example {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	padding: var(--size-4-1) 0;
+}
+
+.better-mathjax-example code {
+	white-space: pre-wrap;
+}
+
+.better-mathjax-see-also {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-2);
+}
+
+.better-mathjax-suggestion-preview {
+	max-height: 2.5em;
+	overflow: hidden;
+}
+
+.better-mathjax-hotkey-callout {
+	margin-bottom: var(--size-4-6);
+	padding: var(--size-4-4);
+	border: 1px solid var(--interactive-accent);
+	border-left-width: 4px;
+	border-radius: var(--radius-m);
+	background-color: color-mix(in srgb, var(--interactive-accent) 12%, transparent);
+}
+
+.better-mathjax-hotkey-callout.is-done {
+	border-color: var(--background-modifier-border);
+	border-left-color: var(--color-green);
+	background-color: var(--background-secondary);
+}
+
+.better-mathjax-hotkey-callout-title {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	font-size: var(--font-ui-large);
+	font-weight: var(--font-bold);
+	color: var(--text-accent);
+}
+
+.better-mathjax-hotkey-callout.is-done .better-mathjax-hotkey-callout-title {
+	color: var(--color-green);
+}
+
+.better-mathjax-hotkey-callout-icon {
+	display: flex;
+}
+
+.better-mathjax-hotkey-callout p {
+	margin: var(--size-4-2) 0;
+	color: var(--text-muted);
+}
+
+.better-mathjax-hotkey-list {
+	display: grid;
+	gap: var(--size-4-1);
+	margin-bottom: var(--size-4-3);
+}
+
+.better-mathjax-hotkey-row {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+}
+
+.better-mathjax-hotkey-missing {
+	color: var(--text-error);
+	font-weight: var(--font-semibold);
+}
+
+.better-mathjax-hotkey-unset {
+	color: var(--text-faint);
+}
+
+.better-mathjax-suggestion-badge.is-builtin {
+	color: var(--text-faint);
+}
+
+.better-mathjax-snippet-code {
+	white-space: pre-wrap;
+	font-family: var(--font-monospace);
+	padding: var(--size-4-2);
+	border-radius: var(--radius-s);
+	background-color: var(--background-secondary);
+}
+
+.better-mathjax-editor .better-mathjax-editor-wide {
+	flex-wrap: wrap;
+}
+
+.better-mathjax-editor .better-mathjax-editor-wide .setting-item-control {
+	flex-basis: 100%;
+}
+
+.better-mathjax-editor .better-mathjax-editor-wide textarea {
+	width: 100%;
+	font-family: var(--font-monospace);
+}
+
+.better-mathjax-editor-status {
+	min-height: 1.5em;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.better-mathjax-editor-status.mod-warning {
+	color: var(--text-warning);
+}
+
+.better-mathjax-editor-preview {
+	display: flex;
+	justify-content: center;
+	min-height: 3em;
+	margin-bottom: var(--size-4-2);
+	padding: var(--size-4-2);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: 1.6em;
+}
+
+.better-mathjax-hotkey-callout-dismiss {
+	margin-left: auto;
+	color: var(--text-muted);
+}
+
+.better-mathjax-field {
+	background-color: color-mix(in srgb, var(--interactive-accent) 15%, transparent);
+	border-radius: var(--radius-s);
+}
+
+.better-mathjax-restore-list {
+	display: grid;
+	gap: var(--size-4-2);
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.better-mathjax-restore-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-3);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+}
+
+.better-mathjax-restore-info {
+	flex: 1;
+	min-width: 0;
 }
 
 
-.better-mathjax-helper-example-title {
-	font-weight: bold;
+.modal.better-mathjax-browser {
+	width: min(860px, 95vw);
 }
 
-.better-mathjax-helper-example-entry {
-	padding-left: 20px;
+.better-mathjax-browser-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-2);
 }
 
-.better-mathjax-helper-see-also-title {
-	font-weight: bold;
+.better-mathjax-browser-controls .search-input-container {
+	flex: 1 1 240px;
 }
 
-.better-mathjax-helper-see-also-entry {
-	padding-left: 20px;
+.better-mathjax-browser-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	margin: var(--size-4-2) 0;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.better-mathjax-browser-bulk {
+	display: flex;
+	gap: var(--size-4-2);
+}
+
+.better-mathjax-browser-list {
+	max-height: 60vh;
+	overflow-y: auto;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.better-mathjax-browser-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-1);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.better-mathjax-browser-row.is-disabled .better-mathjax-browser-info,
+.better-mathjax-browser-row.is-disabled .better-mathjax-browser-preview {
+	opacity: 0.5;
+}
+
+.better-mathjax-browser-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.better-mathjax-browser-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--size-4-1);
+}
+
+.better-mathjax-browser-name {
+	font-family: var(--font-monospace);
+	color: var(--text-normal);
+	text-decoration: none;
+}
+
+.better-mathjax-browser-summary {
+	overflow: hidden;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.better-mathjax-browser-preview {
+	flex: 0 0 120px;
+	max-height: 3em;
+	overflow: hidden;
+	text-align: center;
+}
+
+.better-mathjax-browser-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+}
+
+.better-mathjax-browser-empty {
+	padding: var(--size-4-4);
+	color: var(--text-muted);
+	text-align: center;
+}
+
+.better-mathjax-tag {
+	padding: 0 var(--size-4-1);
+	border-radius: var(--radius-s);
+	background-color: var(--background-modifier-hover);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.better-mathjax-tag.is-user,
+.better-mathjax-tag.is-override {
+	color: var(--text-accent);
+}
+
+.better-mathjax-tag.is-disabled {
+	color: var(--text-error);
+}
+
+.better-mathjax-restore-empty {
+	color: var(--text-muted);
 }

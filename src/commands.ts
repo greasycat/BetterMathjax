@@ -1,117 +1,125 @@
-import {Command, Notice, Plugin} from 'obsidian';
-import MathjaxSuggest from './mathjax-suggest';
-import {BetterMathjaxSettings} from "./settings";
-import {MathjaxHelper} from "./mathjax-helper";
-import Logger from './logger';
+import {Notice} from "obsidian";
+import {commandAtCursor, selectNextPlaceholder, selectPreviousPlaceholder} from "./editor/insert";
+import {moveSelection} from "./editor/suggest-internals";
+import type BetterMathjaxPlugin from "./main";
 
-export function selectNextSuggestCommand(latexSuggest: MathjaxSuggest): Command {
-	return {
-		id: 'select-next-suggestion',
-		name: 'Select next suggestion',
-		hotkeys: [],
-		repeatable: true, editorCallback: (_: never) => {
-			latexSuggest.selectNextSuggestion();
+// Command IDs are kept from 1.x so existing hotkeys keep working.
+export const COMMAND_IDS = {
+	nextSuggestion: "select-next-suggestion",
+	previousSuggestion: "select-previous-suggestion",
+	acceptSuggestion: "accept-suggestion",
+	nextPlaceholder: "better-mathjax-select-next-placeholder",
+	previousPlaceholder: "better-mathjax-select-previous-placeholder",
+	showReference: "better-mathjax-show-mathjax-helper-on-current-selection",
+	importSymbolNote: "import-symbol-note",
+	openSymbolNote: "open-symbol-note",
+	restoreSymbols: "restore-symbols",
+	addSymbol: "add-custom-symbol",
+	browseSymbols: "browse-custom-symbols",
+	browseAllSymbols: "browse-all-symbols",
+} as const;
+
+export function registerCommands(plugin: BetterMathjaxPlugin): void {
+	const {suggest} = plugin;
+
+	plugin.addCommand({
+		id: COMMAND_IDS.nextSuggestion,
+		name: "Select next suggestion",
+		repeatable: true,
+		editorCheckCallback: (checking) => {
+			if (!suggest.isShowing()) return false;
+			if (!checking) moveSelection(suggest, 1);
+			return true;
 		},
-	};
-}
+	});
 
-export function selectPreviousSuggestCommand(latexSuggest: MathjaxSuggest): Command {
-	return {
-		id: 'select-previous-suggestion',
-		name: 'Select previous suggestion',
-		hotkeys: [],
-		repeatable: true, editorCallback: (_: never) => {
-			latexSuggest.selectPreviousSuggestion();
+	plugin.addCommand({
+		id: COMMAND_IDS.previousSuggestion,
+		name: "Select previous suggestion",
+		repeatable: true,
+		editorCheckCallback: (checking) => {
+			if (!suggest.isShowing()) return false;
+			if (!checking) moveSelection(suggest, -1);
+			return true;
 		},
-	};
-}
+	});
 
-export function selectNextPlaceholderCommand(latexSuggest: MathjaxSuggest): Command {
-	return {
-		id: 'better-mathjax-select-next-placeholder',
-		name: 'Select next placeholder',
-		repeatable: true, editorCallback: (_: never) => {
-			latexSuggest.selectNextPlaceholder();
+	plugin.addCommand({
+		id: COMMAND_IDS.acceptSuggestion,
+		name: "Accept suggestion",
+		editorCheckCallback: (checking) => {
+			if (!suggest.isShowing()) return false;
+			if (!checking) suggest.acceptSelected();
+			return true;
 		},
-	};
-}
+	});
 
-export function selectPreviousPlaceholderCommand(latexSuggest: MathjaxSuggest): Command {
-	return {
-		id: 'better-mathjax-select-previous-placeholder',
-		name: 'Select previous placeholder',
-		repeatable: true, editorCallback: (_: never) => {
-			latexSuggest.selectPreviousPlaceholder();
+	plugin.addCommand({
+		id: COMMAND_IDS.nextPlaceholder,
+		name: "Select next placeholder",
+		repeatable: true,
+		editorCallback: (editor) => selectNextPlaceholder(editor),
+	});
+
+	plugin.addCommand({
+		id: COMMAND_IDS.previousPlaceholder,
+		name: "Select previous placeholder",
+		repeatable: true,
+		editorCallback: (editor) => selectPreviousPlaceholder(editor),
+	});
+
+	plugin.addCommand({
+		id: COMMAND_IDS.showReference,
+		name: "Show symbol reference",
+		editorCallback: (editor) => {
+			const name = suggest.selectedSymbol()?.name ?? commandAtCursor(editor);
+			const symbol = name === null ? undefined : plugin.registry.get(name);
+			if (symbol) plugin.showSymbol(symbol);
+			else new Notice(name === null ? "No symbol at the cursor" : `Unknown symbol ${name}`);
 		},
-	};
-}
+	});
 
-export function showMathjaxHelperOnCurrentSelection(latexSuggestions: MathjaxSuggest): Command {
-	return {
-		id: 'better-mathjax-show-mathjax-helper-on-current-selection',
-		name: 'Show mathjax helper on current selection',
-		repeatable: true, editorCallback: (_: never) => {
-			latexSuggestions.showMathjaxHelperOnCurrentSelection();
+	plugin.addCommand({
+		id: COMMAND_IDS.addSymbol,
+		name: "Add custom symbol",
+		callback: () => {
+			// Start from the command under the cursor if there is one, e.g. to customize \frac.
+			const editor = plugin.app.workspace.activeEditor?.editor;
+			plugin.editSymbol((editor && commandAtCursor(editor)) ?? "");
 		},
-	};
-}
+	});
 
-export function insertSubscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, settings: BetterMathjaxSettings): Command {
-	return {
-		id: 'better-mathjax-insert-subscript-placeholder-bracket',
-		name: 'Insert subscript',
-		repeatable: true, editorCallback: (editor, view) => {
+	plugin.addCommand({
+		id: COMMAND_IDS.browseAllSymbols,
+		name: "Browse all symbols",
+		callback: () => plugin.browseAllSymbols(),
+	});
 
+	plugin.addCommand({
+		id: COMMAND_IDS.browseSymbols,
+		name: "Browse custom symbols",
+		callback: () => plugin.browseSymbols(),
+	});
 
-			// Get current cursor position
-			const cursor = editor.getCursor();
-			if (settings.matchingSubScript && mathjaxSuggest.enabled)
-			{
-				editor.replaceRange("_{@1@}", cursor);
-				mathjaxSuggest.selectNextPlaceholder();
-			}
+	plugin.addCommand({
+		id: COMMAND_IDS.openSymbolNote,
+		name: "Open symbol note",
+		checkCallback: (checking) => {
+			if (plugin.customSymbols.storage !== "note") return false;
+			if (!checking) void plugin.openSymbolNote();
+			return true;
 		},
-	};
-}
+	});
 
-export function insertSuperscriptPlaceholder(mathjaxSuggest: MathjaxSuggest, settings: BetterMathjaxSettings): Command {
-	return {
-		id: 'better-mathjax-insert-superscript-placeholder-bracket',
-		name: 'Insert superscript',
-		repeatable: true, editorCallback: (editor, view) => {
+	plugin.addCommand({
+		id: COMMAND_IDS.restoreSymbols,
+		name: "Restore custom symbols from backup",
+		callback: () => plugin.restoreSymbols(),
+	});
 
-			Logger.instance.info("Inserting superscript");
-			// Get current cursor position
-			const cursor = editor.getCursor();
-			if (settings.matchingSuperScript && mathjaxSuggest.enabled) {
-				editor.replaceRange("^{@1@}", cursor);
-				mathjaxSuggest.selectNextPlaceholder();
-			}
-		},
-	};
-}
-
-export function reloadUserDefinedFile(mathjaxHelper: MathjaxHelper): Command {
-	return {
-		id: 'better-mathjax-reload-user-defined-file',
-		name: 'Reload user defined file',
-		repeatable: true, editorCallback: (editor, view) => {
-			mathjaxHelper.readUserDefinedSymbols().then(() => {
-				new Notice("User defined file reloaded");
-			});
-		},
-	};
-}
-
-
-export function addSubSuperScriptCommand(plugin: Plugin, mathjaxSuggest: MathjaxSuggest, settings: BetterMathjaxSettings) {
-		plugin.addCommand(insertSubscriptPlaceholder(mathjaxSuggest, settings));
-		plugin.addCommand(insertSuperscriptPlaceholder(mathjaxSuggest, settings));
-}
-
-export function removeSubSuperScriptCommand(plugin: Plugin) {
-	// @ts-ignore
-	plugin.app.commands.removeCommand("better-mathjax:better-mathjax-insert-superscript-placeholder-bracket");
-	// @ts-ignore
-	plugin.app.commands.removeCommand("better-mathjax:better-mathjax-insert-subscript-placeholder-bracket");
+	plugin.addCommand({
+		id: COMMAND_IDS.importSymbolNote,
+		name: "Import custom symbols from note",
+		callback: () => plugin.importSymbolNote(),
+	});
 }

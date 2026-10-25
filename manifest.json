@@ -1,9 +1,9 @@
 {
 	"id": "better-mathjax",
 	"name": "Better MathJax",
-	"version": "1.0.1",
-	"minAppVersion": "0.15.0",
-	"description": "Provide math autocompletion and customizable snippets.",
+	"version": "2.0.0",
+	"minAppVersion": "1.6.6",
+	"description": "Configurable MathJax autocompletion with snippets, placeholders and a symbol reference.",
 	"author": "GreasyCat",
 	"authorUrl": "https://github.com/greasycat",
 	"fundingUrl": "https://www.buymeacoffee.com/greasycat",

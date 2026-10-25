@@ -1,27 +1,21 @@
 {
 	"compilerOptions": {
 		"baseUrl": ".",
+		"module": "ESNext",
+		"target": "ES2021",
+		"moduleResolution": "bundler",
+		"lib": ["DOM", "ES2021"],
+		"strict": true,
+		"noImplicitOverride": true,
+		"noUncheckedIndexedAccess": true,
+		"isolatedModules": true,
+		"importHelpers": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
 		"inlineSourceMap": true,
 		"inlineSources": true,
-		"module": "ESNext",
-		"target": "ES6",
-		"allowJs": true,
-		"noImplicitAny": true,
-		"moduleResolution": "node",
-		"importHelpers": true,
-		"isolatedModules": true,
-		"strictNullChecks": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"lib": [
-			"DOM",
-			"ES5",
-			"ES6",
-			"ES7"
-		]
+		"types": ["node"]
 	},
-	"include": [
-		"**/*.ts",
-		"src/**/*.ts"
-	]
+	"include": ["src/**/*.ts", "tests/**/*.ts"]
 }
