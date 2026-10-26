@@ -18,13 +18,46 @@
 	color: var(--text-normal);
 }
 
+.better-mathjax-section {
+	margin-bottom: var(--size-4-3);
+	padding: var(--size-4-3) var(--size-4-4);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+}
+
+.better-mathjax-section-title {
+	margin-bottom: var(--size-4-2);
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-semibold);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
+}
+
+.better-mathjax-section .better-mathjax-description > :first-child {
+	margin-top: 0;
+}
+
+.better-mathjax-section .better-mathjax-description > :last-child {
+	margin-bottom: 0;
+}
+
 .better-mathjax-example {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--size-4-2);
-	padding: var(--size-4-1) 0;
+	padding: var(--size-4-2) 0;
+}
+
+.better-mathjax-example-render mjx-container[display="true"] {
+	margin: 0;
+}
+
+.better-mathjax-example + .better-mathjax-example {
+	border-top: 1px solid var(--background-modifier-border);
 }
 
 .better-mathjax-example code {
@@ -38,8 +71,17 @@
 }
 
 .better-mathjax-suggestion-preview {
+	/* Wide examples (an alphabet, a long matrix) are cut off rather than pushing into the name. */
+	flex-shrink: 1;
+	min-width: 0;
+	max-width: 50%;
 	max-height: 2.5em;
 	overflow: hidden;
+	text-align: right;
+}
+
+.better-mathjax-suggestion-name {
+	flex-shrink: 0;
 }
 
 .better-mathjax-hotkey-callout {
@@ -292,4 +334,20 @@
 
 .better-mathjax-restore-empty {
 	color: var(--text-muted);
+}
+
+.better-mathjax-section .better-mathjax-snippet-code {
+	margin: 0 0 var(--size-4-2);
+	background-color: var(--background-primary);
+}
+
+.better-mathjax-section-action {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-4);
+}
+
+.better-mathjax-section:last-child {
+	margin-bottom: 0;
 }

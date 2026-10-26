@@ -34,9 +34,26 @@ function contains(session: Session, pos: number): boolean {
 const sessions = StateField.define<Session[]>({
 	create: () => [],
 	update(stack, tr) {
-		let next = tr.docChanged
-			? stack.map((session) => ({fields: session.fields.map((field) => mapSpan(field, tr)), span: mapSpan(session.span, tr)}))
-			: stack;
+		let next = stack;
+		if (tr.docChanged) {
+			// A change that crosses the edge of the snippet or of a field (replacing the whole note, deleting a
+			// selection that covers part of a field) leaves nothing sensible to track, so it ends the snippet.
+			// Typing inside a field, at its edges, or over exactly one field does not cross an edge.
+			const crosses = (session: Session) => {
+				const edges = [session.span.from, session.span.to, ...session.fields.flatMap((field) => [field.from, field.to])];
+				let crossed = false;
+				tr.changes.iterChangedRanges((fromA, toA) => {
+					if (edges.some((edge) => fromA < edge && edge < toA)) crossed = true;
+				});
+				return crossed;
+			};
+			const kept: Session[] = [];
+			for (const session of stack) {
+				if (crosses(session)) break; // nested sessions inside it end with it
+				kept.push({fields: session.fields.map((field) => mapSpan(field, tr)), span: mapSpan(session.span, tr)});
+			}
+			next = kept;
+		}
 		for (const effect of tr.effects) {
 			if (effect.is(startSession)) next = [...next, effect.value];
 			else if (effect.is(endSession)) next = next.slice(0, -1);

@@ -94,4 +94,27 @@ describe("snippet session", () => {
 		const {view} = harness("@1@ text", 0);
 		expect(jumpField(view, 1)).toBe(false);
 	});
+
+	it("ends when a change replaces the whole note", () => {
+		const {view} = harness("");
+		insertSnippet(view, 0, 0, "\\frac{@1@}{@2@}");
+		view.dispatch({changes: {from: 0, to: view.state.doc.length, insert: "new note text"}, selection: {anchor: 3}});
+		expect(activeFields(view.state)).toEqual([]);
+	});
+
+	it("ends when a deletion covers part of a field", () => {
+		const {view} = harness("");
+		insertSnippet(view, 0, 0, "\\frac{@1@}{@2@}");
+		view.dispatch({changes: {from: 4, to: 8}, selection: {anchor: 4}});
+		expect(activeFields(view.state)).toEqual([]);
+	});
+
+	it("survives replacing exactly one field", () => {
+		const {view, selected} = harness("");
+		insertSnippet(view, 0, 0, "\\frac{@1@}{@2@}");
+		view.dispatch(view.state.replaceSelection("abc"));
+		jumpField(view, 1);
+		expect(selected()).toBe("@2@");
+	});
 });
+

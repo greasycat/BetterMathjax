@@ -5,19 +5,33 @@ Autocompletion for MathJax in Obsidian, with snippets you can edit, placeholders
 ## Features
 
 - **Suggestions inside math.** Type a backslash command inside `$…$` or `$$…$$` to get ranked suggestions, each with a rendered preview. Dollars inside code blocks, inline code and frontmatter are ignored, and so is an escaped `\$`. You can also turn suggestions on everywhere.
-- **Snippets with placeholders.** Accepting `\frac` inserts `\frac{@1@}{@2@}` and selects the first placeholder. Press `Tab` / `Shift+Tab` (or the placeholder commands) to move between the fields; set *Placeholder jump key* to *Hotkeys* to use other keys instead. Fields stay highlighted and jumpable after you type into them, so you can go back and fix one. A snippet inserted inside a field is handled first, then you continue with the outer one. The snippet ends when you move the cursor out of it, or press *next* on the last field once all fields are filled; the cursor then lands after the snippet. Outside a snippet, *next* jumps to the next `@n@` marker in the note, or past the next `}` on the line.
-- **Environments.** Inside math, type the first letters of an environment name, such as `pmat`, with no backslash, and pick `pmatrix` to insert a full `\begin{pmatrix} … \end{pmatrix}` block. Typing `\begin{pm` works too. Only names that start with what you typed are suggested, so variables like `ab` do not open the list, and words in ordinary text never do. To allow only backslash commands, turn on *Require a backslash*. Inside blockquotes and callouts, each inserted line keeps the `>` prefix.
-- **Formatting.** *Format math at cursor* tidies the math block you are in, and *Format all math in note* does every block at once. Environment bodies are indented with one row per line, `&` columns are aligned, and runs of spaces become one. Everything else stays as you wrote it, and the result renders exactly as before. Indentation follows Obsidian's *Indent using tabs* and *Tab indent size* settings, and math in blockquotes and callouts keeps its `>` prefix. Inline math only has its spaces tidied. One undo reverts the whole change. With *Format math when you leave it* turned on (off by default), a block is formatted when the cursor moves out of it by arrow keys, a click or a jump. Typing never triggers it.
-- **Auto-braces.** In math, typing `_` or `^` inserts `_{}` or `^{}` with the cursor inside. If text is selected, it is wrapped instead.
-- **Symbol reference.** Run *Show symbol reference* to see the description, rendered examples and related symbols for the highlighted suggestion, or for the command under the cursor. You can edit and save the symbol's snippet from the same window.
-- **Custom symbols.** Your own symbols and overrides live in an ordinary note (see below).
 
-![Suggestions](https://s2.loli.net/2023/01/27/gCUNFnHspqAE8e7.png)
-![Symbol reference](https://s2.loli.net/2023/01/27/J3QwytrSPloOYiK.png)
+  <img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/suggestions.png" alt="Suggestion list with rendered previews while typing \fr" width="560">
+
+- **Snippets with placeholders.** Accepting `\frac` inserts `\frac{@1@}{@2@}` and selects the first placeholder. Press `Tab` / `Shift+Tab` (or the placeholder commands) to move between the fields; set *Placeholder jump key* to *Hotkeys* to use other keys instead. Fields stay highlighted and jumpable after you type into them, so you can go back and fix one. A snippet inserted inside a field is handled first, then you continue with the outer one. The snippet ends when you move the cursor out of it, or press *next* on the last field once all fields are filled; the cursor then lands after the snippet. Outside a snippet, *next* jumps to the next `@n@` marker in the note, or past the next `}` on the line.
+
+  <img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/snippet-fields.png" alt="A fraction snippet with the filled numerator still highlighted and the denominator field selected" width="560">
+
+- **Environments.** Inside math, type the first letters of an environment name, such as `pmat`, with no backslash, and pick `pmatrix` to insert a full `\begin{pmatrix} … \end{pmatrix}` block. Typing `\begin{pm` works too. Only names that start with what you typed are suggested, so variables like `ab` do not open the list, and words in ordinary text never do. To allow only backslash commands, turn on *Require a backslash*. Inside blockquotes and callouts, each inserted line keeps the `>` prefix.
+
+  <img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/environments.png" alt="Typing pmat in math suggests the pmatrix environments" width="560">
+
+- **Formatting.** *Format math at cursor* tidies the math block you are in, and *Format all math in note* does every block at once. Environment bodies are indented with one row per line, `&` columns are aligned, and runs of spaces become one. Everything else stays as you wrote it, and the result renders exactly as before. Indentation follows Obsidian's *Indent using tabs* and *Tab indent size* settings, and math in blockquotes and callouts keeps its `>` prefix. Inline math only has its spaces tidied. One undo reverts the whole change. With *Format math when you leave it* turned on (off by default), a block is formatted when the cursor moves out of it by arrow keys, a click or a jump. Typing never triggers it.
+
+  <img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/format-before.png" alt="Math blocks before formatting" width="420"> <img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/format-after.png" alt="The same blocks after formatting, indented with aligned columns" width="420">
+
+- **Auto-braces.** In math, typing `_` or `^` inserts `_{}` or `^{}` with the cursor inside. If text is selected, it is wrapped instead.
+- **Symbol reference.** Run *Show symbol reference* to see the description, rendered examples and related symbols for the highlighted suggestion, or for the command under the cursor. *Customize* opens the symbol in the editor.
+
+  <img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/symbol-reference.png" alt="Symbol reference for \frac" width="420">
+
+- **Symbol browser and custom symbols.** Browse all 1,260 built-in symbols, customize any of them, add your own, or turn off ones you never use (see [Custom symbols](#custom-symbols)).
+
+  <img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/symbol-browser.png" alt="Symbol browser searching for matrix" width="640">
 
 ## Hotkeys
 
-The plugin sets no hotkeys by default. Assign them in *Settings → Hotkeys*. For example:
+The plugin sets no hotkeys by default. Assign them in *Settings → Hotkeys*; the guide at the top of the plugin settings shows which are set. For example:
 
 | Command | Example hotkey |
 |---|---|
@@ -31,6 +45,8 @@ The plugin sets no hotkeys by default. Assign them in *Settings → Hotkeys*. Fo
 
 `↑`/`↓` and `Enter` always work in the suggestion list, and so does `Tab` unless you set *Accept suggestion key* to *Enter or hotkey* and bind the *Accept suggestion* command instead. Inside a snippet, `Tab` and `Shift+Tab` also move between placeholders; while the suggestion list is open, `Tab` accepts instead. Tab is handled by the editor rather than as an Obsidian hotkey, so outside a snippet it keeps its normal job (a Tab hotkey would block indenting everywhere). To use other keys, set *Placeholder jump key* to *Hotkeys* and bind the *Select next/previous placeholder* commands. The suggestion commands, including *Accept suggestion*, only act while the list is open, so their keys keep their normal job everywhere else.
 
+<img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/settings.png" alt="Plugin settings with the hotkey guide" width="520">
+
 ## Custom symbols
 
 Add your own commands, or change the snippet, description or examples of any built-in symbol, without touching JSON:
@@ -40,6 +56,8 @@ Add your own commands, or change the snippet, description or examples of any bui
 - **Customize** in the symbol reference opens the same form for the symbol you are looking at.
 
 For a built-in symbol, fields you leave empty keep the built-in value, and *Reset to built-in* removes your changes.
+
+<img src="https://raw.githubusercontent.com/greasycat/BetterMathjax/master/docs/screenshots/symbol-editor.png" alt="Editor for a custom symbol with a live preview of its snippet" width="420">
 
 ### Browsing and disabling symbols
 
