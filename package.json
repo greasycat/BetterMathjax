@@ -1,6 +1,6 @@
 {
 	"name": "better-mathjax",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Configurable MathJax autocompletion and snippets for Obsidian",
 	"private": true,
 	"type": "module",
