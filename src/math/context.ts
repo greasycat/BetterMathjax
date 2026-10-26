@@ -48,14 +48,6 @@ export function initialScanState(): ScanState {
  * `onRegion` for each math region the line closes.
  */
 export function scanLine(state: ScanState, line: string, index: number, base: number, last: boolean, onRegion?: (region: MathRegion) => void): void {
-	const open = (at: number, width: number) => {
-		state.openAt = at;
-		state.openWidth = width;
-	};
-	const close = (mode: MathMode, at: number, width: number) => {
-		onRegion?.({mode, start: state.openAt, from: state.openAt + state.openWidth, to: at, end: at + width});
-	};
-
 	if (index === 0 && line === "---") {
 		state.frontmatter = "open";
 		return;
@@ -107,16 +99,17 @@ export function scanLine(state: ScanState, line: string, index: number, base: nu
 		if (char === "$") {
 			if (line[i + 1] === "$") {
 				if (state.mode === "inline") {
-					close("inline", base + i, 1);
+					onRegion?.(region(state, "inline", base + i, 1));
 					state.mode = null;
 					i += 1;
 					continue;
 				}
 				if (state.mode === "display") {
-					close("display", base + i, 2);
+					onRegion?.(region(state, "display", base + i, 2));
 					state.mode = null;
 				} else {
-					open(base + i, 2);
+					state.openAt = base + i;
+					state.openWidth = 2;
 					state.mode = "display";
 				}
 				i += 2;
@@ -126,13 +119,14 @@ export function scanLine(state: ScanState, line: string, index: number, base: nu
 				const next = line[i + 1];
 				// At the very end of the text the cursor sits right after `$`, so treat it as an opener.
 				if (next === undefined ? last : !/\s/.test(next)) {
-					open(base + i, 1);
+					state.openAt = base + i;
+					state.openWidth = 1;
 					state.mode = "inline";
 				}
 			} else if (state.mode === "inline") {
 				const prev = line[i - 1];
 				if (prev !== undefined && !/\s/.test(prev)) {
-					close("inline", base + i, 1);
+					onRegion?.(region(state, "inline", base + i, 1));
 					state.mode = null;
 				}
 			}
@@ -141,6 +135,11 @@ export function scanLine(state: ScanState, line: string, index: number, base: nu
 		}
 		i++;
 	}
+}
+
+/** The region from the open delimiter in `state` to the closing one at `at`. */
+function region(state: ScanState, mode: MathMode, at: number, width: number): MathRegion {
+	return {mode, start: state.openAt, from: state.openAt + state.openWidth, to: at, end: at + width};
 }
 
 /** The mode a scan in `state` has reached. An unclosed frontmatter holds no math. */

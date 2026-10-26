@@ -83,7 +83,11 @@ export class MathSuggest extends EditorSuggest<ResolvedSymbol> {
 	/** Whether the cursor is in math. Uses the editor's cached scan, so typing does not rescan the whole note. */
 	private inMath(editor: Editor, cursor: EditorPosition): boolean {
 		const view = viewForEditor(editor);
-		if (view) return mathModeInState(view.state, editor.posToOffset(cursor)) !== null;
+		const pos = editor.posToOffset(cursor);
+		// Use the view only when it is the same document as the editor (same line count, the cursor inside it).
+		if (view && view.state.doc.lines === editor.lineCount() && pos <= view.state.doc.length) {
+			return mathModeInState(view.state, pos) !== null;
+		}
 		return mathModeAt(editor.getRange({line: 0, ch: 0}, cursor)) !== null;
 	}
 

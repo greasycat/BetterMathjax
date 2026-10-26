@@ -1,7 +1,11 @@
 import {StateField, type EditorState, type Text} from "@codemirror/state";
 import {initialScanState, scanLine, scanMode, type MathMode, type ScanState} from "../math/context";
 
-/** Lines between saved scan states. A lookup scans at most this many lines plus the cursor's own line. */
+/**
+ * Lines between saved scan states. While typing, a lookup scans at most this many lines plus the cursor's own
+ * line. The first lookup in a note, or the first after an edit far above the cursor, scans from the last saved
+ * state, which can be the top of the note.
+ */
 const STEP = 64;
 
 /**
@@ -28,11 +32,17 @@ export class MathScanCache {
 		const target = this.doc.lineAt(pos);
 		const k = Math.min(this.saved.length - 1, Math.floor((target.number - 1) / STEP));
 		const state = {...this.saved[k]!};
-		for (let number = k * STEP + 1; number < target.number; number++) {
-			const line = this.doc.line(number);
-			scanLine(state, line.text, number - 1, line.from, false);
+		let number = k * STEP + 1;
+		let from = this.doc.line(number).from;
+		// iterLines walks the lines in order, which is cheaper than looking each one up. An empty range still
+		// yields one empty line, so skip the loop when the cursor is on the saved line itself.
+		const lines = number < target.number ? this.doc.iterLines(number, target.number) : [];
+		for (const text of lines) {
+			scanLine(state, text, number - 1, from, false);
 			// Save the state at each STEP boundary passed for the first time.
 			if (number % STEP === 0 && this.saved.length === number / STEP) this.saved.push({...state});
+			from += text.length + 1;
+			number++;
 		}
 		scanLine(state, this.doc.sliceString(target.from, pos), target.number - 1, target.from, true);
 		return scanMode(state);
