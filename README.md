@@ -73,7 +73,7 @@ Before a change replaces or removes a symbol, the plugin saves a backup in its o
 
 ## Upgrading from 1.x
 
-Your existing settings and hotkeys carry over. The first time 2.0 loads, it imports the symbols from your old symbol note (the path from your 1.x settings, or `symbols.md`) and tells you how many it found. The note itself is left as it was, and you can delete it afterwards. To bring in another note in the old format later, use *Import from note* in the settings or the *Import custom symbols from note* command.
+Your existing settings carry over, and so do your hotkeys, except for three commands whose IDs changed: *Select next placeholder*, *Select previous placeholder* and *Show symbol reference* (formerly *Show mathjax helper on current selection*). Assign their hotkeys again; the hotkey guide at the top of the plugin settings shows which ones are not set. The first time 2.0 loads, it imports the symbols from your old symbol note (the path from your 1.x settings, or `symbols.md`) and tells you how many it found. The note itself is left as it was, and you can delete it afterwards. To bring in another note in the old format later, use *Import from note* in the settings or the *Import custom symbols from note* command.
 
 Two other things changed:
 

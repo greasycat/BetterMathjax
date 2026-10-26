@@ -4,14 +4,14 @@ import {commandAtCursor, selectNextPlaceholder, selectPreviousPlaceholder} from 
 import {moveSelection} from "./editor/suggest-internals";
 import type BetterMathjaxPlugin from "./main";
 
-// Command IDs are kept from 1.x so existing hotkeys keep working.
+// Obsidian prefixes these with the plugin ID ("better-mathjax:"), so they must not contain it themselves.
 export const COMMAND_IDS = {
 	nextSuggestion: "select-next-suggestion",
 	previousSuggestion: "select-previous-suggestion",
 	acceptSuggestion: "accept-suggestion",
-	nextPlaceholder: "better-mathjax-select-next-placeholder",
-	previousPlaceholder: "better-mathjax-select-previous-placeholder",
-	showReference: "better-mathjax-show-mathjax-helper-on-current-selection",
+	nextPlaceholder: "select-next-placeholder",
+	previousPlaceholder: "select-previous-placeholder",
+	showReference: "show-symbol-reference",
 	importSymbolNote: "import-symbol-note",
 	openSymbolNote: "open-symbol-note",
 	restoreSymbols: "restore-symbols",
