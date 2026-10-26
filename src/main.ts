@@ -6,6 +6,7 @@ import {MathSuggest} from "./editor/math-suggest";
 import {editorViewRegistry} from "./editor/editor-views";
 import {indentUnit} from "./editor/format-commands";
 import {formatOnLeaveExtension} from "./editor/format-on-leave";
+import {mathScanField} from "./editor/math-scan-cache";
 import {snippetSessionExtension, snippetTabKeymap} from "./editor/snippet-session";
 import {BetterMathjaxSettingTab} from "./settings/settings-tab";
 import {BetterMathjaxSettings, legacySymbolNotePaths, migrateSettings} from "./settings/settings";
@@ -42,6 +43,7 @@ export default class BetterMathjaxPlugin extends Plugin {
 			snippetSessionExtension(),
 			this.jumpKeymap,
 			editorViewRegistry(),
+			mathScanField,
 			formatOnLeaveExtension(() => this.settings.formatOnLeave, () => indentUnit(this.app)),
 		]);
 		this.addSettingTab(new BetterMathjaxSettingTab(this.app, this));

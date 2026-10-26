@@ -1,6 +1,8 @@
 import {Editor, EditorPosition, EditorSuggest, EditorSuggestContext, EditorSuggestTriggerInfo, KeymapEventHandler, TFile} from "obsidian";
 import type BetterMathjaxPlugin from "../main";
 import {mathModeAt} from "../math/context";
+import {viewForEditor} from "./editor-views";
+import {mathModeInState} from "./math-scan-cache";
 import {rank} from "../search/ranker";
 import type {ResolvedSymbol} from "../symbols/types";
 import {renderInlineMath} from "../ui/math-preview";
@@ -72,10 +74,17 @@ export class MathSuggest extends EditorSuggest<ResolvedSymbol> {
 		if (!trigger) return null;
 		// Bare words only count inside math, whatever the activation setting: in prose they are just words.
 		const needsMath = trigger.kind === "word" || settings.activation === "math";
-		if (needsMath && !mathModeAt(editor.getRange({line: 0, ch: 0}, cursor))) return null;
+		if (needsMath && !this.inMath(editor, cursor)) return null;
 
 		this.activeTrigger = trigger;
 		return {start: {line: cursor.line, ch: trigger.from}, end: {line: cursor.line, ch: cursor.ch + trigger.extend}, query: trigger.query};
+	}
+
+	/** Whether the cursor is in math. Uses the editor's cached scan, so typing does not rescan the whole note. */
+	private inMath(editor: Editor, cursor: EditorPosition): boolean {
+		const view = viewForEditor(editor);
+		if (view) return mathModeInState(view.state, editor.posToOffset(cursor)) !== null;
+		return mathModeAt(editor.getRange({line: 0, ch: 0}, cursor)) !== null;
 	}
 
 	getSuggestions(context: EditorSuggestContext): ResolvedSymbol[] {

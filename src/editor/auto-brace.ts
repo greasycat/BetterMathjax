@@ -1,6 +1,6 @@
 import {EditorView} from "@codemirror/view";
 import type {BetterMathjaxSettings} from "../settings/settings";
-import {mathModeAt} from "../math/context";
+import {mathModeInState} from "./math-scan-cache";
 
 /**
  * Typing `_` or `^` inside math inserts `_{}` / `^{}` with the cursor between the braces.
@@ -14,9 +14,8 @@ export function autoBraceExtension(getSettings: () => BetterMathjaxSettings) {
 		if (view.state.selection.ranges.length !== 1 || view.composing) return false;
 
 		const {doc} = view.state;
-		const before = doc.sliceString(0, from);
-		if (before.endsWith("\\") || doc.sliceString(to, to + 1) === "{") return false;
-		if (!mathModeAt(before)) return false;
+		if (doc.sliceString(from - 1, from) === "\\" || doc.sliceString(to, to + 1) === "{") return false;
+		if (!mathModeInState(view.state, from)) return false;
 
 		const selected = doc.sliceString(from, to);
 		const insert = `${text}{${selected}}`;
