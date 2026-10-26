@@ -96,3 +96,28 @@ describe("formatting a note", () => {
 			.toBe("$$\n\\begin{matrix}\n  a & b\n\\end{matrix}\n$$");
 	});
 });
+
+describe("formatting stays safe", () => {
+	const format = (text: string) => applyChanges(text, formatAllMath(text, "  "));
+
+	it("leaves text between a stray $$ and the next block alone", () => {
+		const text = "Some text $$\nfirst paragraph  of   prose\n\nsecond - item\n# Heading\n$$x$$";
+		expect(format(text)).toBe(text);
+	});
+
+	it("leaves inline math that continues on a blockquote line alone", () => {
+		const text = "> [!note]\n> see $a +\n> b$ here";
+		expect(format(text)).toBe(text);
+	});
+
+	it("indents a block that opens on a list line past the list marker", () => {
+		expect(format("1. $$\\begin{cases} a \\\\ b \\end{cases}$$"))
+			.toBe("1. $$\n   \\begin{cases}\n     a \\\\\n     b\n   \\end{cases}\n   $$");
+		expect(format("> - $$\\begin{matrix}a&b\\end{matrix}$$"))
+			.toBe("> - $$\n>   \\begin{matrix}\n>     a & b\n>   \\end{matrix}\n>   $$");
+	});
+
+	it("keeps a trailing control space so the closing $$ is not escaped", () => {
+		expect(format("$$a\\ $$")).toBe("$$a\\ $$");
+	});
+});

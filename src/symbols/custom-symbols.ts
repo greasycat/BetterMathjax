@@ -57,9 +57,12 @@ export function mergeEntries(list: readonly SymbolEntry[], imported: readonly Sy
 
 /**
  * Turn symbols off or on. Disabling adds `disabled: true`, creating an entry for a built-in symbol if needed.
- * Enabling removes the flag, and removes an entry that is then just a name. Unchanged entries keep their place.
+ * Enabling removes the flag, and removes an entry for a built-in symbol that is then just a name (a custom
+ * symbol that is just a name still adds that name). Unchanged entries keep their place.
  */
-export function setDisabledEntries(list: readonly SymbolEntry[], names: readonly string[], disabled: boolean): SymbolEntry[] {
+export function setDisabledEntries(
+	list: readonly SymbolEntry[], names: readonly string[], disabled: boolean, isBuiltin: (name: string) => boolean = () => true,
+): SymbolEntry[] {
 	const wanted = new Set(names);
 	const result: SymbolEntry[] = [];
 	for (const item of list) {
@@ -69,7 +72,7 @@ export function setDisabledEntries(list: readonly SymbolEntry[], names: readonly
 		}
 		wanted.delete(item.name);
 		const next = cleanEntry({...item, disabled});
-		if (!isBare(next)) result.push(next);
+		if (!isBare(next) || !isBuiltin(next.name)) result.push(next);
 	}
 	if (disabled) for (const name of wanted) result.push({name, disabled: true});
 	return result;

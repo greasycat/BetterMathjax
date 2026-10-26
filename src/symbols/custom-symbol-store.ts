@@ -117,9 +117,9 @@ export class CustomSymbolStore {
 		const existing = this.entries.find((item) => item.name === (previousName ?? entry.name.trim()));
 		// Saving without changes must not write anything, nor take a backup that would hide the next real one.
 		if (!renamed && existing && JSON.stringify(cleanEntry(existing)) === JSON.stringify(cleanEntry(entry))) return;
-		// An entry that is only a name changes nothing: skip a new one, and remove an existing one
-		// (e.g. a built-in symbol switched back on in the editor).
-		if (isBare(entry) && !renamed) {
+		// For a built-in symbol, an entry that is only a name changes nothing: skip a new one, and remove an
+		// existing one (e.g. a built-in symbol switched back on in the editor). A custom name alone still adds it.
+		if (isBare(entry) && !renamed && this.plugin.registry.builtinSymbol(entry.name.trim())) {
 			if (existing) await this.remove(existing.name);
 			return;
 		}
@@ -132,7 +132,7 @@ export class CustomSymbolStore {
 
 	/** Turn symbols off (`disabled`) or back on, as one change. Works for built-in and custom symbols. */
 	async setDisabled(names: readonly string[], disabled: boolean): Promise<void> {
-		const next = setDisabledEntries(this.entries, names, disabled);
+		const next = setDisabledEntries(this.entries, names, disabled, (name) => this.plugin.registry.builtinSymbol(name) !== undefined);
 		if (JSON.stringify(next) === JSON.stringify(this.entries)) return;
 		if (overwrites(this.entries, next)) {
 			const what = names.length === 1 ? names[0] : `${names.length} symbols`;
@@ -168,17 +168,26 @@ export class CustomSymbolStore {
 			const moving = [...settings.customSymbols];
 			settings.symbolStorage = "note";
 			this.lastNoteContent = null;
-			await this.loadNote();
-			const existing = new Set(this.noteEntries.map((entry) => entry.name));
-			const added = moving.filter((entry) => !existing.has(entry.name));
-			// Where the note already has a symbol, its version wins. Back up the hidden ones if that loses any.
-			if (overwrites(moving, [...this.noteEntries, ...added])) {
-				await this.backup(`Before moving symbols into ${this.notePath}`, {
-					storage: "hidden", entries: moving, noteContent: this.lastNoteContent ?? undefined,
-				});
-			}
-			if (added.length > 0 || !this.plugin.app.vault.getFileByPath(this.notePath)) {
-				await this.updateNote((content) => added.reduce((text, entry) => upsertInNote(text, entry), content));
+			let added: SymbolEntry[];
+			try {
+				await this.loadNote();
+				const existing = new Set(this.noteEntries.map((entry) => entry.name));
+				added = moving.filter((entry) => !existing.has(entry.name));
+				// Where the note already has a symbol, its version wins. Back up the hidden ones if that loses any.
+				// The backup holds only the hidden symbols, so restoring it puts those back, not the note's old text.
+				if (overwrites(moving, [...this.noteEntries, ...added])) {
+					await this.backup(`Before moving symbols into ${this.notePath}`, {storage: "hidden", entries: moving});
+				}
+				if (added.length > 0 || !this.plugin.app.vault.getFileByPath(this.notePath)) {
+					await this.updateNote((content) => added.reduce((text, entry) => upsertInNote(text, entry), content));
+				}
+			} catch (error) {
+				// Nothing was saved yet: go back to the hidden symbols.
+				settings.symbolStorage = "hidden";
+				this.lastNoteContent = null;
+				this.noteEntries = [];
+				this.apply();
+				throw error;
 			}
 			settings.customSymbols = [];
 			await this.plugin.saveSettings();
@@ -201,6 +210,15 @@ export class CustomSymbolStore {
 		if (!file) return "Symbols are now stored with the plugin settings.";
 		await fileManager.trashFile(file);
 		return `Moved ${settings.customSymbols.length} symbol${settings.customSymbols.length === 1 ? "" : "s"} into the plugin settings and sent ${this.notePath} to the trash.`;
+	}
+
+	/** Use the note at `path` for the symbols. Not an outside edit, so no backup is taken. */
+	async switchNote(path: string): Promise<void> {
+		this.plugin.settings.symbolNotePath = path;
+		await this.plugin.saveSettings();
+		this.lastNoteContent = null;
+		this.lastNoteProblems = "";
+		await this.load();
 	}
 
 	get backupFolder(): string {

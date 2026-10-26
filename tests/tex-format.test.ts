@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {mathml} from "../scripts/mathjax-node.mjs";
-import {formatMath} from "../src/format/tex-format";
+import {formatMath, trimTex} from "../src/format/tex-format";
 import builtin from "../src/symbols/builtin-symbols.json";
 import type {SymbolEntry} from "../src/symbols/types";
 
@@ -72,4 +72,16 @@ describe("formatMath", () => {
 		expect(formatted).toBeGreaterThan(100);
 		expect(changed).toEqual([]);
 	}, 60_000);
+});
+
+describe("trimTex", () => {
+	it("keeps the space of a trailing control space", () => {
+		expect(trimTex("  a\\  ")).toBe("a\\ ");
+		expect(trimTex("a\\\\  ")).toBe("a\\\\");
+		expect(trimTex("a\\")).toBe("a\\");
+	});
+
+	it("keeps a control space before & and a row end", () => {
+		expect(formatMath("\\begin{matrix}a\\ &b\\end{matrix}", "  ")).toBe("\\begin{matrix}\n  a\\  & b\n\\end{matrix}");
+	});
 });

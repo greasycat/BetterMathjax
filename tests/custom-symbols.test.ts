@@ -46,6 +46,11 @@ describe("disabling symbols", () => {
 		expect(setDisabledEntries(disabled, ["\\a", "\\builtin"], false)).toEqual(list);
 	});
 
+	it("enabling keeps a custom symbol that is only a name", () => {
+		const custom = [{name: "\\R", disabled: true}];
+		expect(setDisabledEntries(custom, ["\\R"], false, (name) => name !== "\\R")).toEqual([{name: "\\R"}]);
+	});
+
 	it("does nothing for names that are already in the wanted state", () => {
 		expect(setDisabledEntries(list, ["\\a"], false)).toEqual(list);
 		expect(setDisabledEntries(list, ["\\nothing"], false)).toEqual(list);

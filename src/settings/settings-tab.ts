@@ -254,9 +254,7 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 				search.setPlaceholder("Better MathJax Symbols.md").setValue(plugin.settings.symbolNotePath).onChange(async (value) => {
 					const path = value.trim();
 					if (!path.endsWith(".md")) return;
-					plugin.settings.symbolNotePath = path;
-					await plugin.saveSettings();
-					await store.load();
+					await store.switchNote(path);
 				});
 				new MarkdownFileSuggest(this.app, search.inputEl);
 			})

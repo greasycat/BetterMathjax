@@ -1,5 +1,5 @@
 import {scanMath, type MathRegion} from "../math/context";
-import {formatMath} from "./tex-format";
+import {formatMath, trimTex} from "./tex-format";
 
 /** Replace `from`…`to` (offsets in the note) with `insert`. */
 export interface TextChange {
@@ -8,8 +8,11 @@ export interface TextChange {
 	insert: string;
 }
 
-/** Blockquote / callout markers and indentation at the start of a line, e.g. "> " or "    ". */
-const PREFIX = /^(?:[ \t]*>)*[ \t]*/;
+/**
+ * What opens the line of a display block: blockquote / callout markers and indentation ("> ", "    "), then
+ * an optional list marker ("- ", "1. "). Continuation lines repeat the first part and indent past the marker.
+ */
+const PREFIX = /^((?:[ \t]*>)*[ \t]*)((?:[-+*]|\d{1,9}[.)])[ \t]+)?/;
 
 export function mathRegions(text: string): MathRegion[] {
 	return scanMath(text).regions;
@@ -28,13 +31,16 @@ export function regionAt(text: string, offset: number): MathRegion | null {
 export function formatRegion(text: string, region: MathRegion, unit: string): TextChange | null {
 	const content = text.slice(region.from, region.to);
 	if (region.mode === "inline") {
+		// A continuation line in a blockquote starts with "> ", which is not part of the math: leave it.
+		if (/\n[ \t]*>/.test(content)) return null;
 		const formatted = formatMath(content, unit);
 		return formatted === content || formatted.includes("\n") ? null : {from: region.from, to: region.to, insert: formatted};
 	}
 
 	// Lines after the first carry the prefix of the line that opens the block ("> " in a callout).
 	const lineStart = text.lastIndexOf("\n", region.start - 1) + 1;
-	const prefix = PREFIX.exec(text.slice(lineStart, region.start))![0];
+	const opening = PREFIX.exec(text.slice(lineStart, region.start))!;
+	const prefix = opening[1]! + " ".repeat(opening[2]?.length ?? 0);
 	const lines = content.split("\n");
 	const stripped: string[] = [lines[0]!];
 	for (const line of lines.slice(1)) {
@@ -42,7 +48,10 @@ export function formatRegion(text: string, region: MathRegion, unit: string): Te
 		else if (line.trim() === prefix.trim()) stripped.push("");
 		else return null; // the block's lines do not share the prefix: leave it as it is
 	}
-	const tex = stripped.join("\n").trim();
+	// A blank line cannot be inside display math. If there is one, the `$$` pair is most likely a stray `$$`
+	// matched with the opener of a later block, with ordinary text between them.
+	if (stripped.slice(1, -1).some((line) => line.trim() === "")) return null;
+	const tex = trimTex(stripped.join("\n"));
 	const formatted = formatMath(tex, unit);
 	const multiline = formatted.includes("\n") || content.includes("\n");
 	const insert = multiline

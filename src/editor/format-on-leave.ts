@@ -10,22 +10,33 @@ export function formatOnLeaveExtension(enabled: () => boolean, indentUnit: () =>
 	return ViewPlugin.fromClass(class {
 		/** The block the cursor was in, as offsets in the current document. */
 		private inside: {start: number; end: number} | null = null;
+		/** Set by typing: `inside` is looked up again at `head` before it is next needed. */
+		private stale = false;
+		private head = 0;
 
 		constructor(view: EditorView) {
 			this.inside = this.regionAtHead(view);
+			this.head = view.state.selection.main.head;
 		}
 
 		update(update: ViewUpdate): void {
 			if (!enabled()) {
 				this.inside = null;
+				this.stale = false;
 				return;
 			}
 			if (update.docChanged || !update.selectionSet) {
-				// Typing, or a new note: follow the cursor without formatting anything.
-				if (update.docChanged || update.selectionSet) this.inside = this.regionAtHead(update.view);
+				// Typing, or a new note: follow the cursor without formatting anything. Scanning the note on
+				// every keystroke is wasted work, so the block is found again only when the cursor moves.
+				if (update.docChanged || update.selectionSet) {
+					this.stale = true;
+					this.head = update.state.selection.main.head;
+				}
 				return;
 			}
-			const previous = this.inside;
+			// Where the cursor was before this move. The document did not change in this update.
+			const previous = this.stale ? this.regionAt(update.view, this.head) : this.inside;
+			this.stale = false;
 			const head = update.state.selection.main.head;
 			if (previous && (head < previous.start || head > previous.end)) {
 				// Formatting changes the document, which CodeMirror does not allow during an update.
@@ -33,11 +44,16 @@ export function formatOnLeaveExtension(enabled: () => boolean, indentUnit: () =>
 				queueMicrotask(() => this.format(view, previous.start));
 			}
 			this.inside = this.regionAtHead(update.view);
+			this.head = head;
+		}
+
+		private regionAt(view: EditorView, offset: number): {start: number; end: number} | null {
+			const region = regionAt(view.state.doc.toString(), offset);
+			return region ? {start: region.start, end: region.end} : null;
 		}
 
 		private regionAtHead(view: EditorView): {start: number; end: number} | null {
-			const region = regionAt(view.state.doc.toString(), view.state.selection.main.head);
-			return region ? {start: region.start, end: region.end} : null;
+			return this.regionAt(view, view.state.selection.main.head);
 		}
 
 		private format(view: EditorView, start: number): void {
@@ -51,6 +67,8 @@ export function formatOnLeaveExtension(enabled: () => boolean, indentUnit: () =>
 			if (!change) return;
 			view.dispatch({changes: {from: change.from, to: change.to, insert: change.insert}, userEvent: "format"});
 			this.inside = this.regionAtHead(view);
+			this.stale = false;
+			this.head = view.state.selection.main.head;
 		}
 	});
 }

@@ -154,6 +154,16 @@ function parse(tokens: Token[]): Node[] {
 	return sequence(null);
 }
 
+/**
+ * Trim spaces at both ends, except the space of a trailing control space `\ `: without it the backslash
+ * would escape whatever follows (`&`, `\\`, or the closing `$$`).
+ */
+export function trimTex(text: string): string {
+	const trimmed = text.trim();
+	const backslashes = /\\*$/.exec(trimmed)![0].length;
+	return backslashes % 2 === 1 && trimmed.length < text.trimStart().length ? `${trimmed} ` : trimmed;
+}
+
 /** One line of math: spaces collapsed, text arguments kept exactly. */
 function flat(nodes: readonly Node[]): string {
 	let out = "";
@@ -208,7 +218,7 @@ function layout(nodes: readonly Node[], indent: string, unit: string): string[] 
 	const lines: string[] = [];
 	let pending: Node[] = [];
 	const flush = () => {
-		const text = flat(pending).trim();
+		const text = trimTex(flat(pending));
 		if (text) lines.push(indent + text);
 		pending = [];
 	};
@@ -221,7 +231,7 @@ function layout(nodes: readonly Node[], indent: string, unit: string): string[] 
 		}
 		if (node.body.some((child) => child.kind === "token" && child.token.kind === "comment")) throw new Unformattable();
 		// Text before the environment stays on the \begin line: "f(x) = \begin{cases}".
-		const lead = flat(pending).trim();
+		const lead = trimTex(flat(pending));
 		pending = [];
 		lines.push(`${indent}${lead ? `${lead} ` : ""}\\begin{${node.name}}${node.args}`);
 		lines.push(...environmentBody(node.body, indent + unit, unit));
@@ -260,7 +270,7 @@ function environmentBody(body: readonly Node[], indent: string, unit: string): s
 	}
 
 	const table = all.map((row) => ({
-		cells: row.cells.map((cell) => flat(cell).trim()),
+		cells: row.cells.map((cell) => trimTex(flat(cell))),
 		separator: row.separator,
 	}));
 	// Move \hline at the start of a row onto its own line so it does not widen the first column.
@@ -294,7 +304,7 @@ export function formatMath(source: string, unit = "\t"): string {
 		if (!nodes.some((node) => node.kind === "env")) {
 			// No environment: one line, spaces collapsed. Comments end at the line end, so keep those as they are.
 			if (nodes.some((node) => node.kind === "token" && node.token.kind === "comment")) return source;
-			return flat(nodes).trim();
+			return trimTex(flat(nodes));
 		}
 		return layout(nodes, "", unit).join("\n");
 	} catch (error) {
