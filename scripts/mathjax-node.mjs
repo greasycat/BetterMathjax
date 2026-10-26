@@ -36,3 +36,10 @@ export async function renderError(tex) {
 		return String(error?.message ?? error);
 	}
 }
+
+/** MathML for `tex` without source annotations, to compare what two inputs render to. */
+export async function mathml(tex) {
+	const mj = await initMathJax();
+	mj.texReset();
+	return mj.tex2mml(tex, {display: true}).replace(/ data-latex(-item)?="[^"]*"/g, "").replace(/>\s+</g, "><").trim();
+}

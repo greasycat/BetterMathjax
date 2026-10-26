@@ -78,3 +78,10 @@ describe("require backslash", () => {
 		expect(migrateSettings({requireBackslash: true, bareEnvironments: true}).requireBackslash).toBe(true);
 	});
 });
+
+describe("format on leave", () => {
+	it("is off by default", () => {
+		expect(migrateSettings({}).formatOnLeave).toBe(false);
+		expect(migrateSettings({formatOnLeave: true}).formatOnLeave).toBe(true);
+	});
+});

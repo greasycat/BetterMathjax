@@ -5,7 +5,7 @@ import type BetterMathjaxPlugin from "../main";
 export class NoteImportModal extends FuzzySuggestModal<TFile> {
 	constructor(app: App, private readonly plugin: BetterMathjaxPlugin) {
 		super(app);
-		this.setPlaceholder("Choose a note with a json or yaml block of symbols");
+		this.setPlaceholder("Choose a note with a JSON or YAML block of symbols");
 	}
 
 	getItems(): TFile[] {
@@ -17,6 +17,11 @@ export class NoteImportModal extends FuzzySuggestModal<TFile> {
 	}
 
 	onChooseItem(file: TFile): void {
-		void this.plugin.customSymbols.importNote(file.path).then((result) => new Notice(result.message, 8000));
+		void this.importFrom(file);
+	}
+
+	private async importFrom(file: TFile): Promise<void> {
+		const result = await this.plugin.customSymbols.importNote(file.path);
+		new Notice(result.message, 8000);
 	}
 }

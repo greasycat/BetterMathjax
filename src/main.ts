@@ -4,13 +4,15 @@ import {registerCommands} from "./commands";
 import {autoBraceExtension} from "./editor/auto-brace";
 import {MathSuggest} from "./editor/math-suggest";
 import {editorViewRegistry} from "./editor/editor-views";
+import {indentUnit} from "./editor/format-commands";
+import {formatOnLeaveExtension} from "./editor/format-on-leave";
 import {snippetSessionExtension, snippetTabKeymap} from "./editor/snippet-session";
 import {BetterMathjaxSettingTab} from "./settings/settings-tab";
 import {BetterMathjaxSettings, legacySymbolNotePaths, migrateSettings} from "./settings/settings";
 import builtinSymbols from "./symbols/builtin-symbols.json";
 import {SymbolRegistry} from "./symbols/registry";
 import {CustomSymbolStore} from "./symbols/custom-symbol-store";
-import type {ResolvedSymbol, SymbolEntry} from "./symbols/types";
+import type {ResolvedSymbol} from "./symbols/types";
 import {NoteImportModal} from "./ui/note-import";
 import {RestoreModal} from "./ui/restore-modal";
 import {SymbolBrowserModal} from "./ui/symbol-browser";
@@ -29,7 +31,7 @@ export default class BetterMathjaxPlugin extends Plugin {
 	override async onload(): Promise<void> {
 		const stored: unknown = await this.loadData();
 		this.settings = migrateSettings(stored);
-		this.registry = new SymbolRegistry(builtinSymbols as SymbolEntry[]);
+		this.registry = new SymbolRegistry(builtinSymbols);
 		this.customSymbols = new CustomSymbolStore(this);
 		this.applyJumpKey();
 		this.suggest = new MathSuggest(this);
@@ -40,6 +42,7 @@ export default class BetterMathjaxPlugin extends Plugin {
 			snippetSessionExtension(),
 			this.jumpKeymap,
 			editorViewRegistry(),
+			formatOnLeaveExtension(() => this.settings.formatOnLeave, () => indentUnit(this.app)),
 		]);
 		this.addSettingTab(new BetterMathjaxSettingTab(this.app, this));
 		registerCommands(this);

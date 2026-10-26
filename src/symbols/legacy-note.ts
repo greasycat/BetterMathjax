@@ -40,9 +40,9 @@ export function parseLegacyNote(content: string, yaml: YamlCodec): LegacyParseRe
 	try {
 		raw = parseBody(block, yaml);
 	} catch (error) {
-		return {ok: false, error: `Invalid ${block.lang}: ${error instanceof Error ? error.message : String(error)}`};
+		return {ok: false, error: `Invalid ${block.lang.toUpperCase()}: ${error instanceof Error ? error.message : String(error)}`};
 	}
 	if (raw === null || raw === undefined) return {ok: true, entries: [], hasBlock: true};
-	if (!Array.isArray(raw)) return {ok: false, error: `The ${block.lang} block must contain a list of symbols.`};
+	if (!Array.isArray(raw)) return {ok: false, error: `The ${block.lang.toUpperCase()} block must contain a list of symbols.`};
 	return {ok: true, entries: sanitizeEntries(raw), hasBlock: true};
 }

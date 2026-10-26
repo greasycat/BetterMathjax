@@ -1,4 +1,5 @@
 import {Notice} from "obsidian";
+import {formatAllMathInNote, formatMathAtCursor} from "./editor/format-commands";
 import {commandAtCursor, selectNextPlaceholder, selectPreviousPlaceholder} from "./editor/insert";
 import {moveSelection} from "./editor/suggest-internals";
 import type BetterMathjaxPlugin from "./main";
@@ -14,6 +15,8 @@ export const COMMAND_IDS = {
 	importSymbolNote: "import-symbol-note",
 	openSymbolNote: "open-symbol-note",
 	restoreSymbols: "restore-symbols",
+	formatMathAtCursor: "format-math-at-cursor",
+	formatAllMath: "format-all-math",
 	addSymbol: "add-custom-symbol",
 	browseSymbols: "browse-custom-symbols",
 	browseAllSymbols: "browse-all-symbols",
@@ -109,6 +112,18 @@ export function registerCommands(plugin: BetterMathjaxPlugin): void {
 			if (!checking) void plugin.openSymbolNote();
 			return true;
 		},
+	});
+
+	plugin.addCommand({
+		id: COMMAND_IDS.formatMathAtCursor,
+		name: "Format math at cursor",
+		editorCallback: (editor) => formatMathAtCursor(plugin.app, editor),
+	});
+
+	plugin.addCommand({
+		id: COMMAND_IDS.formatAllMath,
+		name: "Format all math in note",
+		editorCallback: (editor) => formatAllMathInNote(plugin.app, editor),
 	});
 
 	plugin.addCommand({

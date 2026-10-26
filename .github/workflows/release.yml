@@ -1,0 +1,46 @@
+name: Release
+
+# Push a tag that matches the version in manifest.json (for example 2.0.0, no "v") to build the plugin and
+# create a draft GitHub release with the files Obsidian downloads. Publish the draft after checking it.
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check that the tag matches the plugin version
+        run: |
+          manifest=$(node -p "require('./manifest.json').version")
+          package=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_REF_NAME" != "$manifest" ] || [ "$GITHUB_REF_NAME" != "$package" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match manifest.json ($manifest) and package.json ($package)."
+            exit 1
+          fi
+          node -e "const v=require('./versions.json'); if (!v['$GITHUB_REF_NAME']) { console.error('versions.json has no entry for $GITHUB_REF_NAME'); process.exit(1); }"
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+      - name: Create a draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --draft \
+            main.js manifest.json styles.css

@@ -86,6 +86,16 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
+			.setName("Format math when you leave it")
+			.setDesc("When the cursor moves out of a math block, the plugin formats the block. Typing does not trigger it. You can undo the formatting.")
+			.addToggle((toggle) => toggle
+				.setValue(settings.formatOnLeave)
+				.onChange(async (value) => {
+					settings.formatOnLeave = value;
+					await plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
 			.setName("Auto-brace subscripts")
 			.setDesc("In math, when you type _, the plugin inserts _{} and puts the cursor between the braces.")
 			.addToggle((toggle) => toggle
@@ -205,7 +215,7 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Import from note")
-			.setDesc("Copy symbols from another note into your custom symbols. The note must have a jsonl block, or a json or yaml block from before version 2.0. A symbol with the same name replaces your current one. The plugin does not change the other note.")
+			.setDesc("Copy symbols from another note into your custom symbols. The note must have a JSONL block, or a JSON or YAML block from before version 2.0. A symbol with the same name replaces your current one. The plugin does not change the other note.")
 			.addButton((button) => button
 				.setButtonText("Choose note")
 				.onClick(() => plugin.importSymbolNote()));
@@ -220,7 +230,7 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Where symbols are stored")
 			.setDesc(inNote
-				? "The plugin stores the symbols in a note. Each line of a jsonl code block holds one symbol as a JSON object. You can edit the note directly. An agent that can edit your notes can also edit it. Changes apply each time someone saves the note."
+				? "The plugin stores the symbols in a note. Each line of a JSONL code block holds one symbol as a JSON object. You can edit the note directly. An agent that can edit your notes can also edit it. Changes apply each time someone saves the note."
 				: "The plugin stores the symbols with its settings. Nothing appears in your notes. To edit the symbols, use \"Add symbol\" and \"Browse symbols\".")
 			.addDropdown((dropdown) => dropdown
 				.addOption("hidden", "Hidden (plugin settings)")

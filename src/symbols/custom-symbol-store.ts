@@ -303,7 +303,7 @@ export class CustomSymbolStore {
 			if (!legacy.ok) return {status: "invalid", message: `Could not import ${normalized}: ${legacy.error}`};
 			imported = legacy.entries;
 		}
-		if (imported.length === 0) return {status: "empty", message: `${normalized} has no jsonl, json or yaml block with symbols.`};
+		if (imported.length === 0) return {status: "empty", message: `${normalized} has no JSONL, JSON or YAML block with symbols.`};
 
 		const merged = mergeEntries(this.entries, imported);
 		if (overwrites(this.entries, merged.list)) await this.backup(`Before importing from ${normalized}`);

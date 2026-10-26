@@ -83,7 +83,7 @@ export function parseBackup(text: string): Backup | null {
 			kind: value.kind === "outside-edit" ? "outside-edit" : "change",
 			storage: value.storage === "note" ? "note" : "hidden",
 			entries: value.entries.filter((entry): entry is SymbolEntry =>
-				typeof entry === "object" && entry !== null && typeof (entry as SymbolEntry).name === "string"),
+				typeof entry === "object" && entry !== null && typeof entry.name === "string"),
 			notePath: typeof value.notePath === "string" ? value.notePath : undefined,
 			noteContent: typeof value.noteContent === "string" ? value.noteContent : undefined,
 		};

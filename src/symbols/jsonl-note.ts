@@ -39,7 +39,7 @@ function findBlock(content: string): Block | {error: LineError} | null {
 	const firstLine = content.slice(0, bodyFrom).split("\n").length;
 	const rest = content.slice(Math.min(bodyFrom, content.length));
 	const close = CLOSE.exec(rest);
-	if (!close) return {error: {line: firstLine - 1, message: "The jsonl block is not closed with ```."}};
+	if (!close) return {error: {line: firstLine - 1, message: "The JSONL block is not closed with ```."}};
 	return {bodyFrom, bodyTo: bodyFrom + close.index, firstLine, eol: content.includes("\r\n") ? "\r\n" : "\n"};
 }
 
@@ -115,14 +115,16 @@ Custom symbols for the Better MathJax plugin. Edit them here, or with the "Brows
  * (null for blank or invalid lines) and returns the new line texts. Adds a block, or a whole note, if missing.
  */
 function editLines(content: string, edit: (lines: {text: string; name: string | null}[]) => string[]): string {
-	let block = findBlock(content);
-	if (block && "error" in block) throw new Error(block.error.message);
-	if (!block) {
+	let found = findBlock(content);
+	if (found && "error" in found) throw new Error(found.error.message);
+	if (!found) {
 		const base = content.trim() === "" ? SYMBOL_NOTE_HEADER : content;
 		const separator = base.endsWith("\n\n") ? "" : base.endsWith("\n") ? "\n" : "\n\n";
 		content = `${base}${separator}\`\`\`jsonl\n\`\`\`\n`;
-		block = findBlock(content) as Block;
+		found = findBlock(content);
 	}
+	if (!found || "error" in found) throw new Error("Could not add a JSONL block to the note.");
+	const block = found;
 	const lines = bodyLines(content, block).map((text) => {
 		const parsed = parseLine(text);
 		return {text, name: parsed && "entry" in parsed ? parsed.entry.name : null};

@@ -131,7 +131,7 @@ export class MathSuggest extends EditorSuggest<ResolvedSymbol> {
 	/** The highlighted suggestion while the popup is open. */
 	selectedSymbol(): ResolvedSymbol | null {
 		if (!this.shownNow) return null;
-		const index = selectedIndex(this as EditorSuggest<unknown>);
+		const index = selectedIndex(this);
 		return index === null ? null : this.shown[index] ?? null;
 	}
 }

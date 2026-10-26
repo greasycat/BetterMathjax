@@ -7,6 +7,7 @@ Autocompletion for MathJax in Obsidian, with snippets you can edit, placeholders
 - **Suggestions inside math.** Type a backslash command inside `$…$` or `$$…$$` to get ranked suggestions, each with a rendered preview. Dollars inside code blocks, inline code and frontmatter are ignored, and so is an escaped `\$`. You can also turn suggestions on everywhere.
 - **Snippets with placeholders.** Accepting `\frac` inserts `\frac{@1@}{@2@}` and selects the first placeholder. Press `Tab` / `Shift+Tab` (or the placeholder commands) to move between the fields; set *Placeholder jump key* to *Hotkeys* to use other keys instead. Fields stay highlighted and jumpable after you type into them, so you can go back and fix one. A snippet inserted inside a field is handled first, then you continue with the outer one. The snippet ends when you move the cursor out of it, or press *next* on the last field once all fields are filled; the cursor then lands after the snippet. Outside a snippet, *next* jumps to the next `@n@` marker in the note, or past the next `}` on the line.
 - **Environments.** Inside math, type the first letters of an environment name, such as `pmat`, with no backslash, and pick `pmatrix` to insert a full `\begin{pmatrix} … \end{pmatrix}` block. Typing `\begin{pm` works too. Only names that start with what you typed are suggested, so variables like `ab` do not open the list, and words in ordinary text never do. To allow only backslash commands, turn on *Require a backslash*. Inside blockquotes and callouts, each inserted line keeps the `>` prefix.
+- **Formatting.** *Format math at cursor* tidies the math block you are in, and *Format all math in note* does every block at once. Environment bodies are indented with one row per line, `&` columns are aligned, and runs of spaces become one. Everything else stays as you wrote it, and the result renders exactly as before. Indentation follows Obsidian's *Indent using tabs* and *Tab indent size* settings, and math in blockquotes and callouts keeps its `>` prefix. Inline math only has its spaces tidied. One undo reverts the whole change. With *Format math when you leave it* turned on (off by default), a block is formatted when the cursor moves out of it by arrow keys, a click or a jump. Typing never triggers it.
 - **Auto-braces.** In math, typing `_` or `^` inserts `_{}` or `^{}` with the cursor inside. If text is selected, it is wrapped instead.
 - **Symbol reference.** Run *Show symbol reference* to see the description, rendered examples and related symbols for the highlighted suggestion, or for the command under the cursor. You can edit and save the symbol's snippet from the same window.
 - **Custom symbols.** Your own symbols and overrides live in an ordinary note (see below).
@@ -26,7 +27,7 @@ The plugin sets no hotkeys by default. Assign them in *Settings → Hotkeys*. Fo
 | Select next placeholder | `Ctrl+'` |
 | Select previous placeholder | `Ctrl+;` |
 | Show symbol reference | `Ctrl+Shift+/` |
-| Browse all symbols / Add custom symbol / Browse custom symbols / Import custom symbols from note / Open symbol note / Restore custom symbols from backup | — |
+| Format math at cursor / Format all math in note / Browse all symbols / Add custom symbol / Browse custom symbols / Import custom symbols from note / Open symbol note / Restore custom symbols from backup | — |
 
 `↑`/`↓` and `Enter` always work in the suggestion list, and so does `Tab` unless you set *Accept suggestion key* to *Enter or hotkey* and bind the *Accept suggestion* command instead. Inside a snippet, `Tab` and `Shift+Tab` also move between placeholders; while the suggestion list is open, `Tab` accepts instead. Tab is handled by the editor rather than as an Obsidian hotkey, so outside a snippet it keeps its normal job (a Tab hotkey would block indenting everywhere). To use other keys, set *Placeholder jump key* to *Hotkeys* and bind the *Select next/previous placeholder* commands. The suggestion commands, including *Accept suggestion*, only act while the list is open, so their keys keep their normal job everywhere else.
 
@@ -95,7 +96,8 @@ npm run lint
 | Path | Role |
 |---|---|
 | `src/main.ts` | Plugin wiring only |
-| `src/math/context.ts` | Pure: is the cursor inside math? |
+| `src/math/context.ts` | Pure: is the cursor inside math, and where are the math regions? |
+| `src/format/` | Pure: the minimal TeX formatter and applying it to a note's math regions |
 | `src/search/ranker.ts` | Pure: match scoring and ranking |
 | `src/snippet/placeholders.ts` | Pure: placeholder search and snippet indentation |
 | `src/symbols/` | Built-in data, the registry that merges user overrides, pure custom-symbol list operations, the jsonl note reader/writer (`jsonl-note.ts`), backup helpers (`backups.ts`), the pre-2.0 note reader (import only), and `custom-symbol-store.ts`, which saves to the plugin data or the note and runs the one-time migration |
@@ -104,6 +106,12 @@ npm run lint
 | `src/settings/` | Settings model with 1.x migration, settings tab |
 
 `src/editor/suggest-internals.ts` is the only module that touches undocumented Obsidian internals (the selected row of the suggestion list), and it fails softly if they change.
+
+### Releasing
+
+1. Run `npm version <new version>` (for example `npm version 2.0.1`). It updates `package.json`, `manifest.json` and `versions.json`, commits, and tags the commit without a `v` prefix, as Obsidian expects.
+2. Run `git push --follow-tags`. The *Release* workflow checks that the tag matches the plugin version, runs lint, tests and the build, and creates a draft GitHub release with `main.js`, `manifest.json` and `styles.css`.
+3. Check the draft and publish it. Obsidian picks up the new version from `manifest.json` on `master`, so the release commit must be on `master`.
 
 ### Built-in symbols
 

@@ -10,6 +10,8 @@ export interface BetterMathjaxSettings {
 	activation: ActivationMode;
 	/** Only `\\command` and `\\begin{…` open suggestions. Off: in math, a bare word also suggests environments. */
 	requireBackslash: boolean;
+	/** Format a math block automatically when the cursor leaves it. */
+	formatOnLeave: boolean;
 	/** Insert a symbol's snippet instead of its bare name when it has one. */
 	useSnippetFirst: boolean;
 	maxSuggestions: number;
@@ -35,6 +37,7 @@ export interface BetterMathjaxSettings {
 export const DEFAULT_SETTINGS: BetterMathjaxSettings = {
 	activation: "math",
 	requireBackslash: false,
+	formatOnLeave: false,
 	useSnippetFirst: true,
 	maxSuggestions: 5,
 	acceptWithTab: true,
@@ -84,6 +87,7 @@ export function migrateSettings(stored: unknown): BetterMathjaxSettings {
 		// `bareEnvironments` comes from a development build with the opposite meaning.
 		requireBackslash: pick(data, "requireBackslash", isBool)
 			?? (typeof data.bareEnvironments === "boolean" ? !data.bareEnvironments : DEFAULT_SETTINGS.requireBackslash),
+		formatOnLeave: pick(data, "formatOnLeave", isBool) ?? DEFAULT_SETTINGS.formatOnLeave,
 		useSnippetFirst: pick(data, "useSnippetFirst", isBool) ?? DEFAULT_SETTINGS.useSnippetFirst,
 		maxSuggestions: pick(data, "maxSuggestions", isCount)
 			?? (isCount(legacy.maxSuggestionNumber) ? legacy.maxSuggestionNumber! : DEFAULT_SETTINGS.maxSuggestions),
@@ -92,11 +96,11 @@ export function migrateSettings(stored: unknown): BetterMathjaxSettings {
 		tabJumpsFields: pick(data, "tabJumpsFields", isBool)
 			?? (typeof data.fieldJumpKey === "string" ? data.fieldJumpKey === "Tab" : DEFAULT_SETTINGS.tabJumpsFields),
 		previewWithoutExample: pick(data, "previewWithoutExample", isBool)
-			?? (isBool(legacy.alwaysShowExamples) ? legacy.alwaysShowExamples! : DEFAULT_SETTINGS.previewWithoutExample),
+			?? (isBool(legacy.alwaysShowExamples) ? legacy.alwaysShowExamples : DEFAULT_SETTINGS.previewWithoutExample),
 		autoBraceSubscript: pick(data, "autoBraceSubscript", isBool)
-			?? (isBool(legacy.matchingSubScript) ? legacy.matchingSubScript! : DEFAULT_SETTINGS.autoBraceSubscript),
+			?? (isBool(legacy.matchingSubScript) ? legacy.matchingSubScript : DEFAULT_SETTINGS.autoBraceSubscript),
 		autoBraceSuperscript: pick(data, "autoBraceSuperscript", isBool)
-			?? (isBool(legacy.matchingSuperScript) ? legacy.matchingSuperScript! : DEFAULT_SETTINGS.autoBraceSuperscript),
+			?? (isBool(legacy.matchingSuperScript) ? legacy.matchingSuperScript : DEFAULT_SETTINGS.autoBraceSuperscript),
 		symbolStorage: pick(data, "symbolStorage", (v) => v === "hidden" || v === "note") ?? DEFAULT_SETTINGS.symbolStorage,
 		customSymbols: sanitizeEntries(data.customSymbols),
 		symbolNotePath: pick(data, "symbolNotePath", (v) => isString(v) && (v as string).trim().endsWith(".md"))
