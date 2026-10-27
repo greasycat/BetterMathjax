@@ -1,7 +1,7 @@
 {
 	"id": "better-mathjax",
 	"name": "Better MathJax",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"minAppVersion": "1.6.6",
 	"description": "Autocomplete MathJax commands and environments with snippets, a symbol browser, and math formatting.",
 	"author": "GreasyCat",
