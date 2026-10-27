@@ -53,6 +53,8 @@ In blockquotes and callouts, each inserted line keeps the `>` prefix.
 
 In math, type `_` or `^`. The plugin inserts `_{}` or `^{}` and puts the cursor between the braces. If you select text first, the braces go around the selected text.
 
+When you type `}` just before the closing brace, the cursor moves past it, and the plugin adds no second brace. This works until the cursor goes to a different line.
+
 ## Formatting
 
 *Format math at cursor* formats the math block that contains the cursor. *Format all math in note* formats all math blocks in the note.
