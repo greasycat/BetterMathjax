@@ -4,10 +4,12 @@ This page shows every feature of Better MathJax. For setup and upgrade notes, se
 
 - [Suggestions](#suggestions)
 - [Snippets and fields](#snippets-and-fields)
+- [Tab stops](#tab-stops)
 - [Environments](#environments)
 - [Macros from the note](#macros-from-the-note)
 - [Auto-braces](#auto-braces)
 - [Formatting](#formatting)
+- [Math without indentation](#math-without-indentation)
 - [Symbol reference](#symbol-reference)
 - [Symbol browser](#symbol-browser)
 - [Custom symbols](#custom-symbols)
@@ -36,20 +38,24 @@ When you accept `\frac`, the plugin inserts `\frac{@1@}{@2@}` and selects the fi
 - A field stays highlighted after you type in it, so you can go back and correct it.
 - If you insert a snippet in a field, you fill that snippet first. Then you continue with the outer snippet.
 
-In math, `Tab` also moves out of brackets. It uses this order:
+The snippet ends when you move the cursor out of it. It also ends when you press *next* on the last field after you fill all fields. The cursor then goes to the end of the snippet.
 
-1. If `_` or `^` added a closing brace and the cursor is inside that group, `Tab` moves past the brace. Thus in `\frac{x_{2|}}{@2@}`, the first `Tab` goes past the brace after `2`, and the next `Tab` selects the second field.
+<img src="screenshots/snippet-fields.png" alt="A fraction snippet with the filled numerator still highlighted and the denominator field selected" width="560">
+
+## Tab stops
+
+In math, `Tab` moves to the next stop, also outside a snippet. It uses this order:
+
+1. A closing bracket that the plugin or Obsidian added for you. This is the brace that `_` or `^` added, or a closing bracket ahead of the cursor in the current field, such as a `)` that Obsidian paired. Thus in `\frac{x_{2|}}{@2@}`, the first `Tab` goes past the brace after `2`, and the next `Tab` selects the second field.
 2. The next field of the snippet.
 3. The next `@n@` marker in the same math block.
 4. Past the next `)`, `]` or `}` on the line.
 
-`Shift+Tab` goes back in the same order: the previous field, the previous marker, then to just before the previous `)`, `]` or `}` on the line. When `Tab` has nowhere to go, or the cursor is not in math, `Tab` works as usual.
+`Shift+Tab` goes back in the same order: the previous field, the previous marker, then to just before the previous `)`, `]` or `}` on the line. Thus `Shift+Tab` undoes a step past a bracket.
 
-The snippet ends when you move the cursor out of it. It also ends when you press *next* on the last field after you fill all fields. The cursor then goes to the end of the snippet.
+When `Tab` has nowhere to go, or the cursor is not in math, `Tab` works as usual. While the suggestion list is open, `Tab` accepts the suggestion.
 
-Outside a snippet, *next* goes to the next `@n@` marker in the note. If there is no marker, it goes past the next `}` on the line.
-
-<img src="screenshots/snippet-fields.png" alt="A fraction snippet with the filled numerator still highlighted and the denominator field selected" width="560">
+The *Select next placeholder* and *Select previous placeholder* commands use the same order. Outside math, they go to the next `@n@` marker in the note, or past the next closing bracket on the line.
 
 ## Environments
 
@@ -99,7 +105,7 @@ When you type `}` just before the closing brace, the cursor moves past it, and t
 
 The formatter makes these changes and no others:
 
-- It indents the body of each environment and puts each row on its own line.
+- It indents the body of each environment and puts each row on its own line. If *Indent math* is off, it does not indent.
 - It aligns the `&` columns.
 - It changes a sequence of spaces to one space.
 
@@ -109,7 +115,7 @@ Turn on *Format math when you leave it* to format a block when the cursor leaves
 
 <img src="screenshots/format-before.png" alt="Math blocks before formatting" width="420"> <img src="screenshots/format-after.png" alt="The same blocks after formatting, indented with aligned columns" width="420">
 
-### Math without indentation
+## Math without indentation
 
 To keep math free of indentation, turn off *Indent math*. Then in math:
 
@@ -223,6 +229,6 @@ In the suggestion list:
 - `Tab` also accepts a suggestion. To stop this, set *Accept suggestion key* to *Enter or hotkey* and assign a key to *Accept suggestion*.
 - The suggestion commands work only while the list is open. Their keys do their usual job at all other times.
 
-In a snippet, `Tab` and `Shift+Tab` move between fields. While the suggestion list is open, `Tab` accepts the suggestion. The editor handles `Tab` itself, not as an Obsidian hotkey. Thus `Tab` indents as usual outside a snippet. To use other keys for fields, set *Placeholder jump key* to *Hotkeys* and assign keys to *Select next placeholder* and *Select previous placeholder*.
+In math, `Tab` and `Shift+Tab` move between [tab stops](#tab-stops). While the suggestion list is open, `Tab` accepts the suggestion. The editor handles `Tab` itself, not as an Obsidian hotkey. Thus `Tab` indents as usual when it has no stop to go to. To use other keys for fields, set *Placeholder jump key* to *Hotkeys* and assign keys to *Select next placeholder* and *Select previous placeholder*.
 
 <img src="screenshots/settings.png" alt="Plugin settings with the hotkey guide" width="520">
