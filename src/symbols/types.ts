@@ -27,5 +27,8 @@ export interface ResolvedSymbol {
 	/** The user turned the symbol off; it is not suggested. */
 	disabled: boolean;
 	package: string | null;
-	source: "builtin" | "user" | "override";
+	/** "document": a macro that the open note defines. */
+	source: "builtin" | "user" | "override" | "document";
+	/** TeX to put before an example when it renders, such as the note's macro definitions. */
+	preamble?: string;
 }

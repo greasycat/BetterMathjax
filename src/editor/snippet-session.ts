@@ -1,5 +1,5 @@
-import {Prec, StateEffect, StateField, type EditorState, type Extension, type Transaction} from "@codemirror/state";
-import {Decoration, EditorView, keymap, type DecorationSet} from "@codemirror/view";
+import {StateEffect, StateField, type EditorState, type Extension, type Transaction} from "@codemirror/state";
+import {Decoration, EditorView, type DecorationSet} from "@codemirror/view";
 import {orderFields, PLACEHOLDER, type Span} from "../snippet/placeholders";
 
 /**
@@ -78,20 +78,6 @@ export function snippetSessionExtension(): Extension {
 	return sessions;
 }
 
-/**
- * Tab moves to the next field and Shift+Tab to the previous one while a snippet is active. Outside a snippet,
- * or when `enabled()` says no (for example while the suggestion list is open and Tab should accept), the key
- * is passed on and keeps its normal behaviour. An Obsidian hotkey on Tab could not do this: it blocks the key
- * even when its command does nothing.
- */
-export function snippetTabKeymap(enabled: () => boolean): Extension {
-	const run = (direction: 1 | -1) => (view: EditorView) => enabled() && activeSession(view.state) !== null && jumpField(view, direction);
-	return Prec.highest(keymap.of([
-		{key: "Tab", run: run(1)},
-		{key: "Shift-Tab", run: run(-1)},
-	]));
-}
-
 /** The part of EditorView the session needs; lets tests drive it with a bare EditorState. */
 export type SessionView = Pick<EditorView, "state" | "dispatch">;
 
@@ -124,6 +110,13 @@ function activeSession(state: EditorState): Session | null {
 
 function isFilled(state: EditorState, field: Span): boolean {
 	return !new RegExp(`^(?:${PLACEHOLDER.source})$`).test(state.sliceDoc(field.from, field.to));
+}
+
+/** The field of the innermost active session that holds the selection, if any. */
+export function fieldAtSelection(state: EditorState): Span | null {
+	const session = activeSession(state);
+	if (!session) return null;
+	return session.fields[currentField(session, state)] ?? null;
 }
 
 /** Index of the field the selection is in, or -1. */

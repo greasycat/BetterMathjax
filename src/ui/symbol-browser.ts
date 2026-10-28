@@ -9,7 +9,7 @@ import {SymbolModal} from "./symbol-modal";
 /** Rows added per step while scrolling; the full table has over a thousand symbols. */
 const PAGE = 60;
 
-const SOURCE_LABEL: Record<ResolvedSymbol["source"], string> = {builtin: "built-in", override: "customized", user: "custom"};
+const SOURCE_LABEL: Record<ResolvedSymbol["source"], string> = {builtin: "built-in", override: "customized", user: "custom", document: "note"};
 
 /** First line of a description as plain text, for a one-line summary. */
 function summary(symbol: ResolvedSymbol): string {

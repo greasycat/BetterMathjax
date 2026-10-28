@@ -14,6 +14,12 @@ export interface TextChange {
  */
 const PREFIX = /^((?:[ \t]*>)*[ \t]*)((?:[-+*]|\d{1,9}[.)])[ \t]+)?/;
 
+/** The prefix for continuation lines of a block whose first line starts with `opening` (the text before `$$`). */
+export function continuationPrefix(opening: string): string {
+	const match = PREFIX.exec(opening)!;
+	return match[1]! + " ".repeat(match[2]?.length ?? 0);
+}
+
 export function mathRegions(text: string): MathRegion[] {
 	return scanMath(text).regions;
 }
@@ -39,8 +45,7 @@ export function formatRegion(text: string, region: MathRegion, unit: string): Te
 
 	// Lines after the first carry the prefix of the line that opens the block ("> " in a callout).
 	const lineStart = text.lastIndexOf("\n", region.start - 1) + 1;
-	const opening = PREFIX.exec(text.slice(lineStart, region.start))!;
-	const prefix = opening[1]! + " ".repeat(opening[2]?.length ?? 0);
+	const prefix = continuationPrefix(text.slice(lineStart, region.start));
 	const lines = content.split("\n");
 	const stripped: string[] = [lines[0]!];
 	for (const line of lines.slice(1)) {

@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {findClosingBrace, findNextPlaceholder, findPreviousPlaceholder, indentSnippet} from "../src/snippet/placeholders";
+import {findClosingBracket, findNextPlaceholder, findPreviousClosingBracket, findPreviousPlaceholder, indentSnippet} from "../src/snippet/placeholders";
 import {insertionText} from "../src/snippet/insertion";
 import type {ResolvedSymbol} from "../src/symbols/types";
 
@@ -19,10 +19,19 @@ describe("placeholders", () => {
 		expect(findPreviousPlaceholder(text, 6)).toBeNull();
 	});
 
-	it("steps past the next unescaped closing brace on the line", () => {
-		expect(findClosingBrace("x^{ab} c", 4)).toBe(6);
-		expect(findClosingBrace("a\\} b} c", 0)).toBe(6);
-		expect(findClosingBrace("a\n}", 0)).toBeNull();
+	it("steps past the next unescaped closing bracket on the line", () => {
+		expect(findClosingBracket("x^{ab} c", 4)).toBe(6);
+		expect(findClosingBracket("a\\} b} c", 0)).toBe(6);
+		expect(findClosingBracket("f(x) + y", 2)).toBe(4);
+		expect(findClosingBracket("[0, 1]", 1)).toBe(6);
+		expect(findClosingBracket("a\n}", 0)).toBeNull();
+	});
+
+	it("steps back to the previous unescaped closing bracket on the line", () => {
+		expect(findPreviousClosingBracket("x^{ab} c", 8)).toBe(5);
+		expect(findPreviousClosingBracket("f(x)\\} c", 8)).toBe(3);
+		expect(findPreviousClosingBracket("}\nab", 4)).toBeNull();
+		expect(findPreviousClosingBracket("x^{ab}", 5)).toBeNull();
 	});
 
 	it("carries indentation and blockquote markers into snippet lines", () => {

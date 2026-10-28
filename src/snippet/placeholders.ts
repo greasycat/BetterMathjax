@@ -43,12 +43,36 @@ export function findPreviousPlaceholder(text: string, before: number): Span | nu
 	return found;
 }
 
-/** Offset just past the next `}` on the same line as `from`, used to step out of a group when no placeholder is left. */
-export function findClosingBrace(text: string, from: number): number | null {
-	for (let i = from; i < text.length; i++) {
+const CLOSING = new Set(["}", ")", "]"]);
+const isClosing = (text: string, i: number) => CLOSING.has(text[i]!) && text[i - 1] !== "\\";
+
+/** Offset just past the next unescaped `}`, `)` or `]` on the same line as `from`, to step out of a group. */
+export function findClosingBracket(text: string, from: number): number | null {
+	for (let i = from; i < text.length && text[i] !== "\n"; i++) {
+		if (isClosing(text, i)) return i + 1;
+	}
+	return null;
+}
+
+/**
+ * Offset just past the bracket that closes the innermost group around `from`, if it comes before `to`.
+ * Brackets opened after `from` are skipped together with their closing bracket.
+ */
+export function findEnclosingClose(text: string, from: number, to: number): number | null {
+	let depth = 0;
+	for (let i = from; i < to; i++) {
 		const char = text[i];
-		if (char === "\n") return null;
-		if (char === "}" && text[i - 1] !== "\\") return i + 1;
+		if (char === "\\") i++;
+		else if (char === "{" || char === "(" || char === "[") depth++;
+		else if (CLOSING.has(char!) && depth-- === 0) return i + 1;
+	}
+	return null;
+}
+
+/** Offset of the last unescaped `}`, `)` or `]` before `before` on its line, to step back into a group. */
+export function findPreviousClosingBracket(text: string, before: number): number | null {
+	for (let i = before - 1; i >= 0 && text[i] !== "\n"; i--) {
+		if (isClosing(text, i)) return i;
 	}
 	return null;
 }

@@ -5,6 +5,7 @@ This page shows every feature of Better MathJax. For setup and upgrade notes, se
 - [Suggestions](#suggestions)
 - [Snippets and fields](#snippets-and-fields)
 - [Environments](#environments)
+- [Macros from the note](#macros-from-the-note)
 - [Auto-braces](#auto-braces)
 - [Formatting](#formatting)
 - [Symbol reference](#symbol-reference)
@@ -16,7 +17,9 @@ This page shows every feature of Better MathJax. For setup and upgrade notes, se
 
 ## Suggestions
 
-Type a backslash command in `$…$` or `$$…$$`. A list of matching symbols opens, and each row shows a rendered preview.
+Type a command in `$…$` or `$$…$$`. A list of matching symbols opens, and each row shows a rendered preview.
+
+In math, you do not have to type the backslash. Type `frac` and accept `\frac`: the plugin replaces `frac` with `\frac{@1@}{@2@}`. Without a backslash, the list shows only names that start with the letters you typed, and it opens after two letters. Thus most variables, such as `xy`, do not open it. Words in usual text never open it. To get suggestions only after a backslash, turn on *Require a backslash*.
 
 The plugin ignores dollar signs in code blocks, inline code and the frontmatter. It also ignores an escaped `\$`. To get suggestions in all text, change *Suggest symbols* in the settings.
 
@@ -33,6 +36,15 @@ When you accept `\frac`, the plugin inserts `\frac{@1@}{@2@}` and selects the fi
 - A field stays highlighted after you type in it, so you can go back and correct it.
 - If you insert a snippet in a field, you fill that snippet first. Then you continue with the outer snippet.
 
+In math, `Tab` also moves out of brackets. It uses this order:
+
+1. If `_` or `^` added a closing brace and the cursor is inside that group, `Tab` moves past the brace. Thus in `\frac{x_{2|}}{@2@}`, the first `Tab` goes past the brace after `2`, and the next `Tab` selects the second field.
+2. The next field of the snippet.
+3. The next `@n@` marker in the same math block.
+4. Past the next `)`, `]` or `}` on the line.
+
+`Shift+Tab` goes back in the same order: the previous field, the previous marker, then to just before the previous `)`, `]` or `}` on the line. When `Tab` has nowhere to go, or the cursor is not in math, `Tab` works as usual.
+
 The snippet ends when you move the cursor out of it. It also ends when you press *next* on the last field after you fill all fields. The cursor then goes to the end of the snippet.
 
 Outside a snippet, *next* goes to the next `@n@` marker in the note. If there is no marker, it goes past the next `}` on the line.
@@ -43,11 +55,37 @@ Outside a snippet, *next* goes to the next `@n@` marker in the note. If there is
 
 In math, type the first letters of an environment name without a backslash, for example `pmat`. Select `pmatrix` to insert a full `\begin{pmatrix} … \end{pmatrix}` block. You can also type `\begin{pm`.
 
-The list shows only environment names that start with the letters you typed. Thus a variable such as `ab` does not open the list. Words in usual text never open it. To get suggestions only after a backslash, turn on *Require a backslash*.
-
 In blockquotes and callouts, each inserted line keeps the `>` prefix.
 
 <img src="screenshots/environments.png" alt="Typing pmat in math suggests the pmatrix environments" width="560">
+
+## Macros from the note
+
+If a note defines macros in its math, the plugin suggests them while you edit that note. The suggestion shows a *note* badge and a preview. Other notes do not get these suggestions.
+
+```tex
+$$
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+$$
+```
+
+In this note, `\no` suggests `\norm`. Accept it to insert `\norm{@1@}` with its field selected.
+
+The plugin reads these commands:
+
+- `\newcommand`, `\renewcommand` and `\providecommand`, with argument counts and an optional first argument. The snippet has a field for each argument that you must give. An optional argument keeps its default.
+- `\def`, for example `\def\ip#1#2{\langle #1,#2 \rangle}`.
+- `\DeclareMathOperator`, with or without `*`.
+- `\let`, which copies the description and the snippet of the command that it points to.
+- `\newenvironment` and `\renewenvironment`. These become environments, the same as the built-in environments.
+
+The plugin reads a definition only when it is in math. It does not read definitions in code blocks, or in text outside math. If a note defines a name that a built-in or custom symbol also uses, the note's definition wins. *Show symbol reference* shows the definition and its line.
+
+The plugin rereads the definitions after an edit that changes a definition. An edit can move a `$` delimiter, so that a definition goes into or out of math. The plugin sees that change after the next edit to a definition.
+
+To stop these suggestions, turn off *Suggest macros from the note* in the plugin settings.
 
 ## Auto-braces
 
@@ -70,6 +108,17 @@ The formatted math renders the same as before. Indentation follows the Obsidian 
 Turn on *Format math when you leave it* to format a block when the cursor leaves it. Arrow keys, a click and a jump all count. Typing never starts a format. This option is off by default.
 
 <img src="screenshots/format-before.png" alt="Math blocks before formatting" width="420"> <img src="screenshots/format-after.png" alt="The same blocks after formatting, indented with aligned columns" width="420">
+
+### Math without indentation
+
+To keep math free of indentation, turn off *Indent math*. Then in math:
+
+- `Tab` and `Shift+Tab` still move between fields and brackets, but they do not indent.
+- `Enter` starts the new line without the indentation of the line above.
+- Snippets such as `pmatrix` insert their lines without indentation.
+- The formatter does not indent environment bodies. It still aligns `&` columns.
+
+Blockquote, callout and list prefixes stay, so the math stays in its callout or list.
 
 ## Symbol reference
 

@@ -30,7 +30,7 @@ export class SymbolModal extends Modal {
 			for (const example of symbol.examples) {
 				const row = examples.createDiv({cls: "better-mathjax-example"});
 				row.createEl("code", {text: example.trim()});
-				renderInlineMath(example, row.createDiv({cls: "better-mathjax-example-render"}), true);
+				renderInlineMath((symbol.preamble ?? "") + example, row.createDiv({cls: "better-mathjax-example-render"}), true);
 			}
 		}
 
@@ -50,6 +50,8 @@ export class SymbolModal extends Modal {
 		const snippet = this.section("Snippet");
 		// An empty snippet inserts the name itself.
 		snippet.createEl("pre", {cls: "better-mathjax-snippet-code", text: symbol.snippet || symbol.name});
+		// The note defines this macro, so there is nothing in the plugin to customize.
+		if (symbol.source === "document") return;
 		const customize = snippet.createDiv({cls: "better-mathjax-section-action"});
 		customize.createDiv({
 			cls: "setting-item-description",

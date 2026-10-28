@@ -43,7 +43,7 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Require a backslash")
-			.setDesc("If you turn this on, only a backslash command or \\begin{ opens the suggestion list. If it is off, in math, the first letters of an environment name, such as pmat, also suggest the environment.")
+			.setDesc("If you turn this on, only a backslash command or \\begin{ opens the suggestion list. If it is off, in math, the first letters of a name also open the list, such as frac for \\frac or pmat for pmatrix.")
 			.addToggle((toggle) => toggle
 				.setValue(settings.requireBackslash)
 				.onChange(async (value) => {
@@ -92,6 +92,26 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 				.setValue(settings.formatOnLeave)
 				.onChange(async (value) => {
 					settings.formatOnLeave = value;
+					await plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName("Indent math")
+			.setDesc("If you turn this off, the plugin adds no indentation in math. In math, Tab and Shift + Tab do not indent, and a new line starts without indentation. Snippets and the formatter do not indent environment bodies. Blockquote and list prefixes stay.")
+			.addToggle((toggle) => toggle
+				.setValue(settings.indentMath)
+				.onChange(async (value) => {
+					settings.indentMath = value;
+					await plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName("Suggest macros from the note")
+			.setDesc("Suggest the macros that the open note defines in its math, for example with \\newcommand or \\DeclareMathOperator.")
+			.addToggle((toggle) => toggle
+				.setValue(settings.noteMacros)
+				.onChange(async (value) => {
+					settings.noteMacros = value;
 					await plugin.saveSettings();
 				}));
 
@@ -160,7 +180,7 @@ export class BetterMathjaxSettingTab extends PluginSettingTab {
 		const setting = new Setting(containerEl)
 			.setName("Placeholder jump key")
 			.setDesc(settings.tabJumpsFields
-				? "In a snippet, Tab moves to the next field. Shift + Tab moves to the previous field. Outside a snippet, Tab works as usual."
+				? "Tab moves to the next snippet field. In math, it also moves past the next closing bracket. Shift + Tab moves back. Outside math and snippets, Tab works as usual."
 				: `The plugin uses your hotkeys for "Select next placeholder" (${label(COMMAND_IDS.nextPlaceholder)}) and "Select previous placeholder" (${label(COMMAND_IDS.previousPlaceholder)}).`)
 			.addDropdown((dropdown) => dropdown
 				.addOption("tab", "Tab / Shift + Tab")

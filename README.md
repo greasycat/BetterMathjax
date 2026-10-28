@@ -8,13 +8,14 @@ Better MathJax suggests MathJax commands and environments while you type math in
 
 For all features, with screenshots, see [Features](https://github.com/greasycat/BetterMathjax/blob/master/docs/FEATURES.md).
 
-- **Suggestions in math.** Type a backslash command in `$…$` or `$$…$$` to see matching symbols with rendered previews.
-- **Snippets with fields.** Accept `\frac` to insert `\frac{@1@}{@2@}`. Press `Tab` to go to the next field.
-- **Environments without a backslash.** Type `pmat` in math to insert a full `pmatrix` block.
+- **Suggestions in math.** Type a command name in `$…$` or `$$…$$`, with or without its backslash, to see matching symbols with rendered previews.
+- **Snippets with fields.** Accept `\frac` to insert `\frac{@1@}{@2@}`. Press `Tab` to go to the next field, or out of a bracket.
+- **No backslash needed.** Type `frac` in math to insert `\frac{}{}`, or `pmat` to insert a full `pmatrix` block.
 - **Auto-braces.** Type `_` or `^` in math to get `_{}` or `^{}`.
 - **Formatting.** Indent environments, align `&` columns and remove extra spaces. The math renders the same as before.
 - **Symbol reference.** See the description, examples and related symbols of a command.
 - **Symbol browser.** Search about 1,260 built-in symbols. Customize or disable any of them.
+- **Macros from the note.** Macros that a note defines with `\newcommand`, `\DeclareMathOperator` and similar commands become suggestions in that note.
 - **Custom symbols.** Add your own symbols in a form with a live preview. Keep them in the plugin settings, or in a note that you or an AI agent can edit.
 - **Backups.** Before a change replaces or removes a symbol, the plugin saves a backup that you can restore.
 

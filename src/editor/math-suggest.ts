@@ -4,6 +4,7 @@ import {mathModeAt} from "../math/context";
 import {viewForEditor} from "./editor-views";
 import {mathModeInState} from "./math-scan-cache";
 import {rank} from "../search/ranker";
+import {withDocumentSymbols} from "../symbols/document-symbols";
 import type {ResolvedSymbol} from "../symbols/types";
 import {renderInlineMath} from "../ui/math-preview";
 import {insertSymbol} from "./insert";
@@ -94,7 +95,7 @@ export class MathSuggest extends EditorSuggest<ResolvedSymbol> {
 	getSuggestions(context: EditorSuggestContext): ResolvedSymbol[] {
 		const limit = this.plugin.settings.maxSuggestions;
 		this.limit = limit;
-		const symbols = this.plugin.registry.enabled();
+		const symbols = withDocumentSymbols(this.plugin.noteSymbols(context.editor), this.plugin.registry.enabled());
 		switch (this.activeTrigger?.kind) {
 			case "begin":
 				this.shown = rank(symbols.filter(isEnvironment), context.query, limit);
@@ -102,7 +103,7 @@ export class MathSuggest extends EditorSuggest<ResolvedSymbol> {
 			case "word": {
 				// Only names that start with the word, so ordinary variables rarely open the list.
 				const prefix = context.query.toLowerCase();
-				this.shown = rank(symbols.filter(isEnvironment), context.query, symbols.length)
+				this.shown = rank(symbols, context.query, symbols.length)
 					.filter((symbol) => symbol.key.toLowerCase().startsWith(prefix))
 					.slice(0, limit);
 				break;
@@ -116,20 +117,23 @@ export class MathSuggest extends EditorSuggest<ResolvedSymbol> {
 	renderSuggestion(symbol: ResolvedSymbol, el: HTMLElement): void {
 		el.addClass("better-mathjax-suggestion");
 		el.createSpan({cls: "better-mathjax-suggestion-name", text: symbol.name});
-		if (symbol.source !== "builtin") el.createSpan({cls: "better-mathjax-suggestion-badge", text: "custom"});
+		if (symbol.source !== "builtin") {
+			el.createSpan({cls: "better-mathjax-suggestion-badge", text: symbol.source === "document" ? "note" : "custom"});
+		}
 
 		const preview = !symbol.preview ? null : symbol.examples[0] ??
 			(this.plugin.settings.previewWithoutExample && symbol.name.startsWith("\\") ? symbol.name : null);
 		if (preview !== null) {
 			const mathEl = el.createSpan({cls: "better-mathjax-suggestion-preview"});
-			if (!renderInlineMath(preview, mathEl)) mathEl.remove();
+			if (!renderInlineMath((symbol.preamble ?? "") + preview, mathEl)) mathEl.remove();
 		}
 	}
 
 	selectSuggestion(symbol: ResolvedSymbol, _event: MouseEvent | KeyboardEvent): void {
 		const context = this.context;
 		if (!context) return;
-		this.suppressAt = insertSymbol(context.editor, symbol, context.start, context.end, this.plugin.settings.useSnippetFirst);
+		this.suppressAt = insertSymbol(context.editor, symbol, context.start, context.end,
+			this.plugin.settings.useSnippetFirst, this.plugin.settings.indentMath);
 		this.close();
 	}
 

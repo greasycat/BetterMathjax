@@ -38,6 +38,28 @@ function hasClosingBrace(state: EditorState, pos: number): boolean {
 }
 
 /**
+ * Moving past the closing brace that auto-brace inserted, when it closes the innermost group around the cursor.
+ * Tab does this before it moves to a field, so `x_{2}` can be finished inside a snippet field.
+ */
+export function exitAutoBrace(state: EditorState): TransactionSpec | null {
+	const head = state.selection.main.head;
+	const line = state.doc.lineAt(head);
+	const rest = state.doc.sliceString(head, line.to);
+	let depth = 0;
+	for (let i = 0; i < rest.length; i++) {
+		const char = rest[i];
+		if (char === "\\") i++;
+		else if (char === "{") depth++;
+		else if (char === "}" && depth-- === 0) {
+			const pos = head + i;
+			if (!hasClosingBrace(state, pos)) return null;
+			return {selection: {anchor: pos + 1}, effects: skipClosingBrace.of(pos), userEvent: "select"};
+		}
+	}
+	return null;
+}
+
+/**
  * The transaction for typing `text` over `from`-`to`, or null to let the editor insert it.
  * Typing `_` or `^` inside math inserts `_{}` / `^{}` with the cursor between the braces.
  * With text selected, the selection is wrapped instead. `\_`, `\^` and an existing `{` are left alone.

@@ -2,8 +2,8 @@
  * What the text before the cursor asks to complete. Pure, so it can be tested without an editor.
  * - "command": `\name`, matched against every symbol.
  * - "begin": `\begin{name`, matched against environments; the completion replaces the whole `\begin{…}`.
- * - "word": a bare word of two or more letters, matched against environments by prefix only, so that
- *   variables such as `ab` do not open the list.
+ * - "word": a bare word of two or more letters, matched against every symbol by prefix only, so that
+ *   most variables such as `xy` do not open the list. Accepting a command inserts its backslash.
  */
 export type TriggerKind = "command" | "begin" | "word";
 

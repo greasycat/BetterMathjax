@@ -21,6 +21,10 @@ export interface BetterMathjaxSettings {
 	tabJumpsFields: boolean;
 	/** Render the symbol itself as a preview when it has no example. */
 	previewWithoutExample: boolean;
+	/** Indent math: Tab and Enter indent as usual, snippets and the formatter indent environment bodies. */
+	indentMath: boolean;
+	/** Suggest the macros that the open note defines with `\\newcommand` and similar commands. */
+	noteMacros: boolean;
 	/** Typing `_` or `^` in math inserts `_{}` or `^{}` with the cursor inside. */
 	autoBraceSubscript: boolean;
 	autoBraceSuperscript: boolean;
@@ -43,6 +47,8 @@ export const DEFAULT_SETTINGS: BetterMathjaxSettings = {
 	acceptWithTab: true,
 	tabJumpsFields: true,
 	previewWithoutExample: true,
+	noteMacros: true,
+	indentMath: true,
 	autoBraceSubscript: true,
 	autoBraceSuperscript: true,
 	symbolStorage: "hidden",
@@ -97,6 +103,8 @@ export function migrateSettings(stored: unknown): BetterMathjaxSettings {
 			?? (typeof data.fieldJumpKey === "string" ? data.fieldJumpKey === "Tab" : DEFAULT_SETTINGS.tabJumpsFields),
 		previewWithoutExample: pick(data, "previewWithoutExample", isBool)
 			?? (isBool(legacy.alwaysShowExamples) ? legacy.alwaysShowExamples : DEFAULT_SETTINGS.previewWithoutExample),
+		noteMacros: pick(data, "noteMacros", isBool) ?? DEFAULT_SETTINGS.noteMacros,
+		indentMath: pick(data, "indentMath", isBool) ?? DEFAULT_SETTINGS.indentMath,
 		autoBraceSubscript: pick(data, "autoBraceSubscript", isBool)
 			?? (isBool(legacy.matchingSubScript) ? legacy.matchingSubScript : DEFAULT_SETTINGS.autoBraceSubscript),
 		autoBraceSuperscript: pick(data, "autoBraceSuperscript", isBool)

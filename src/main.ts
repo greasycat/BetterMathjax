@@ -1,16 +1,20 @@
 import type {Extension} from "@codemirror/state";
-import {loadMathJax, Notice, Plugin} from "obsidian";
+import {loadMathJax, Notice, Plugin, type Editor} from "obsidian";
 import {registerCommands} from "./commands";
 import {autoBraceExtension} from "./editor/auto-brace";
+import {documentMacrosField, macrosInState} from "./editor/document-macros";
 import {MathSuggest} from "./editor/math-suggest";
-import {editorViewRegistry} from "./editor/editor-views";
+import {editorViewRegistry, viewForEditor} from "./editor/editor-views";
 import {indentUnit} from "./editor/format-commands";
 import {formatOnLeaveExtension} from "./editor/format-on-leave";
 import {mathScanField} from "./editor/math-scan-cache";
-import {snippetSessionExtension, snippetTabKeymap} from "./editor/snippet-session";
+import {snippetSessionExtension} from "./editor/snippet-session";
+import {noIndentKeymap} from "./editor/no-indent";
+import {tabStopKeymap} from "./editor/tab-stops";
 import {BetterMathjaxSettingTab} from "./settings/settings-tab";
 import {BetterMathjaxSettings, legacySymbolNotePaths, migrateSettings} from "./settings/settings";
 import builtinSymbols from "./symbols/builtin-symbols.json";
+import {documentSymbols} from "./symbols/document-symbols";
 import {SymbolRegistry} from "./symbols/registry";
 import {CustomSymbolStore} from "./symbols/custom-symbol-store";
 import type {ResolvedSymbol} from "./symbols/types";
@@ -44,7 +48,9 @@ export default class BetterMathjaxPlugin extends Plugin {
 			this.jumpKeymap,
 			editorViewRegistry(),
 			mathScanField,
-			formatOnLeaveExtension(() => this.settings.formatOnLeave, () => indentUnit(this.app)),
+			documentMacrosField,
+			noIndentKeymap(() => !this.settings.indentMath && !this.suggest.isShowing()),
+			formatOnLeaveExtension(() => this.settings.formatOnLeave, () => this.mathIndentUnit()),
 		]);
 		this.addSettingTab(new BetterMathjaxSettingTab(this.app, this));
 		registerCommands(this);
@@ -67,7 +73,7 @@ export default class BetterMathjaxPlugin extends Plugin {
 	/** Add or remove the Tab field-jump keymap to match the settings, in open editors too. */
 	applyJumpKey(): void {
 		this.jumpKeymap.length = 0;
-		if (this.settings.tabJumpsFields) this.jumpKeymap.push(snippetTabKeymap(() => !this.suggest.isShowing()));
+		if (this.settings.tabJumpsFields) this.jumpKeymap.push(tabStopKeymap(() => !this.suggest.isShowing()));
 		this.app.workspace.updateOptions();
 	}
 
@@ -101,6 +107,19 @@ export default class BetterMathjaxPlugin extends Plugin {
 
 	importSymbolNote(): void {
 		new NoteImportModal(this.app, this).open();
+	}
+
+	/** One level of indentation for formatted math, or "" when the settings turn math indentation off. */
+	mathIndentUnit(): string {
+		return this.settings.indentMath ? indentUnit(this.app) : "";
+	}
+
+	/** The suggestions for the macros that the note in `editor` defines, or none when the setting is off. */
+	noteSymbols(editor: Editor): ResolvedSymbol[] {
+		const view = viewForEditor(editor);
+		if (!this.settings.noteMacros || !view) return [];
+		const {defs, line} = macrosInState(view.state);
+		return defs.length ? documentSymbols(defs, line, (name) => this.registry.get(name)) : [];
 	}
 
 	showSymbol(symbol: ResolvedSymbol): void {

@@ -7,7 +7,7 @@ import {SymbolEditorModal} from "./symbol-editor";
 
 type Item = {kind: "new"; name: string} | {kind: "symbol"; symbol: ResolvedSymbol};
 
-const SOURCE_LABEL: Record<ResolvedSymbol["source"], string> = {user: "custom", override: "customized", builtin: "built-in"};
+const SOURCE_LABEL: Record<ResolvedSymbol["source"], string> = {user: "custom", override: "customized", builtin: "built-in", document: "note"};
 
 /** Search all symbols and open one in the editor, or start a new one from the query. */
 export class SymbolPickerModal extends SuggestModal<Item> {

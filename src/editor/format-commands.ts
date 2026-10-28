@@ -20,14 +20,15 @@ function apply(editor: Editor, changes: readonly TextChange[]): void {
 	});
 }
 
-export function formatMathAtCursor(app: App, editor: Editor): void {
+/** Format the math at the cursor. `unit` is one level of indentation, "" for none. */
+export function formatMathAtCursor(editor: Editor, unit: string): void {
 	const text = editor.getValue();
 	const region = regionAt(text, editor.posToOffset(editor.getCursor()));
 	if (!region) {
 		new Notice("The cursor is not in math.");
 		return;
 	}
-	const change = formatRegion(text, region, indentUnit(app));
+	const change = formatRegion(text, region, unit);
 	if (!change) {
 		new Notice("This math is already formatted.");
 		return;
@@ -35,8 +36,8 @@ export function formatMathAtCursor(app: App, editor: Editor): void {
 	apply(editor, [change]);
 }
 
-export function formatAllMathInNote(app: App, editor: Editor): void {
-	const changes = formatAllMath(editor.getValue(), indentUnit(app));
+export function formatAllMathInNote(editor: Editor, unit: string): void {
+	const changes = formatAllMath(editor.getValue(), unit);
 	if (changes.length === 0) {
 		new Notice("All math in this note is already formatted.");
 		return;

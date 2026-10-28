@@ -19,11 +19,12 @@ npm run lint
 |---|---|
 | `src/main.ts` | Connects the parts of the plugin |
 | `src/math/context.ts` | Finds math regions, and tells if a position is in math |
+| `src/math/macros.ts` | Finds the macros that a note defines in its math |
 | `src/format/` | The TeX formatter, and the code that applies it to the math of a note |
 | `src/search/ranker.ts` | Scores and sorts the matches |
 | `src/snippet/placeholders.ts` | Finds placeholders and indents snippets |
 | `src/symbols/` | The built-in data, the registry, custom-symbol storage, the `jsonl` note, backups and the import of 1.x notes |
-| `src/editor/` | The suggestion list, snippet fields, auto-braces, the cached math scan and the formatting commands |
+| `src/editor/` | The suggestion list, snippet fields, auto-braces, the cached math scan, the note's macros and the formatting commands |
 | `src/ui/` | The symbol reference, browser, editor and restore windows |
 | `src/settings/` | The settings, the 1.x migration and the settings tab |
 

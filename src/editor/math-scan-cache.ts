@@ -29,6 +29,16 @@ export class MathScanCache {
 
 	/** The math mode at `pos`, as `mathModeAt` would give for the text before it. */
 	modeAt(pos: number): MathMode | null {
+		return scanMode(this.stateAt(pos));
+	}
+
+	/** Where the math around `pos` opens (the offset of its `$`), or null outside math. */
+	openAt(pos: number): number | null {
+		const state = this.stateAt(pos);
+		return scanMode(state) === null ? null : state.openAt;
+	}
+
+	private stateAt(pos: number): ScanState {
 		const target = this.doc.lineAt(pos);
 		const k = Math.min(this.saved.length - 1, Math.floor((target.number - 1) / STEP));
 		const state = {...this.saved[k]!};
@@ -45,7 +55,7 @@ export class MathScanCache {
 			number++;
 		}
 		scanLine(state, this.doc.sliceString(target.from, pos), target.number - 1, target.from, true);
-		return scanMode(state);
+		return state;
 	}
 }
 
@@ -61,7 +71,16 @@ export const mathScanField = StateField.define<MathScanCache>({
 	},
 });
 
+function cacheOf(state: EditorState): MathScanCache {
+	return state.field(mathScanField, false) ?? MathScanCache.create(state.doc);
+}
+
 /** The math mode at `pos`, using the cache when the editor has it. */
 export function mathModeInState(state: EditorState, pos: number): MathMode | null {
-	return (state.field(mathScanField, false) ?? MathScanCache.create(state.doc)).modeAt(pos);
+	return cacheOf(state).modeAt(pos);
+}
+
+/** The offset of the `$` that opens the math around `pos`, or null outside math. */
+export function mathOpenInState(state: EditorState, pos: number): number | null {
+	return cacheOf(state).openAt(pos);
 }

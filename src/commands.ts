@@ -76,7 +76,8 @@ export function registerCommands(plugin: BetterMathjaxPlugin): void {
 		name: "Show symbol reference",
 		editorCallback: (editor) => {
 			const name = suggest.selectedSymbol()?.name ?? commandAtCursor(editor);
-			const symbol = name === null ? undefined : plugin.registry.get(name);
+			const symbol = name === null ? undefined
+				: plugin.noteSymbols(editor).find((note) => note.name === name) ?? plugin.registry.get(name);
 			if (symbol) plugin.showSymbol(symbol);
 			else new Notice(name === null ? "No symbol at the cursor" : `Unknown symbol ${name}`);
 		},
@@ -117,13 +118,13 @@ export function registerCommands(plugin: BetterMathjaxPlugin): void {
 	plugin.addCommand({
 		id: COMMAND_IDS.formatMathAtCursor,
 		name: "Format math at cursor",
-		editorCallback: (editor) => formatMathAtCursor(plugin.app, editor),
+		editorCallback: (editor) => formatMathAtCursor(editor, plugin.mathIndentUnit()),
 	});
 
 	plugin.addCommand({
 		id: COMMAND_IDS.formatAllMath,
 		name: "Format all math in note",
-		editorCallback: (editor) => formatAllMathInNote(plugin.app, editor),
+		editorCallback: (editor) => formatAllMathInNote(editor, plugin.mathIndentUnit()),
 	});
 
 	plugin.addCommand({
